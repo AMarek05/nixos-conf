@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+
+# Compress directories with zstd and show a progress bar
+# Output archives are saved in the current directory
+
+set -e
+
+# Check arguments
+if [ $# -lt 1 ]; then
+    echo "Usage: $0 <dir1> [dir2 dir3 ...]"
+    exit 1
+fi
+
+# Compression level
+ZSTD_LEVEL=19
+
+# Current directory for outputs
+OUTDIR="$(pwd)"
+
+for dir in "$@"; do
+    if [ ! -d "$dir" ]; then
+        echo "ERR: Skipping '$dir': not a directory"
+        continue
+    fi
+
+    # Sanitize name (replace / with _ to avoid conflicts)
+    base_name="$(basename "$dir")"
+    output="${OUTDIR}/${base_name}.tar.zst"
+
+    size_bytes=$(du -sb "$dir" | awk '{print $1}')
+    size_human=$(du -sh "$dir" | awk '{print $1}')
+
+    echo "LOG: Compressing '$dir' (${size_human}) → '${output}'"
+
+    tar -cf - -C "$(dirname "$dir")" "$base_name" \
+        | pv -s "$size_bytes" -pterb \
+        | zstd -${ZSTD_LEVEL} -T0 -o "$output"
+
+    echo "EXIT: Done: $output"
+    echo
+done
+
+exit 0

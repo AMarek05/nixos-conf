@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+REPO="/home/adam/sys/"
+
+DOTS="/home/adam/sys/dots"
+CONF="/home/adam/sys/home.nix"
+
+nvim "$CONF"
+
+cd "$REPO" || exit 1
+
+git add "$DOTS" "$CONF"
+git commit -m "$(date +'%H:%M - %d %B %Y')"
+
+home-manager switch --flake .#adam@nixos
