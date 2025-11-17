@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+REPO="/home/adam/sys"
+
+CONFIG="/home/adam/sys/etc/configuration.nix"
+
+cd "$REPO" || exit 1
+
+nvim "$CONFIG"
+
+git add "$CONFIG"
+git commit -m "$(date +'%H:%M - %d %B %Y')"
+
+echo "Proceeding to rebuild:"
+sudo nixos-rebuild switch --flake .#nixos

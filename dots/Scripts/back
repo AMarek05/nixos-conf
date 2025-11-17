@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+#
+# Backup given directories into compressed tar.zst archives,
+# store them in ~/gdrive/Backup, and sync with gdrive:Backup.
+#
+# Usage:
+#   ./backup-to-gdrive.sh /path/to/dir1 [/path/to/dir2 ...]
+#
+
+set -euo pipefail
+
+# === CONFIG ===
+BACKUP_DIR="$HOME/gdrive/Backup"
+REMOTE_DIR="gdrive:Remote/Backup"
+mkdir -p "$BACKUP_DIR"
+
+LOG_FILE="$HOME/.local/share/backup-rclone.log"
+
+TMP_DIR="$(mktemp -d)"
+
+PARALLEL=8
+
+# === CHECKS ===
+if ! command -v rclone &>/dev/null; then
+    echo "FATAL: rclone not found. Please install it first." >&2
+    exit 1
+fi
+
+if ! command -v zstd &>/dev/null; then
+    echo "FATAL: zstd not found. Please install it" >&2
+    exit 1
+fi
+
+if ! command -v pv &>/dev/null; then
+    echo "FATAL: pv not found. Please install it" >&2
+    exit 1
+fi
+
+if [ "$#" -eq 0 ]; then
+    echo "FATAL: No directories provided to back up." >&2
+    echo "Usage: $0 /path/to/dir1 [/path/to/dir2 ...]" >&2
+    exit 1
+fi
+
+# === FUNCTION: human progress tar.zstd ===
+compress_dir() {
+    local src="$1"
+    local base
+    base="$(basename "$src")"
+    local archive="${BACKUP_DIR}/${base}.tar.zst"
+
+    echo "LOG: Compressing $src → $archive"
+    tar --zstd -cvf "$archive" -C "$(dirname "$src")" "$base" \
+        | pv -lep -s "$(du -sb "$src" | awk '{print $1}')" > /dev/null
+
+    echo "LOG: Done: $(du -h "$archive" | awk '{print $1}')"
+}
+
+# === MAIN ===
+{
+    echo "==== $(date '+%Y-%m-%d %H:%M:%S') ===="
+    echo "Backup directories: $*"
+    echo "Local backup dir: $BACKUP_DIR"
+    echo "Remote: $REMOTE_DIR"
+    echo
+
+    for dir in "$@"; do
+        if [ -d "$dir" ]; then
+            compress_dir "$dir"
+        else
+            echo "ERR: Skipping invalid path: $dir"
+        fi
+    done
+
+    echo
+    echo "LOG: Syncing backups to Google Drive..."
+    script -q -a "$LOG_FILE" -c \
+        "rclone sync -P --checkers $((PARALLEL*2)) --transfers $PARALLEL --drive-use-trash=false \"$BACKUP_DIR\" \"$REMOTE_DIR\""
+
+    echo
+    echo "EXIT: Backup and sync completed successfully."
+}
+
+# === CLEANUP ===
+rm -rf "$TMP_DIR"

@@ -1,0 +1,83 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Script: update-arch-mirrorlist.sh
+# Purpose: Automate mirror discovery and ranking with ghostmirror per ArchWiki example.
+# Requirements: ghostmirror installed, root privileges, network access.
+# Countries: Germany, Poland, Czechia
+
+# === CONFIGURATION ===
+MIRRORLIST_PATH="/etc/pacman.d/mirrorlist"
+BACKUP_PATH="/etc/pacman.d/mirrorlist.bak"
+TEMP_MIRRORLIST="/tmp/mirrorlist.ghostmirror"
+COUNTRIES="Germany,Poland,Czechia"
+MAX_MIRRORS=30   # adjust for your preference
+SPEED_TEST_MODE="light"  # could be 'light' or 'full'
+
+# === SANITY CHECKS ===
+command -v ghostmirror >/dev/null 2>&1 || {
+  echo "❌ ghostmirror not found. Install it first (e.g., via AUR or package manager)."
+  exit 1
+}
+
+[[ $EUID -ne 0 ]] && {
+  echo "⚠️  Please run this script as root (sudo ./update-arch-mirrorlist.sh)"
+  exit 1
+}
+
+echo "=== Arch Linux Mirrorlist Auto-Updater (Ghostmirror) ==="
+echo "Countries: $COUNTRIES"
+echo "Max mirrors: $MAX_MIRRORS"
+echo "Temporary file: $TEMP_MIRRORLIST"
+echo
+
+# === BACKUP EXISTING MIRRORLIST ===
+if [[ -f "$MIRRORLIST_PATH" ]]; then
+  echo "Backing up current mirrorlist to $BACKUP_PATH"
+  cp -p "$MIRRORLIST_PATH" "$BACKUP_PATH"
+else
+  echo "No existing mirrorlist found at $MIRRORLIST_PATH. Proceeding without backup."
+fi
+
+# === PHASE 1: DISCOVERY ===
+echo
+echo "🔍 Phase 1: Discovering good mirrors for $COUNTRIES..."
+ghostmirror -Po \
+  -c "$COUNTRIES" \
+  -l "$TEMP_MIRRORLIST" \
+  -L "$MAX_MIRRORS" \
+  -S state,outofdate,morerecent,ping
+
+if [[ ! -s "$TEMP_MIRRORLIST" ]]; then
+  echo "❌ Phase 1 failed — no mirrors found."
+  exit 1
+fi
+
+# === PHASE 2: RANKING ===
+echo
+echo "⚙️ Phase 2: Testing and ranking mirrors by speed..."
+ghostmirror -Po \
+  -mu "$TEMP_MIRRORLIST" \
+  -l "$TEMP_MIRRORLIST" \
+  -s "$SPEED_TEST_MODE" \
+  -S state,outofdate,morerecent,estimated,speed
+
+if [[ ! -s "$TEMP_MIRRORLIST" ]]; then
+  echo "❌ Phase 2 failed — speed test returned empty list."
+  exit 1
+fi
+
+# === APPLY NEW MIRRORLIST ===
+echo
+echo "📦 Installing new mirrorlist to $MIRRORLIST_PATH"
+cp "$TEMP_MIRRORLIST" "$MIRRORLIST_PATH"
+chmod 644 "$MIRRORLIST_PATH"
+
+# === REFRESH PACMAN DATABASE ===
+echo
+echo "🔄 Refreshing pacman databases..."
+pacman -Syyu --noconfirm
+
+echo
+echo "✅ Done!"
+echo "Mirrorlist updated with $COUNTRIES mirrors and applied successfully."
