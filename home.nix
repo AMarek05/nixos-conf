@@ -93,8 +93,6 @@
     };
   };
 
-  systemd.user.services.
-
   # zsh setup
   programs.zsh = {
     enable = true;
