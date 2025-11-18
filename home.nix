@@ -77,6 +77,7 @@ in
       PartOf = "default.target";
     };
     Service = {
+      Environment = "PATH=${scriptBinPath}";
       Type = "oneshot";
       ExecStop = "/home/adam/Scripts/push-home";
       RemainAfterExit = "yes";
@@ -94,6 +95,7 @@ in
       Description = "Squash and push commits for the day - for timer";
     };
     Service = {
+      Environment = "PATH=${scriptBinPath}";
       Type = "oneshot";
       ExecStart = "/home/adam/Scripts/push-home";
       Nice = 19;
