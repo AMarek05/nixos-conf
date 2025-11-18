@@ -66,7 +66,6 @@
   };
 
   systemd.user.services.push-home = {
-    path = with pkgs; [ git bash ];
     Unit = {
       Description = "Squash and push commits for the day";
       PartOf = "default.target";
@@ -80,10 +79,11 @@
     Install = {
       WantedBy = [ "default.target" ];
     };
+    serviceConfig = { DefaultDependencies = true; };
   };
 
   systemd.user.services.push-home-timer = {
-    path = with pkgs; [ git bash ];
+    serviceConfig = { DefaultDependencies = true; };
     Unit = {
       Description = "Squash and push commits for the day - for timer";
     };
