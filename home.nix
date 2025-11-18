@@ -77,7 +77,7 @@
       Nice = 19;
     };
     Install = {
-      WantedBy = "default.target";
+      WantedBy = [ "default.target" ];
     };
   };
 
@@ -89,7 +89,7 @@
       Unit = "push-home.service";
     };
     Install = {
-      WantedBy = "timers.target";
+      WantedBy = [ "timers.target" ];
     };
   };
 
