@@ -87,7 +87,7 @@
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "/home/adam/Scripts/push-home";
+      ExecStart = "/usr/bin/bash /home/adam/Scripts/push-home";
       Nice = 19;
     };
   };
