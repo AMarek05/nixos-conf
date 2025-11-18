@@ -65,48 +65,6 @@
     TERM = "xterm-256color";
   };
 
-  systemd.user.services.push-home = {
-    Unit = {
-      Description = "Squash and push commits for the day";
-      PartOf = "default.target";
-    };
-    Service = {
-      Type = "oneshot";
-      ExecStop = "${pkgs.bash}/bin/bash /home/adam/Scripts/push-home";
-      RemainAfterExit = "yes";
-      Nice = 19;
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-    serviceConfig = { DefaultDependencies = true; };
-  };
-
-  systemd.user.services.push-home-timer = {
-    serviceConfig = { DefaultDependencies = true; };
-    Unit = {
-      Description = "Squash and push commits for the day - for timer";
-    };
-    Service = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/bash /home/adam/Scripts/push-home";
-      Nice = 19;
-    };
-  };
-
-  systemd.user.timers.push-home-timer = {
-    Unit = {
-      description = "Run push-home daily at 23:59";
-    };
-    Timer = {
-      OnCalendar = "*-*-* 23:59";
-      Unit = "push-home-timer.service";
-    };
-    Install = {
-      WantedBy = [ "timers.target" ];
-    };
-  };
-
   # zsh setup
   programs.zsh = {
     enable = true;
@@ -213,3 +171,55 @@
   programs.home-manager.enable = true;
 }
 
+{ config, pkgs, ... }:
+let
+  # Creates a PATH string containing the /bin directories of the listed packages
+  scriptBinPath = pkgs.lib.makeBinPath [
+    pkgs.git       # <-- This is the crucial part for your script
+    pkgs.coreutils # For basic commands like 'cd', 'echo', etc.
+    pkgs.bash      # The shell used to run the script
+  ];
+in
+{
+  systemd.user.services.push-home = {
+    Unit = {
+      Description = "Squash and push commits for the day";
+      PartOf = "default.target";
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStop = "/home/adam/Scripts/push-home";
+      RemainAfterExit = "yes";
+      Nice = 19;
+    };
+    Install = {
+      WantedBy = [ "default.target" ];
+    };
+    serviceConfig = { DefaultDependencies = true; };
+  };
+
+  systemd.user.services.push-home-timer = {
+    serviceConfig = { DefaultDependencies = true; };
+    Unit = {
+      Description = "Squash and push commits for the day - for timer";
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStart = "/home/adam/Scripts/push-home";
+      Nice = 19;
+    };
+  };
+
+  systemd.user.timers.push-home-timer = {
+    Unit = {
+      description = "Run push-home daily at 23:59";
+    };
+    Timer = {
+      OnCalendar = "*-*-* 23:59";
+      Unit = "push-home-timer.service";
+    };
+    Install = {
+      WantedBy = [ "timers.target" ];
+    };
+  };
+}
