@@ -72,7 +72,7 @@
     };
     Service = {
       Type = "oneshot";
-      ExecStop = "/home/adam/Scripts/push-home";
+      ExecStop = "${pkgs.bash}/bin/bash /home/adam/Scripts/push-home";
       RemainAfterExit = "yes";
       Nice = 19;
     };
@@ -87,7 +87,7 @@
     };
     Service = {
       Type = "oneshot";
-      ExecStart = "/usr/bin/bash /home/adam/Scripts/push-home";
+      ExecStart = "${pkgs.bash}/bin/bash /home/adam/Scripts/push-home";
       Nice = 19;
     };
   };
