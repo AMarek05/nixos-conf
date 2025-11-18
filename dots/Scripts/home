@@ -10,4 +10,4 @@ cd "$REPO" || exit 1
 git add "$DOTS" "$CONF"
 git commit -m "$(date +'%H:%M - %d %B %Y')"
 
-home-manager switch --flake .#adam@nixos
+nh home switch
