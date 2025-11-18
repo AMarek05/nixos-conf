@@ -101,10 +101,8 @@ in
   };
 
   systemd.user.timers.push-home-timer = {
-    Unit = {
-      description = "Run push-home daily at 23:59";
-    };
     Timer = {
+      description = "Run push-home daily at 23:59";
       OnCalendar = "*-*-* 23:59";
       Unit = "push-home-timer.service";
     };
