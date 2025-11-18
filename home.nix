@@ -37,6 +37,8 @@ in
     gcc
     nodejs
     zig
+
+    nh
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -69,6 +71,7 @@ in
     SHELL = pkgs.zsh;
     PATH = "$PATH:/home/adam/Scripts";
     TERM = "xterm-256color";
+    FLAKE = "/home/adam/sys/"
   };
 
   systemd.user.services.push-home = {
