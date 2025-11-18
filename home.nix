@@ -66,6 +66,7 @@
   };
 
   systemd.user.services.push-home = {
+    path = with pkgs; [ git bash ];
     Unit = {
       Description = "Squash and push commits for the day";
       PartOf = "default.target";
@@ -82,6 +83,7 @@
   };
 
   systemd.user.services.push-home-timer = {
+    path = with pkgs; [ git bash ];
     Unit = {
       Description = "Squash and push commits for the day - for timer";
     };
