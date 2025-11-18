@@ -33,7 +33,7 @@ in
     gnumake
     shellcheck
 
-    python3Minimal
+    python3
     gcc
     nodejs
     zig
@@ -75,46 +75,6 @@ in
     NH_FLAKE = "/home/adam/sys/";
   };
 
-  systemd.user.services.push-home = {
-    Unit = {
-      Description = "Squash and push commits for the day";
-      PartOf = "default.target";
-    };
-    Service = {
-      Environment = "PATH=${scriptBinPath}";
-      Type = "oneshot";
-      ExecStop = "${pkgs.bash}/bin/sh /home/adam/Scripts/push-home";
-      RemainAfterExit = "yes";
-      Nice = 19;
-    };
-    Install = {
-      WantedBy = [ "default.target" ];
-    };
-  };
-
-  systemd.user.services.push-home-timer = {
-    Unit = {
-      Description = "Squash and push commits for the day - for timer";
-    };
-    Service = {
-      Environment = "PATH=${scriptBinPath}";
-      Type = "oneshot";
-      ExecStart = "${pkgs.bash}/bin/sh /home/adam/Scripts/push-home";
-      Nice = 19;
-    };
-  };
-
-  systemd.user.timers.push-home-timer = {
-    Timer = {
-      description = "Run push-home daily at 23:59";
-      OnCalendar = "*-*-* 23:59";
-      Unit = "push-home-timer.service";
-    };
-    Install = {
-      WantedBy = [ "timers.target" ];
-    };
-  };
-
   # zsh setup
   programs.zsh = {
     enable = true;
@@ -140,7 +100,7 @@ in
     # Change Autosuggest Key
     bindkey '^ ' autosuggest-accept
     
-    #set up transient prompt
+    #Set up transient prompt
     source ~/.config/.transient_prompt
     '';
     
