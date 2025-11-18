@@ -71,7 +71,7 @@ in
     SHELL = pkgs.zsh;
     PATH = "$PATH:/home/adam/Scripts";
     TERM = "xterm-256color";
-    FLAKE = "/home/adam/sys/"
+    FLAKE = "/home/adam/sys/";
   };
 
   systemd.user.services.push-home = {
@@ -201,6 +201,7 @@ in
       lua-language-server
       stylua
       bash-language-server
+      nixd
     ];
   };
 
