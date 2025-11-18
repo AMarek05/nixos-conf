@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+set -e
+
+REPO="/home/adam/sys";
+cd "$REPO"
+
+git pull --rebase
+
+git push --force
+
