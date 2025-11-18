@@ -87,7 +87,7 @@
     };
     Service = {
       Type = "oneshot";
-      ExecStop = "/home/adam/Scripts/push-home";
+      ExecStart = "/home/adam/Scripts/push-home";
       Nice = 19;
     };
   };
@@ -98,7 +98,7 @@
     };
     Timer = {
       OnCalendar = "*-*-* 23:59";
-      Unit = "push-home.service";
+      Unit = "push-home-timer.service";
     };
     Install = {
       WantedBy = [ "timers.target" ];
