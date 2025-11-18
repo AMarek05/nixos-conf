@@ -86,11 +86,9 @@ in
     Install = {
       WantedBy = [ "default.target" ];
     };
-    serviceConfig = { DefaultDependencies = true; };
   };
 
   systemd.user.services.push-home-timer = {
-    serviceConfig = { DefaultDependencies = true; };
     Unit = {
       Description = "Squash and push commits for the day - for timer";
     };
