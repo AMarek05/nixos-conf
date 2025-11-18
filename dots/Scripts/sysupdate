@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+
+REPO="$NH_FLAKE"
+
+cd "$REPO" || exit 1
+
+nh os switch --update
+nh home switch --update
+
+git commit -m "System Update: $(date +'%H:%M - %d %B %Y')"
