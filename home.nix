@@ -71,7 +71,7 @@ in
     SHELL = pkgs.zsh;
     PATH = "$PATH:/home/adam/Scripts";
     TERM = "xterm-256color";
-    FLAKE = "/home/adam/sys/";
+    NH_FLAKE = "/home/adam/sys/";
   };
 
   systemd.user.services.push-home = {
@@ -165,6 +165,7 @@ in
     settings.user = {
       name = "Adam Marek";
       email = "118975111+AMarek05@users.noreply.github.com";
+      useConfigOnly = true;
     };
 
     signing = {
@@ -175,9 +176,6 @@ in
 
     settings = {
       gpg.format = "ssh";
-
-      user.useConfigOnly = true;
-
       init.defaultBranch = "main";
     };
   };
