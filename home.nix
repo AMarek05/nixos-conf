@@ -66,29 +66,34 @@
   };
 
   systemd.user.services.push-home = {
+    Unit = {
+      Description = "Squash and push commits for the day";
+      PartOf = "default.target";
+    };
     Service = {
-      ExecStart = "/home/adam/Scripts/push-home";
-    };
-    serviceConfig = {
-      description = "Daily Git squash and push at shutdown";
       Type = "oneshot";
-      DefaultDependencies = false;
-      RemainAfterExit = true;
+      ExecStop = "/home/adam/Scripts/push-home";
+      RemainAfterExit = "yes";
+      Nice = 19;
     };
-    wantedBy = { "default.target" = true; };
-    before = { "default.target" = true; };
+    Install = {
+      WantedBy = "default.target";
+    };
   };
 
   # Optional daily timer at 23:59
   systemd.user.timers.push-home = {
-    timerConfig = {
+    Timer = {
       description = "Run push-home daily at 23:59";
       OnCalendar = "*-*-* 23:59";
       Unit = "push-home.service";
-      Persistent = false;
     };
-    wantedBy = { "timers.target" = true; };
+    Install = {
+      WantedBy = "timers.target";
+    };
   };
+
+  systemd.user.services.
 
   # zsh setup
   programs.zsh = {
