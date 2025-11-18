@@ -81,8 +81,18 @@
     };
   };
 
-  # Optional daily timer at 23:59
-  systemd.user.timers.push-home = {
+  systemd.user.services.push-home-timer = {
+    Unit = {
+      Description = "Squash and push commits for the day - for timer";
+    };
+    Service = {
+      Type = "oneshot";
+      ExecStop = "/home/adam/Scripts/push-home";
+      Nice = 19;
+    };
+  };
+
+  systemd.user.timers.push-home-timer = {
     Timer = {
       description = "Run push-home daily at 23:59";
       OnCalendar = "*-*-* 23:59";
