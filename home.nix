@@ -79,7 +79,7 @@ in
     Service = {
       Environment = "PATH=${scriptBinPath}";
       Type = "oneshot";
-      ExecStop = "/home/adam/Scripts/push-home";
+      ExecStop = "bash /home/adam/Scripts/push-home";
       RemainAfterExit = "yes";
       Nice = 19;
     };
@@ -97,7 +97,7 @@ in
     Service = {
       Environment = "PATH=${scriptBinPath}";
       Type = "oneshot";
-      ExecStart = "/home/adam/Scripts/push-home";
+      ExecStart = "bash /home/adam/Scripts/push-home";
       Nice = 19;
     };
   };
