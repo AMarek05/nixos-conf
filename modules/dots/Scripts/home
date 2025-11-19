@@ -3,13 +3,12 @@ set -e
 
 REPO="/home/adam/sys/"
 
-DOTS="/home/adam/sys/dots"
 CONF="/home/adam/sys/home.nix"
 MODULES="/home/adam/sys/modules/"
 
 cd "$REPO"
 
-git add "$DOTS" "$CONF" "$MODULES"
+git add "$CONF" "$MODULES"
 
 nh home switch
 
