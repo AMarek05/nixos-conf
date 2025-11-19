@@ -27,6 +27,7 @@
         nixd
         nixfmt
         gnumake
+        zsh
       ];
     };
   };
