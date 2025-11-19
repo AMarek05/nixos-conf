@@ -515,7 +515,7 @@ require('lazy').setup({
           settings = {
             nixd = {
               formatting = {
-                command = { 'alejandra' },
+                command = { 'nixfmt' },
               },
             },
           },
