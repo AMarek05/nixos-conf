@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -e
+
+REPO="/home/adam/sys"
+
+ETC="/home/adam/sys/etc/"
+
+cd "$REPO"
+
+git add "$ETC"
+echo "Proceeding to rebuild:"
+
+nh os switch
+
+git commit -m "$(date +'%H:%M - %d %B %Y')"
+
