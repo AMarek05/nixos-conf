@@ -20,11 +20,24 @@
           ./etc/configuration.nix 
 
           ./etc/hosts/laptop/hardware-configuration.nix
+
+          {
+            networking.hostName = nixpkgs.lib.mkForce "nixos-laptop";
+          }
         ];
       };
     };
     homeConfigurations = {
       "adam@nixos" = home-manager.lib.homeManagerConfiguration {
+        pkgs = nixpkgs.legacyPackages."x86_64-linux";
+
+        modules = [ ./home.nix ];
+
+        extraSpecialArgs = {
+          inherit inputs;
+        };
+      };
+      "adam@nixos-laptop" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages."x86_64-linux";
 
         modules = [ ./home.nix ];
