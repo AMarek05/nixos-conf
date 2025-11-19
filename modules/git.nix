@@ -4,10 +4,7 @@ let
 in
 {
   options.modules.git = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      description = "Enable git";
-    };
+    enable = lib.mkEnableOption "git";
   };
 
   config = lib.mkIf cfg.enable {

@@ -4,10 +4,12 @@ REPO="/home/adam/sys/"
 
 DOTS="/home/adam/sys/dots"
 CONF="/home/adam/sys/home.nix"
+MODULES="/home/adam/sys/modules/"
 
 cd "$REPO" || exit 1
 
-git add "$DOTS" "$CONF"
-git commit -m "$(date +'%H:%M - %d %B %Y')"
+git add "$DOTS" "$CONF" "$MODULES"
 
 nh home switch
+
+git commit -m "$(date +'%H:%M - %d %B %Y')"
