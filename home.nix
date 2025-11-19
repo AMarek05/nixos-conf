@@ -1,10 +1,6 @@
 { config, pkgs, ... }:
 let
-  scriptBinPath = pkgs.lib.makeBinPath [
-    pkgs.git       # <-- This is the crucial part for your script
-    pkgs.coreutils # For basic commands like 'cd', 'echo', etc.
-    pkgs.bash      # The shell used to run the script
-  ];
+
 in
 {
   imports = [
