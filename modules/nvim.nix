@@ -26,6 +26,7 @@
         nixd
         alejandra
         nixfmt
+        zsh
       ];
     };
   };
