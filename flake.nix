@@ -13,13 +13,13 @@
 
   outputs = { self, nixpkgs, home-manager, ... } @ inputs : {
     nixosConfigurations = {
-      nixos = nixpkgs.lib.nixosSystem {
+      nixos-laptop = nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
 
         modules = [
           ./etc/configuration.nix 
 
-          ./etc/hardware-configuration.nix
+          ./etc/hosts/laptop/hardware-configuration.nix
         ];
       };
     };
