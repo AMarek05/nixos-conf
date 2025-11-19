@@ -7,6 +7,11 @@ let
   ];
 in
 {
+  imports = [
+    ./modules/nvim.nix
+    ./modules/git.nix
+    ./modules/shell.nix
+  ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
   home.username = "adam";
@@ -25,9 +30,7 @@ in
   # environment.
   home.packages = with pkgs; [
     eza
-    keychain
     unzip
-    zoxide
 
     python313Packages.pip
     gnumake
@@ -51,129 +54,11 @@ in
     "Scripts".source = dots/Scripts;
   };
 
-  # Home Manager can also manage your environment variables through
-  # 'home.sessionVariables'. These will be explicitly sourced when using a
-  # shell provided by Home Manager. If you don't want to manage your shell
-  # through Home Manager then you have to manually source 'hm-session-vars.sh'
-  # located at either
-  #
-  #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  ~/.local/state/nix/profiles/profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  /etc/profiles/per-user/adam/etc/profile.d/hm-session-vars.sh
-  #
-
   home.sessionVariables = {
     SHELL = pkgs.zsh;
     PATH = "$PATH:/home/adam/Scripts";
     TERM = "xterm-256color";
     NH_FLAKE = "/home/adam/sys/";
-  };
-
-  # zsh setup
-  programs.zsh = {
-    enable = true;
-
-    oh-my-zsh = {
-      enable = true;
-      plugins = [ "git" "extract" ];
-    };
-
-    zplug = {
-      enable = true;
-      plugins = [ 
-        { name = "zsh-users/zsh-autosuggestions"; }
-        { name = "zsh-users/zsh-syntax-highlighting"; }
-      ];
-    };
-
-    localVariables = {
-      ZSH_AUTOSUGGEST_MANUAL_REBIND = 1;
-    };
-
-    initContent = ''
-    # Change Autosuggest Key
-    bindkey '^ ' autosuggest-accept
-    
-    #Set up transient prompt
-    source ~/.config/.transient_prompt
-    '';
-    
-    shellAliases = {
-      c = "clear";
-
-      switch = "sudo nixos-rebuild switch";
-
-      gs = "git status";
-
-      ls = "eza -1   --icons=auto";
-      ll = "eza -lha --icons=auto --sort=name --group-directories-first";
-      ld = "eza -lhD --icons=auto";
-      lt = "eza      --icons=auto --tree";
-
-      polluks = "ssh inf164182@polluks.cs.put.poznan.pl";
-    };
-  };
-
-  programs.git = {
-    enable = true;
-
-    settings.user = {
-      name = "Adam Marek";
-      email = "118975111+AMarek05@users.noreply.github.com";
-      useConfigOnly = true;
-    };
-
-    signing = {
-      key = "/home/adam/.ssh/git";
-      signByDefault = true;
-      signer = "ssh";
-    };
-
-    settings = {
-      gpg.format = "ssh";
-      init.defaultBranch = "main";
-    };
-  };
-
-  programs.starship = {
-    enable = true;
-    enableZshIntegration = true;
-  };
-
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
-
-    extraPackages = with pkgs; [
-      clang-tools
-      gopls
-      pyright
-      jdt-language-server
-      rust-analyzer
-      zls
-      lua-language-server
-      stylua
-      bash-language-server
-      nixd
-    ];
-  };
-
-  programs.zoxide = {
-    enable = true;
-    enableZshIntegration = true;
-    options = [ "--cmd cd" ];
-  };
-
-  programs.keychain = {
-    enable = true;
-    enableZshIntegration = true;
-    keys = [ "git" ];
   };
 
   # Let Home Manager install and manage itself.
