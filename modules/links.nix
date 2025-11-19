@@ -1,4 +1,5 @@
 { config, lib, ... }:
+
 {
   options.modules.links = {
     enable = lib.mkEnableOption "links";
