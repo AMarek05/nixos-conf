@@ -1,15 +1,18 @@
 #!/usr/bin/env bash
+set -e
 
 REPO="/home/adam/sys"
 
 CONFIG="/home/adam/sys/etc/configuration.nix"
 
-cd "$REPO" || exit 1
+cd "$REPO"
 
 nvim "$CONFIG"
 
 git add "$CONFIG"
+echo "Proceeding to rebuild:"
+
+nh os switch
+
 git commit -m "$(date +'%H:%M - %d %B %Y')"
 
-echo "Proceeding to rebuild:"
-nh os switch
