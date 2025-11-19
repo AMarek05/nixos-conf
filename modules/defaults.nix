@@ -5,8 +5,10 @@
     ./nvim.nix
     ./shell.nix
     ./util.nix
+    ./env.nix
   ];
 
+  modules.env.enable = lib.mkDefault true;
   modules.git.enable = lib.mkDefault true;
   modules.util.enable = lib.mkDefault true;
   # modules.nvim.enable = lib.mkDefault true;
