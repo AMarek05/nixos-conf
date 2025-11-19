@@ -2,13 +2,17 @@
 # your system. Help is available in the configuration.nix(5) man page, on
 # https://search.nixos.org/options and in the NixOS manual (`nixos-help`).
 
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 
 {
   imports = [
     # Include the results of the hardware scan.
     # ./hardware-configuration.nix
-    ./graphics.nix
   ];
 
   nixpkgs.config.allowUnfree = true;
