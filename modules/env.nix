@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ pkgs, config, lib, ... }:
 {
   options.modules.env = {
     enable = lib.mkEnableOption "env";
