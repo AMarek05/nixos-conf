@@ -19,7 +19,7 @@
         modules = [
           ./etc/configuration.nix 
 
-          ./etc/hosts/laptop/hardware-configuration.nix
+          ./etc/hosts/nixos-hardware.nix
 
           {
             networking.hostName = nixpkgs.lib.mkForce "nixos";
@@ -32,7 +32,7 @@
         modules = [
           ./etc/configuration.nix 
 
-          ./etc/hosts/laptop/hardware-configuration.nix
+          ./etc/hosts/laptop-hardware.nix
 
           {
             networking.hostName = nixpkgs.lib.mkForce "nixos-laptop";
