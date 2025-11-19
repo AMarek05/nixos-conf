@@ -1,4 +1,7 @@
-{ pkgs, ... }:
+{ ... }:
 {
-  imports = [ ../modules/default.nix ];
+  imports = [
+    ../modules/defaults.nix
+    ./common.nix
+  ];
 }

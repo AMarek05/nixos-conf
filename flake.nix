@@ -44,7 +44,9 @@
       "adam@nixos" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages."x86_64-linux";
 
-        modules = [ ./home.nix ];
+        modules = [
+          ./home.nix
+        ];
 
         extraSpecialArgs = {
           inherit inputs;
@@ -53,7 +55,9 @@
       "adam@nixos-laptop" = home-manager.lib.homeManagerConfiguration {
         pkgs = nixpkgs.legacyPackages."x86_64-linux";
 
-        modules = [ ./home.nix ];
+        modules = [
+          ./hosts/nixos-laptop.nix
+        ];
 
         extraSpecialArgs = {
           inherit inputs;
