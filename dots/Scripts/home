@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+set -e
 
 REPO="/home/adam/sys/"
 
@@ -6,7 +7,7 @@ DOTS="/home/adam/sys/dots"
 CONF="/home/adam/sys/home.nix"
 MODULES="/home/adam/sys/modules/"
 
-cd "$REPO" || exit 1
+cd "$REPO"
 
 git add "$DOTS" "$CONF" "$MODULES"
 

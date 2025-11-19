@@ -11,5 +11,5 @@
       TERM = "xterm-256color";
       NH_FLAKE = "/home/adam/sys/";
     };
-  }
+  };
 }
