@@ -55,7 +55,7 @@
     enable = true;
     packages = with pkgs; [ terminus_font ];
 
-    font = "ter-v32n";
+    font = "ter-v16n";
 
     keyMap = "us";
     # useXkbConfig = true; # use xkb.options in tty.
