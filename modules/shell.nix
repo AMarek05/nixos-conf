@@ -1,5 +1,8 @@
-{ ... }:
+{ pkgs, ... }:
 {
+  home.packages = with pkgs; [
+    eza
+  ];
   # zsh setup
   programs.zsh = {
     enable = true;
