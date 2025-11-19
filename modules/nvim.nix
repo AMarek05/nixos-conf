@@ -1,20 +1,27 @@
-{ pkgs, ...}:
+{ pkgs, config, lib, ...}:
 {
-  programs.neovim = {
-    enable = true;
-    defaultEditor = true;
+  options.modules.nvim = {
+    enable = lib.mkEnableOption "nvim";
+  };
 
-    extraPackages = with pkgs; [
-      clang-tools
-      gopls
-      pyright
-      jdt-language-server
-      rust-analyzer
-      zls
-      lua-language-server
-      stylua
-      bash-language-server
-      nixd
-    ];
+  config = lib.mkIf config.modules.links.enable {
+    programs.neovim = {
+      enable = true;
+      defaultEditor = true;
+
+      extraPackages = with pkgs; [
+        clang-tools
+        gopls
+        pyright
+        jdt-language-server
+        rust-analyzer
+        zls
+        lua-language-server
+        stylua
+        bash-language-server
+        nixd
+        alejandra
+      ];
+    };
   };
 }
