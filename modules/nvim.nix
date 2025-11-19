@@ -3,7 +3,8 @@
   config,
   lib,
   ...
-}: {
+}:
+{
   options.modules.nvim = {
     enable = lib.mkEnableOption "nvim";
   };
@@ -24,8 +25,8 @@
         stylua
         bash-language-server
         nixd
-        alejandra
         nixfmt
+        gnumake
       ];
     };
   };
