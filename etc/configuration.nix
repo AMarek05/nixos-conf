@@ -5,10 +5,11 @@
 { lib, pkgs, ... }:
 
 {
-  # imports =
-  # [ # Include the results of the hardware scan.
-  # ./hardware-configuration.nix
-  # ];
+  imports = [
+    # Include the results of the hardware scan.
+    # ./hardware-configuration.nix
+    ./graphics.nix
+  ];
 
   # Use the systemd-boot EFI boot loader.
   # boot.loader.systemd-boot.enable = true;
@@ -50,6 +51,19 @@
   fonts.packages = with pkgs; [
     nerd-fonts.jetbrains-mono
   ];
+
+  services.kmscon = {
+    enable = true;
+    hwRender = true;
+
+    fonts = [
+      {
+        name = "JetBrainsMono Nerd Font";
+        package = pkgs.nerd-fonts.jetbrains-mono;
+      }
+    ];
+    extraConfig = "font-size=14";
+  };
 
   console = {
     enable = true;
