@@ -11,7 +11,7 @@ set -euo pipefail
 
 # === CONFIG ===
 BACKUP_DIR="$HOME/gdrive/Backup"
-REMOTE_DIR="gdrive:Remote/Backup"
+REMOTE_DIR="gdrive:Backup"
 mkdir -p "$BACKUP_DIR"
 
 LOG_FILE="$HOME/.local/share/backup-rclone.log"
