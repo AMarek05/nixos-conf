@@ -5,10 +5,11 @@ REPO="/home/adam/sys/"
 
 MODULES="/home/adam/sys/modules/"
 HOSTS="/home/adam/sys/hosts/"
+STORE="/home/adam/sys/store/"
 
 cd "$REPO"
 
-git add "$HOSTS" "$MODULES"
+git add "$HOSTS" "$MODULES" "$STORE"
 
 nh home switch
 
