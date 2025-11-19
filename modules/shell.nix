@@ -39,7 +39,7 @@
 
       gs = "git status";
 
-      ls = "eza -1   --icons=auto";
+      ls = "eza -1   --icons=auto --sort=name --group-directories-first";
       ll = "eza -lha --icons=auto --sort=name --group-directories-first";
       ld = "eza -lhD --icons=auto";
       lt = "eza      --icons=auto --tree";
