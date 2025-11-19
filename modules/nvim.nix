@@ -1,10 +1,14 @@
-{ pkgs, config, lib, ...}:
 {
+  pkgs,
+  config,
+  lib,
+  ...
+}: {
   options.modules.nvim = {
     enable = lib.mkEnableOption "nvim";
   };
 
-  config = lib.mkIf config.modules.links.enable {
+  config = lib.mkIf config.modules.nvim.enable {
     programs.neovim = {
       enable = true;
       defaultEditor = true;
