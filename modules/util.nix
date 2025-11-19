@@ -4,17 +4,13 @@ let
 in
 {
   options.modules.util = {
-    enable = lib.mkOption {
-      type = lib.types.bool;
-      default = false;
-      description = "Enable commandline utilities";
-    };
+    enable = lib.mkEnableOption "util";
   };
 
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       unzip
-      unrar
+      unrar-free
       p7zip
       nh
       fastfetch

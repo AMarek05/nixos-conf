@@ -4,9 +4,7 @@ let
 in
 {
   imports = [
-    ./modules/nvim.nix
-    ./modules/git.nix
-    ./modules/shell.nix
+    ./modules/defaults.nix
   ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
