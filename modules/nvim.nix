@@ -25,6 +25,7 @@
         bash-language-server
         nixd
         alejandra
+        nixfmt
       ];
     };
   };
