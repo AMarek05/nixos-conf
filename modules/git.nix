@@ -1,23 +1,36 @@
-{ ... }:
+{ config, lib, ... }:
+let 
+  cfg = config.modules.git;
+in
 {
-  programs.git = {
-    enable = true;
-
-    settings.user = {
-      name = "Adam Marek";
-      email = "118975111+AMarek05@users.noreply.github.com";
-      useConfigOnly = true;
+  options.modules.git = {
+    enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enable git";
     };
+  };
 
-    signing = {
-      key = "/home/adam/.ssh/git";
-      signByDefault = true;
-      signer = "ssh";
-    };
+  config = lib.mkIf cfg.enable {
+    programs.git = {
+      enable = true;
 
-    settings = {
-      gpg.format = "ssh";
-      init.defaultBranch = "main";
+      settings.user = {
+        name = "Adam Marek";
+        email = "118975111+AMarek05@users.noreply.github.com";
+        useConfigOnly = true;
+      };
+
+      signing = {
+        key = "/home/adam/.ssh/git";
+        signByDefault = true;
+        signer = "ssh";
+      };
+
+      settings = {
+        gpg.format = "ssh";
+        init.defaultBranch = "main";
+      };
     };
   };
 }
