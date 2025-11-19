@@ -33,19 +33,6 @@ in
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
-  home.file = {
-    ".config/starship.toml".source = dots/starship/starship.toml;
-    ".config/.transient_prompt".source = dots/starship/.transient_prompt;
-    ".config/nvim".source = dots/nvim;
-    "Scripts".source = dots/Scripts;
-  };
-
-  home.sessionVariables = {
-    SHELL = pkgs.zsh;
-    PATH = "$PATH:/home/adam/Scripts";
-    TERM = "xterm-256color";
-    NH_FLAKE = "/home/adam/sys/";
-  };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
