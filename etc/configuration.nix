@@ -47,11 +47,19 @@
       LC_TIME = "pl_PL.UTF-8";
     };
   };
-  # console = {
-  #   font = "Lat2-Terminus16";
-  #   keyMap = "us";
-  #   useXkbConfig = true; # use xkb.options in tty.
-  # };
+  fonts.packages = with pkgs; [
+    nerd-fonts.jetbrains-mono
+  ];
+
+  console = {
+    enable = true;
+    packages = with pkgs; [ terminus_font ];
+
+    font = "ter-v32n";
+
+    keyMap = "us";
+    # useXkbConfig = true; # use xkb.options in tty.
+  };
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
