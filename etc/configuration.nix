@@ -6,9 +6,9 @@
 
 {
   # imports =
-    # [ # Include the results of the hardware scan.
-      # ./hardware-configuration.nix
-    # ];
+  # [ # Include the results of the hardware scan.
+  # ./hardware-configuration.nix
+  # ];
 
   # Use the systemd-boot EFI boot loader.
   # boot.loader.systemd-boot.enable = true;
@@ -24,7 +24,7 @@
   networking.hostName = lib.mkDefault "nixos"; # Define your hostname.
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-  networking.networkmanager.enable = true;  # Easiest to use and most distros use this by default.
+  networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
 
   # Set your time zone.
   time.timeZone = "Europe/Warsaw";
@@ -68,7 +68,10 @@
   };
 
   # enabke flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes"];
+  nix.settings.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
 
   # List packages installed in system profile.
   # You can use https://search.nixos.org/ to find more packages (and options).
@@ -94,6 +97,10 @@
   # Enable the OpenSSH daemon.
   services.openssh = {
     enable = true;
+    settings = {
+      PasswordAuthentication = false;
+      PermitRootLogin = "no";
+    };
   };
 
   # Open ports in the firewall.
@@ -126,4 +133,3 @@
   # For more information, see `man configuration.nix` or https://nixos.org/manual/nixos/stable/options#opt-system.stateVersion .
   system.stateVersion = "25.05"; # Did you read the comment?
 }
-
