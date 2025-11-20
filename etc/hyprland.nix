@@ -8,13 +8,14 @@
   environment.systemPackages = with pkgs; [
     catppuccin-sddm
 
+    kdePackages.qt5compat
     kdePackages.qtsvg
   ];
 
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
-    theme = "catppuccin-mocha";
+    theme = "catppuccin-mocha-mauve";
     package = pkgs.kdePackages.sddm;
   };
 
