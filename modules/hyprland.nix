@@ -1,8 +1,7 @@
-{ pkgs, ... }:
+{ ... }:
 {
   wayland.windowManager.hyprland = {
     enable = true;
-    systemd.enable = false;
 
     settings = {
       "$mainMod" = "SUPER";
@@ -12,6 +11,7 @@
         "SUPER, Enter, exec, kitty"
       ];
     };
+
   };
   programs.waybar.systemd.enable = true;
   services.dunst.enable = true;
@@ -26,7 +26,7 @@
       drun-display-format = "{icon} {name}";
       disable-history = false;
       hide-scrollbar = true;
-      sudebar-mode = true;
+      sidebar-mode = true;
     };
   };
 }
