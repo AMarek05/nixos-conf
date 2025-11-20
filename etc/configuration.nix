@@ -5,7 +5,6 @@
 {
   lib,
   pkgs,
-  config,
   ...
 }:
 
@@ -74,7 +73,7 @@
   ];
 
   services.kmscon = {
-    enable = true;
+    enable = false;
     hwRender = true;
 
     fonts = [
