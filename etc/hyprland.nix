@@ -5,8 +5,21 @@
     enable32Bit = true;
   };
 
-  programs.hyprland = {
+  services.greetd = {
     enable = false;
+    settings = {
+      command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd 'uwsm start hyprland-uwsm.desktop'";
+      user = "greeter";
+    };
+  };
+
+  services.displayManager.sddm = {
+    enable = true;
+    wayland.enable = true;
+  };
+
+  programs.hyprland = {
+    enable = true;
 
     package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
     portalPackage =
