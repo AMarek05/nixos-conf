@@ -7,6 +7,7 @@
     ./util.nix
     ./env.nix
     ./links.nix
+    ./hyprland.nix
   ];
 
   modules.env.enable = lib.mkDefault true;
