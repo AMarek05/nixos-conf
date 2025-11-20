@@ -7,12 +7,15 @@
 
   environment.systemPackages = with pkgs; [
     catppuccin-sddm
+
+    kdePackages.qtsvg
   ];
 
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
-    theme = "sddm-sugar-dark-theme";
+    theme = "catppuccin-mocha";
+    package = pkgs.kdePackages.sddm;
   };
 
   programs.hyprland = {
