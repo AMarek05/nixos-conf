@@ -2,14 +2,14 @@
 set -e
 
 REPO="/home/adam/sys"
-
-CONFIG="/home/adam/sys/etc/configuration.nix"
+ETC="/home/adam/sys/etc/"
+FLAKE="/home/adam/sys/flake.nix"
 
 cd "$REPO"
 
-nvim "$CONFIG"
+nvim "${ETC}/configuartion.nix"
 
-git add "$CONFIG"
+git add "$ETC" "$FLAKE"
 echo "Proceeding to rebuild:"
 
 nh os switch

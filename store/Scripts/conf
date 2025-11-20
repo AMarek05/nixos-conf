@@ -2,12 +2,12 @@
 set -e
 
 REPO="/home/adam/sys"
-
 ETC="/home/adam/sys/etc/"
+FLAKE="/home/adam/sys/flake.nix"
 
 cd "$REPO"
 
-git add "$ETC"
+git add "$ETC" "$FLAKE"
 echo "Proceeding to rebuild:"
 
 nh os switch
