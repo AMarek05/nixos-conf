@@ -2,13 +2,15 @@
 {
   wayland.windowManager.hyprland = {
     enable = true;
+    systemd.enable = false;
 
     settings = {
       "$mainMod" = "SUPER";
 
       bind = [
-        "SUPER_CTRL, Enter, exec, rofi -show drun"
-        "SUPER, Enter, exec, ghostty"
+        "SUPER CTRL, Enter, exec, rofi -show drun"
+        "SUPER, Enter, exec, kitty"
+        "SUPER, M, quit"
       ];
     };
 
