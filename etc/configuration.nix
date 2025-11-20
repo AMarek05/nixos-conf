@@ -37,10 +37,6 @@
       device = "nodev";
       efiSupport = true;
     };
-    efi = {
-      canTouchEfiVariables = true;
-      efiSysMountPoint = "/boot";
-    };
   };
 
   # Use latest kernel.
