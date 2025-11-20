@@ -13,6 +13,9 @@ in
     gcc
     nodejs
     zig
+
+    kitty
+    ghostty
   ];
 
   programs.home-manager.enable = true;
