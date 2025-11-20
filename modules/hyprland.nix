@@ -10,17 +10,16 @@
       ];
 
       bind = [
-        "$mainMod, A, exec, uwsm app -- rofi -show drun"
+        "mainMod, A, exec, uwsm app -- rofi -show drun"
       ];
     };
   };
   programs.waybar.systemd.enable = true;
   services.dunst.enable = true;
-  services.sww.enable = true;
+  # services.swww.enable = true;
 
   programs.rofi = {
     enable = true;
-    package = pkgs.rofi-wayland;
 
     extraConfig = {
       modi = "drun,run";
