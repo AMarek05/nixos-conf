@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   wayland.windowManager.hyprland = {
-    enable = false;
+    enable = true;
 
     settings = {
       "$mainMod" = "SUPER";
