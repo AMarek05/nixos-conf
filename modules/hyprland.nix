@@ -29,6 +29,4 @@
       sidebar-mode = true;
     };
   };
-
-  programs.kitty.enable = true;
 }
