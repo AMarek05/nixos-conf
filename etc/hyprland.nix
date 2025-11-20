@@ -6,17 +6,29 @@
   };
 
   environment.systemPackages = with pkgs; [
-    catppuccin-sddm
+    # catppuccin-sddm
 
-    kdePackages.qt5compat
-    kdePackages.qtsvg
+    # kdePackages.qt5compat
+    # kdePackages.qtsvg
+
+    uwsm
   ];
 
   services.displayManager.sddm = {
-    enable = true;
+    enable = false;
     wayland.enable = true;
     theme = "catppuccin-mocha-mauve";
     package = pkgs.kdePackages.sddm;
+  };
+
+  services.greetd = {
+    enable = true;
+    settings = {
+      default_session = {
+        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd 'uwsm start hyprland-uwsm.desktop'";
+        user = "greeter";
+      };
+    };
   };
 
   programs.hyprland = {
@@ -26,7 +38,7 @@
     portalPackage =
       inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
 
-    withUWSM = false;
+    withUWSM = true;
     xwayland.enable = true;
   };
 }
