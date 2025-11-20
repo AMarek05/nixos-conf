@@ -3,7 +3,7 @@
 
   inputs = {
     # Nixpkgs is the primary source of packages
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable"; 
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -11,58 +11,65 @@
     };
   };
 
-  outputs = { self, nixpkgs, home-manager, ... } @ inputs : {
-    nixosConfigurations = {
-      nixos = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+  outputs =
+    {
+      self,
+      nixpkgs,
+      home-manager,
+      ...
+    }@inputs:
+    {
+      nixosConfigurations = {
+        nixos = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
 
-        modules = [
-          ./etc/configuration.nix 
+          modules = [
+            ./etc/configuration.nix
+            ./etc/hosts/nixos-hardware.nix
 
-          ./etc/hosts/nixos-hardware.nix
+            ./etc/graphics.nix
+            {
+              networking.hostName = nixpkgs.lib.mkForce "nixos";
+            }
+          ];
+        };
+        nixos-laptop = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
 
-          {
-            networking.hostName = nixpkgs.lib.mkForce "nixos";
-          }
-        ];
-      };
-      nixos-laptop = nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
+          modules = [
+            ./etc/configuration.nix
 
-        modules = [
-          ./etc/configuration.nix 
+            ./etc/hosts/laptop-hardware.nix
 
-          ./etc/hosts/laptop-hardware.nix
-
-          {
-            networking.hostName = nixpkgs.lib.mkForce "nixos-laptop";
-          }
-        ];
-      };
-    };
-    homeConfigurations = {
-      "adam@nixos" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages."x86_64-linux";
-
-        modules = [
-          ./hosts/nixos.nix
-        ];
-
-        extraSpecialArgs = {
-          inherit inputs;
+            {
+              networking.hostName = nixpkgs.lib.mkForce "nixos-laptop";
+            }
+          ];
         };
       };
-      "adam@nixos-laptop" = home-manager.lib.homeManagerConfiguration {
-        pkgs = nixpkgs.legacyPackages."x86_64-linux";
+      homeConfigurations = {
+        "adam@nixos" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages."x86_64-linux";
 
-        modules = [
-          ./hosts/nixos-laptop.nix
-        ];
+          modules = [
+            ./hosts/nixos.nix
+          ];
 
-        extraSpecialArgs = {
-          inherit inputs;
+          extraSpecialArgs = {
+            inherit inputs;
+          };
+        };
+        "adam@nixos-laptop" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages."x86_64-linux";
+
+          modules = [
+            ./hosts/nixos-laptop.nix
+          ];
+
+          extraSpecialArgs = {
+            inherit inputs;
+          };
         };
       };
     };
-  };
 }
