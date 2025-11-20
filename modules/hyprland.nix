@@ -1,11 +1,14 @@
 { pkgs, ... }:
 {
+  programs.waybar.enable = true;
   wayland.windowManager.hyprland = {
-    enable = true;
+    enable = false;
+    systemd.enable = false;
 
     settings = {
-      "$mainMod" = "SUPER";
-
+      exec-once = [
+        "uwsm app -- waybar"
+      ];
       bind = [
         "SUPER CTRL, Enter, exec, uwsm app -- rofi -show drun"
         "SUPER, Enter, exec, uwsm app -- kitty"
@@ -13,8 +16,8 @@
     };
 
   };
-  programs.waybar.systemd.enable = true;
-  services.dunst.enable = true;
+  # programs.waybar.systemd.enable = true;
+  # services.dunst.enable = true;
   # services.swww.enable = true;
 
   programs.rofi = {
