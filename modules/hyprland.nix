@@ -10,8 +10,8 @@
         "uwsm app -- waybar"
       ];
       bind = [
-        "SUPER CTRL, Enter, exec, uwsm app -- rofi -show drun"
-        "SUPER, Enter, exec, uwsm app -- kitty"
+        "SUPER CTRL, Return, exec, uwsm app -- rofi -show drun"
+        "SUPER, Return, exec, uwsm app -- kitty"
       ];
     };
 
