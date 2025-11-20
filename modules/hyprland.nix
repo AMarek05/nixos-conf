@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 {
   wayland.windowManager.hyprland = {
     enable = false;
@@ -29,4 +29,6 @@
       sidebar-mode = true;
     };
   };
+
+  programs.kitty.enable = true;
 }
