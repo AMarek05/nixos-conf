@@ -10,7 +10,7 @@
         # "uwsm finalize"
       ];
 
-      bindm = [
+      bind = [
         "SUPER_CTRL, Enter, exec, uwsm app -- rofi -show drun"
         "SUPER, Enter, exec, uwsm app -- kitty"
       ];
