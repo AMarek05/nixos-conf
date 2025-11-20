@@ -6,16 +6,13 @@
   };
 
   environment.systemPackages = with pkgs; [
-    sddm-astronaut
-    kdePackages.qtmultimedia
-    kdePackages.qt5compat
-    kdePackages.qt6ct
+    sddm-sugar-dark
   ];
 
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
-    theme = "sddm-astronaut-theme";
+    theme = "sddm-sugar-dark-theme";
   };
 
   programs.hyprland = {
