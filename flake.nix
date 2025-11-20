@@ -29,7 +29,7 @@
             ./etc/configuration.nix
             ./etc/hosts/nixos-hardware.nix
 
-            ./etc/graphics.nix
+            ./etc/nvidia.nix
             {
               networking.hostName = nixpkgs.lib.mkForce "nixos";
             }
