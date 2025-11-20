@@ -7,7 +7,7 @@ FLAKE="/home/adam/sys/flake.nix"
 
 cd "$REPO"
 
-nvim "${ETC}/configuartion.nix"
+nvim "${ETC}/configuration.nix"
 
 git add "$ETC" "$FLAKE"
 echo "Proceeding to rebuild:"
