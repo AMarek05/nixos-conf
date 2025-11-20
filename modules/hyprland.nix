@@ -7,10 +7,10 @@
     settings = {
       "$mainMod" = "SUPER";
       exec-once = [
-        "uwsm finalize"
+        # "uwsm finalize"
       ];
 
-      bind = [
+      bindm = [
         "SUPER_CTRL, Enter, exec, uwsm app -- rofi -show drun"
         "SUPER, Enter, exec, uwsm app -- kitty"
       ];
