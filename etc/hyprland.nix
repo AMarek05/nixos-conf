@@ -6,7 +6,7 @@
   };
 
   environment.systemPackages = with pkgs; [
-    sddm-sugar-dark
+    catppuccin-sddm
   ];
 
   services.displayManager.sddm = {
