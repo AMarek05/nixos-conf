@@ -4,6 +4,8 @@ set -e
 REPO="/home/adam/sys"
 
 MODULES="/home/adam/sys/modules"
+STORE="/home/adam/sys/store"
+HOSTS="/home/adam/sys/hosts/"
 
 nvim "$MODULES/defaults.nix"
 
@@ -11,5 +13,5 @@ cd "$REPO"
 
 nh home switch
 
-git add "$MODULES"
+git add "$MODULES" "$STORE" "$HOSTS"
 git commit -m "$(date +'%H:%M - %d %B %Y')"
