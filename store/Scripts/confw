@@ -2,7 +2,7 @@
 set -e
 
 REPO="/home/adam/sys"
-ETC="/home/adam/sys/etc/"
+ETC="/home/adam/sys/etc"
 FLAKE="/home/adam/sys/flake.nix"
 
 cd "$REPO"
