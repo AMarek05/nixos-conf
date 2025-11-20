@@ -2,7 +2,7 @@
 {
   programs.waybar.enable = true;
   wayland.windowManager.hyprland = {
-    enable = false;
+    enable = true;
     systemd.enable = false;
 
     settings = {
