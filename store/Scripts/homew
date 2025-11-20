@@ -1,16 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
-REPO="/home/adam/sys/"
+REPO="/home/adam/sys"
 
-CONF="/home/adam/sys/home.nix"
-MODULES="/home/adam/sys/modules/"
+MODULES="/home/adam/sys/modules"
 
-nvim "$CONF"
+nvim "$MODULES/defaults.nix"
 
 cd "$REPO"
 
 nh home switch
 
-git add "$CONF" "$MODULES"
+git add "$MODULES"
 git commit -m "$(date +'%H:%M - %d %B %Y')"
