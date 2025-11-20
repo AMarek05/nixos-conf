@@ -6,13 +6,10 @@
 
     settings = {
       "$mainMod" = "SUPER";
-      exec-once = [
-        # "uwsm finalize"
-      ];
 
       bind = [
-        "SUPER_CTRL, Enter, exec, uwsm app -- rofi -show drun"
-        "SUPER, Enter, exec, uwsm app -- kitty"
+        "SUPER_CTRL, Enter, exec, rofi -show drun"
+        "SUPER, Enter, exec, kitty"
       ];
     };
   };
