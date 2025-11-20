@@ -10,15 +10,13 @@
         "uwsm app -- waybar"
       ];
       bind = [
-        "SUPER CTRL, Return, exec, uwsm app -- rofi -show drun"
-        "SUPER, Return, exec, uwsm app -- kitty"
+        "Super Control, Return, exec, uwsm app -- rofi -show drun"
+        "Super, Return, exec, uwsm app -- kitty"
+        "Super, Q, killactive,"
       ];
     };
 
   };
-  # programs.waybar.systemd.enable = true;
-  # services.dunst.enable = true;
-  # services.swww.enable = true;
 
   programs.rofi = {
     enable = true;
