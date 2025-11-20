@@ -20,6 +20,7 @@ in
       nh
       fastfetch
       zstd
+      wl-clipboard
     ];
   };
 }
