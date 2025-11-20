@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 let
   cfg = config.modules.util;
 in
@@ -14,6 +19,7 @@ in
       p7zip
       nh
       fastfetch
+      zstd
     ];
   };
 }
