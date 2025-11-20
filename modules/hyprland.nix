@@ -10,7 +10,7 @@
       ];
 
       bind = [
-        "mainMod, A, exec, uwsm app -- rofi -show drun"
+        "$mainMod, A, exec, uwsm app -- rofi -show drun"
       ];
     };
   };
