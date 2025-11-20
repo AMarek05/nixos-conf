@@ -8,6 +8,8 @@
   environment.systemPackages = with pkgs; [
     sddm-astronaut
     kdePackages.qtmultimedia
+    kdePackages.qt5compat
+    kdePackages.qt6ct
   ];
 
   services.displayManager.sddm = {
