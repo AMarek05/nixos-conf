@@ -8,7 +8,7 @@
 
       bind = [
         "SUPER_CTRL, Enter, exec, rofi -show drun"
-        "SUPER, Enter, exec, kitty"
+        "SUPER, Enter, exec, ghostty"
       ];
     };
 
