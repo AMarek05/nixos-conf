@@ -4,6 +4,7 @@
   inputs = {
     # Nixpkgs is the primary source of packages
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    hyprland.url = "github:hyprwm/Hyprland";
 
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -22,6 +23,7 @@
       nixosConfigurations = {
         nixos = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
 
           modules = [
             ./etc/configuration.nix
@@ -35,6 +37,7 @@
         };
         nixos-laptop = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
 
           modules = [
             ./etc/configuration.nix
