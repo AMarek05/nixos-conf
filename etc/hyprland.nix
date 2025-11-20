@@ -5,17 +5,15 @@
     enable32Bit = true;
   };
 
-  services.greetd = {
-    enable = false;
-    settings = {
-      command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd 'uwsm start hyprland-uwsm.desktop'";
-      user = "greeter";
-    };
-  };
+  environment.systemPackages = with pkgs; [
+    sddm-astronaut
+    kdePackages.qtmultimedia
+  ];
 
   services.displayManager.sddm = {
     enable = true;
     wayland.enable = true;
+    theme = "sddm-astronaut-theme";
   };
 
   programs.hyprland = {
