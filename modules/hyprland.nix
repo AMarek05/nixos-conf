@@ -5,12 +5,14 @@
     systemd.enable = false;
 
     settings = {
+      "$mainMod" = "SUPER";
       exec-once = [
         "uwsm finalize"
       ];
 
       bind = [
-        "$mainMod, A, exec, uwsm app -- rofi -show drun"
+        "SUPER_CTRL, Enter, exec, uwsm app -- rofi -show drun"
+        "SUPER, Enter, exec, uwsm app -- kitty"
       ];
     };
   };
