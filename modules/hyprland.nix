@@ -2,6 +2,8 @@
 {
   imports = [
     ./hyprland/binds.nix
+    ./hyprland/decoration.nix
+
     ./apps/main.nix
   ];
 
