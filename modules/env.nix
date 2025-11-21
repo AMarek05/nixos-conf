@@ -1,4 +1,9 @@
-{ pkgs, config, lib, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 {
   options.modules.env = {
     enable = lib.mkEnableOption "env";
@@ -9,7 +14,7 @@
       SHELL = pkgs.zsh;
       PATH = "$PATH:/home/adam/Scripts";
       TERM = "xterm-256color";
-      NH_FLAKE = "/home/adam/sys/";
+      NH_FLAKE = "/home/adam/sys";
     };
   };
 }
