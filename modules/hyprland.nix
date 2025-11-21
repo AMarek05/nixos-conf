@@ -22,6 +22,8 @@
 
   };
 
+  programs.ashell.enable = true;
+
   programs.rofi = {
     enable = true;
 
