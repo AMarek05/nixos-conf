@@ -139,6 +139,7 @@
     neovim
     rclone
     alsa-ucm-conf
+    alsa-utils
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
