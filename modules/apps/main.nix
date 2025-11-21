@@ -16,6 +16,10 @@
     keepassxc
   ];
 
+  gtk = {
+    colorScheme = "dark";
+  };
+
   # programs.firefox.enable = true;
   programs.zen-browser.enable = true;
 }
