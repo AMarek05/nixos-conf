@@ -12,6 +12,9 @@
       prefix = "C-a";
       keyMode = "vi";
       mouse = true;
+      disableConfirmationPrompt = true;
+
+      escapeTime = 0;
 
       newSession = true;
 
