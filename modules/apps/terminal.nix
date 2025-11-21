@@ -4,7 +4,7 @@
     tmux = {
       enable = true;
 
-      terminal = "screen-256color";
+      terminal = "xterm-256color";
       shell = "${pkgs.zsh}/bin/zsh";
 
       sensibleOnTop = true;
@@ -36,7 +36,7 @@
       ];
 
       extraConfig = ''
-        set -ga terminal-overrides ",screen-256color:Tc"
+        set -ga terminal-overrides ",xterm-256color:Tc"
       '';
     };
 
