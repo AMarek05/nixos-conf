@@ -10,6 +10,7 @@
       sensibleOnTop = true;
 
       prefix = "C-a";
+      keyMode = "vi";
       newSession = true;
 
       plugins = [
@@ -29,6 +30,7 @@
       settings = {
         theme = "TokyoNight Night";
       };
+      enableZshIntegration = true;
     };
   };
 }
