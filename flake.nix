@@ -70,8 +70,13 @@
 
           modules = [
             ./hosts/nixos-laptop.nix
+            {
+              wayland.windowManager.hyprland.settings = {
+                monitors = nixpkgs.lib.mkForce [ ", preferred, auto, 1" ];
+                "$mod" = nixpkgs.lib.mkForce "Alt";
+              };
+            }
           ];
-
           extraSpecialArgs = {
             inherit inputs;
           };
