@@ -1,7 +1,7 @@
 { ... }:
 {
   wayland.windowManager.hyprland.settings = {
-    windowrulev2 = [
+    windowrule = [
       "float, class:(walker)"
       "center, class:(walker)"
       "size 600 500, class:(walker)"
