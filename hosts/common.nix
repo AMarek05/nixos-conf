@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 let
 
 in
@@ -16,6 +16,10 @@ in
 
     kitty
     ghostty
+  ];
+
+  imports = [
+    inputs.stylix.homeModules.stylix
   ];
 
   programs.home-manager.enable = true;
