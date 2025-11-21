@@ -34,6 +34,10 @@
         pkgs.tmuxPlugins.yank
         pkgs.tmuxPlugins.continuum
       ];
+
+      extraConfig = ''
+        set -ga terminal-overrides ",screen-256color:Tc"
+      '';
     };
 
     ghostty = {
