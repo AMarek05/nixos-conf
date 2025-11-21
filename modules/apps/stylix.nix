@@ -13,6 +13,7 @@
     targets.gnome.enable = false;
 
     targets.starship.enable = false;
+    targets.firefox.enable = false;
 
     cursor = {
       package = pkgs.bibata-cursors;
