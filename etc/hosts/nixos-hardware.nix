@@ -41,6 +41,11 @@
     ];
   };
 
+  fileSystems."/mnt/Shared" = {
+    device = "/dev/disk/by-partuuid/052588a6-a32b-11ee-b2b0-74e5f9857e91";
+    fsType = "ntfs";
+  };
+
   swapDevices = [
     { device = "/dev/disk/by-uuid/7dadea4b-b2e3-4da9-ac70-048e37b6e65e"; }
   ];
