@@ -8,7 +8,7 @@
 
       "match:class walker, move 0 10%"
 
-      "match:class walker, stayfocused on"
+      "match:class walker, stay_focused on"
     ];
   };
 }
