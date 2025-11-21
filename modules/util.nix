@@ -17,10 +17,14 @@ in
       unzip
       unrar-free
       p7zip
-      nh
-      fastfetch
       zstd
+
+      nh
       wl-clipboard
+      bat
+      htop
+
+      fastfetch
     ];
   };
 }
