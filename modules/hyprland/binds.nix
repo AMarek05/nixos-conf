@@ -6,6 +6,10 @@
         "Super, Escape, exit,"
         "Super, Q, killactive,"
 
+        # apps
+        "Super Control, Return, exec, uwsm app -- rofi -show drun"
+        "Super, Return, exec, uwsm app -- kitty"
+
         # move focus
         "Super, H, movefocus, l"
         "Super, J, movefocus, d"
@@ -35,9 +39,6 @@
         "Super Shift, 8, movetoworkspace, 8"
         "Super Shift, 9, movetoworkspace, 9"
         "Super Shift, 0, movetoworkspace, 10"
-
-        "Super Control, Return, exec, uwsm app -- rofi -show drun"
-        "Super, Return, exec, uwsm app -- kitty"
       ];
 
       # mouse binds
