@@ -10,7 +10,7 @@
         "$mod, Space, exec, hyprctl switchxkblayout all next"
 
         # apps
-        "$mod Control, Return, exec, uwsm app -- rofi -show drun"
+        "$mod Control, Return, exec, uwsm app -- walker"
         "$mod, Return, exec, uwsm app -- ghostty"
 
         # move focus

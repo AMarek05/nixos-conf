@@ -3,13 +3,14 @@ set -e
 
 REPO="/home/adam/sys/"
 
-MODULES="/home/adam/sys/modules/"
-HOSTS="/home/adam/sys/hosts/"
-STORE="/home/adam/sys/store/"
+MODULES="/home/adam/sys/modules"
+HOSTS="/home/adam/sys/hosts"
+STORE="/home/adam/sys/store"
+FLAKE=/home/adam/sys/flake.nix
 
 cd "$REPO"
 
-git add "$HOSTS" "$MODULES" "$STORE"
+git add "$HOSTS" "$MODULES" "$STORE" "$FLAKE"
 
 nh home switch
 
