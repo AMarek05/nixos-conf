@@ -14,6 +14,12 @@
 
     targets.starship.enable = false;
 
+    cursor = {
+      package = pkgs.bibata-cursors;
+      name = "Bibata-Modern-Classic";
+      size = 24;
+    };
+
     image = ../../store/wallpaper.webp;
 
     fonts = {
