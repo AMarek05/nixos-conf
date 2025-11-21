@@ -1,6 +1,7 @@
 { ... }:
 {
   imports = [
+    ./hyprland/binds.nix
     ./apps/main.nix
   ];
 
