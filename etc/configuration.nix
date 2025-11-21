@@ -101,10 +101,13 @@
   # Enable sound.
   # services.pulseaudio.enable = true;
   # OR
+  security.rtkit.enable = true;
+
   services.pipewire = {
     enable = true;
     pulse.enable = true;
     alsa.enable = true;
+    alsa.support32Bit = true;
   };
 
   # Enable touchpad support (enabled default in most desktopManager).
@@ -135,6 +138,7 @@
     git
     neovim
     rclone
+    alsa-ucm-conf
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
