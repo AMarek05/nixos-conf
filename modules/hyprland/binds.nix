@@ -7,6 +7,8 @@
         "$mod, Escape, exit,"
         "$mod, Q, killactive,"
 
+        "$mod, Space, exec, hyprctl switchxkblayout all next"
+
         # apps
         "$mod Control, Return, exec, uwsm app -- rofi -show drun"
         "$mod, Return, exec, uwsm app -- ghostty"

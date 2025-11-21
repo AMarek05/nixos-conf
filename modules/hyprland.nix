@@ -15,6 +15,9 @@
       exec-once = [
         "uwsm app -- waybar"
       ];
+      input = {
+        kb_layout = "pl,us";
+      };
     };
 
   };
