@@ -20,6 +20,6 @@
     colorScheme = "dark";
   };
 
-  # programs.firefox.enable = true;
+  programs.firefox.enable = true;
   programs.zen-browser.enable = true;
 }
