@@ -15,6 +15,7 @@
       disableConfirmationPrompt = true;
 
       escapeTime = 0;
+      baseIndex = 1;
 
       newSession = true;
 
