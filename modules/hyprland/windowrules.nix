@@ -2,13 +2,13 @@
 {
   wayland.windowManager.hyprland.settings = {
     windowrule = [
-      "float, class:(walker)"
-      "center, class:(walker)"
-      "size 600 500, class:(walker)"
+      "match:class walker, float"
+      "match:class walker, center"
+      "match:class walker, center"
 
-      "move 0 10%, class:(walker)"
+      "match:class walker, move 0 10%"
 
-      "stayfocused, class:(walker)"
+      "match:class walker, stayfocused"
     ];
   };
 }
