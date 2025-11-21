@@ -8,7 +8,7 @@
 
         # apps
         "Super Control, Return, exec, uwsm app -- rofi -show drun"
-        "Super, Return, exec, uwsm app -- kitty"
+        "Super, Return, exec, uwsm app -- ghostty"
 
         # move focus
         "Super, H, movefocus, l"
