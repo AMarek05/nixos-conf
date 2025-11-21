@@ -1,7 +1,8 @@
-{ pkgs, ... }:
+{ inputs, pkgs, ... }:
 {
   imports = [
     ./terminal.nix
+    inputs.zen-browser.homeModules.twilight-official
   ];
 
   home.packages = with pkgs; [
@@ -15,4 +16,5 @@
   };
 
   programs.firefox.enable = true;
+  programs.zen-browser.enable = true;
 }
