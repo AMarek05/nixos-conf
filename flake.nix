@@ -46,6 +46,9 @@
 
             {
               networking.hostName = nixpkgs.lib.mkForce "nixos-laptop";
+              boot.loader.grub.enable = nixpkgs.lib.mkForce false;
+              boot.loader.systemd-boot.enable = nixpkgs.lib.mkForce true;
+              boot.loader.efi.canTouchEfiVariables = nixpkgs.lib.mkForce true;
             }
           ];
         };
