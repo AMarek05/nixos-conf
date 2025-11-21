@@ -4,7 +4,7 @@
     tmux = {
       enable = true;
 
-      terminal = "xterm-256color";
+      terminal = "tmux-256color";
       shell = "${pkgs.zsh}/bin/zsh";
 
       sensibleOnTop = true;
@@ -24,7 +24,6 @@
             set -g @tokyo-night-tmux_show_battery_widget 0
           '';
         }
-        pkgs.tmuxPlugins.yank
         {
           plugin = pkgs.tmuxPlugins.resurrect;
           extraConfig = ''
@@ -32,6 +31,7 @@
             set -g @resurrect-strategy-nvim 'session'
           '';
         }
+        pkgs.tmuxPlugins.yank
         pkgs.tmuxPlugins.continuum
       ];
     };
