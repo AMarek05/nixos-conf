@@ -20,6 +20,8 @@ in
       zstd
 
       nh
+      nvd
+
       wl-clipboard
       bat
       htop
