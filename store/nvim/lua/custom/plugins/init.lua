@@ -39,4 +39,7 @@ return {
   {
     'farmergreg/vim-lastplace',
   },
+  {
+    'tpope/vim-obsession',
+  },
 }

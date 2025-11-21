@@ -11,6 +11,8 @@
 
       prefix = "C-a";
       keyMode = "vi";
+      mouse = true;
+
       newSession = true;
 
       plugins = [
@@ -22,6 +24,15 @@
             set -g @tokyo-night-tmux_show_battery_widget 0
           '';
         }
+        pkgs.tmuxPlugins.yank
+        {
+          plugin = pkgs.tmuxPlugins.resurrect;
+          extraConfig = ''
+            set -g @resurrect-capture-pane-contents 'on'
+            set -g @resurrect-strategy-nvim 'session'
+          '';
+        }
+        pkgs.tmuxPlugins.continuum
       ];
     };
 
