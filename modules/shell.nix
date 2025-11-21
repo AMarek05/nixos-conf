@@ -9,12 +9,15 @@
 
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" "extract" ];
+      plugins = [
+        "git"
+        "extract"
+      ];
     };
 
     zplug = {
       enable = true;
-      plugins = [ 
+      plugins = [
         { name = "zsh-users/zsh-autosuggestions"; }
         { name = "zsh-users/zsh-syntax-highlighting"; }
       ];
@@ -25,13 +28,13 @@
     };
 
     initContent = ''
-    # Change Autosuggest Key
-    bindkey '^ ' autosuggest-accept
-    
-    #Set up transient prompt
-    source ~/.config/.transient_prompt
+      # Change Autosuggest Key
+      bindkey '^ ' autosuggest-accept
+
+      #Set up transient prompt
+      source ~/.config/.transient_prompt
     '';
-    
+
     shellAliases = {
       c = "clear";
 
@@ -43,6 +46,8 @@
       ll = "eza -lha --icons=auto --sort=name --group-directories-first";
       ld = "eza -lhD --icons=auto";
       lt = "eza      --icons=auto --tree";
+
+      st = "/mnt/Shared/SillyTavern/SillyTavern/start.sh";
 
       polluks = "ssh inf164182@polluks.cs.put.poznan.pl";
     };
