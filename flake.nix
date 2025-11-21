@@ -72,8 +72,9 @@
             ./hosts/nixos-laptop.nix
             {
               wayland.windowManager.hyprland.settings = {
-                monitors = nixpkgs.lib.mkForce [ ", preferred, auto, 1" ];
+                monitor = nixpkgs.lib.mkForce [ ", preferred, auto, 1" ];
                 "$mod" = nixpkgs.lib.mkForce "Alt";
+                exec-once = [ "uwsm app -- ghostty" ];
               };
             }
           ];
