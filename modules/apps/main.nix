@@ -2,7 +2,7 @@
 {
   imports = [
     ./terminal.nix
-    inputs.zen-browser.homeModules.twilight-official
+    inputs.zen-browser.homeModules.beta
   ];
 
   home.packages = with pkgs; [
