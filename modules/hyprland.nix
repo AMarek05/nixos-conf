@@ -36,6 +36,4 @@
       sidebar-mode = true;
     };
   };
-
-  programs.waybar.enable = true;
 }
