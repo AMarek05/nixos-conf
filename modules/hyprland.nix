@@ -1,6 +1,9 @@
 { ... }:
 {
-  programs.waybar.enable = true;
+  imports = [
+    ./apps/main.nix
+  ];
+
   wayland.windowManager.hyprland = {
     enable = true;
     systemd.enable = false;
@@ -8,11 +11,6 @@
     settings = {
       exec-once = [
         "uwsm app -- waybar"
-      ];
-      bind = [
-        "Super Control, Return, exec, uwsm app -- rofi -show drun"
-        "Super, Return, exec, uwsm app -- kitty"
-        "Super, Q, killactive,"
       ];
     };
 
@@ -30,4 +28,6 @@
       sidebar-mode = true;
     };
   };
+
+  programs.waybar.enable = true;
 }
