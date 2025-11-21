@@ -52,7 +52,7 @@
   };
 
   fileSystems."/mnt/Hard" = {
-    device = "/dev/disk/by-uuid/20F80CA2F80C787";
+    device = "/dev/disk/by-uuid/20F80CA2F80C7874";
     fsType = "ntfs";
   };
 
