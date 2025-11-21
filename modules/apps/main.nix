@@ -1,7 +1,13 @@
-{ inputs, pkgs, ... }:
+{
+  inputs,
+  pkgs,
+  lib,
+  ...
+}:
 {
   imports = [
     ./terminal.nix
+    ./stylix.nix
     inputs.zen-browser.homeModules.beta
   ];
 
@@ -10,11 +16,6 @@
     keepassxc
   ];
 
-  gtk = {
-    enable = true;
-    colorScheme = "dark";
-  };
-
-  programs.firefox.enable = true;
+  # programs.firefox.enable = true;
   programs.zen-browser.enable = true;
 }
