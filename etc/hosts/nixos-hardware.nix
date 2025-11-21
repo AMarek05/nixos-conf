@@ -51,6 +51,11 @@
     fsType = "ntfs";
   };
 
+  fileSystems."/mnt/Hard" = {
+    device = "/dev/disk/by-uuid/20F80CA2F80C787";
+    fsType = "ntfs";
+  };
+
   fileSystems."/mnt/Linux" = {
     device = "/dev/disk/by-uuid/fbeec391-5a63-4142-b49e-54db9e07da97";
     fsType = "ext4";
