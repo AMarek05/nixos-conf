@@ -46,6 +46,11 @@
     fsType = "ntfs";
   };
 
+  fileSystems."/mnt/Linux" = {
+    device = "/dev/disk/by-uuid/fbeec391-5a63-4142-b49e-54db9e07da97";
+    fsType = "ext4";
+  };
+
   swapDevices = [
     { device = "/dev/disk/by-uuid/7dadea4b-b2e3-4da9-ac70-048e37b6e65e"; }
   ];
