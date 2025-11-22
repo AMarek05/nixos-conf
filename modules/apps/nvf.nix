@@ -23,6 +23,7 @@
         name = lib.mkForce "tokyonight";
         style = "night";
       };
+
       globals.maplocalleader = " ";
     };
   };
