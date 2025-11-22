@@ -29,7 +29,7 @@
       splitbelow = true;
 
       list = true;
-      listchars = "tab:» ,trail:·,nbsp:␣";
+      listchars = "tab:» ,trail:· ,nbsp:␣ ";
 
       inccommand = "split";
       cursorline = true;
