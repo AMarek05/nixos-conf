@@ -21,6 +21,18 @@
       input = {
         kb_layout = "pl,us";
       };
+      general = {
+        gaps_in = 4;
+        gaps_out = 6;
+
+        border_size = 3;
+      };
+
+      dwindle = {
+        preserve_split = true;
+        smart_split = false;
+        smart_resizing = false;
+      };
     };
 
   };
@@ -46,7 +58,7 @@
       workspaces.max_workspaces = 5;
 
       window_title.mode = "Title";
-      window_title.truncate_title_after_length = 60;
+      window_title.truncate_title_after_length = 50;
 
       appearance = {
         font_name = "JetBrainsMono Nerd Font Propo";
