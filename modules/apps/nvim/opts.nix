@@ -28,7 +28,11 @@
     splitbelow = true;
 
     list = true;
-    listchars = "tab:» ,trail:· ,nbsp:␣ ";
+    listchars = {
+      tab = "» ";
+      trail = "·";
+      nvsp = "␣";
+    };
 
     inccommand = "split";
     cursorline = true;
