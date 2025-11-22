@@ -1,35 +1,28 @@
 { pkgs, ... }:
 {
-  programs.nvf.settings.vim.plugins = {
-    Comment = {
-      package = pkgs.vimPlugins.comment-nvim;
-      setupModule = "Comment";
-    };
-    vim-sleuth = {
-      package = pkgs.vimPlugins.vim-sleuth;
-    };
-    gitsigns-nvim = {
-      package = pkgs.vimPlugins.gitsigns-nvim;
-      setupModule = "gitsigns";
-      setupOpts = {
-        signs = {
-          add = {
-            text = "+";
-          };
-          change = {
-            text = "~";
-          };
-          delete = {
-            text = "~";
-          };
-          topdelete = {
-            text = "‾";
-          };
-          changedelete = {
-            text = "~";
-          };
+  programs.nvf.settings.vim = {
+    utility.sleuth.enable = true;
+    comments.comment-nvim.enable = true;
+    git = {
+      enable = true;
+      gitsigns.setupOpts = {
+        add = {
+          text = "+";
+        };
+        change = {
+          text = "~";
+        };
+        delete = {
+          text = "_";
+        };
+        topdelete = {
+          text = "‾";
+        };
+        changedelete = {
+          text = "~";
         };
       };
+      neogit.enable = true;
     };
   };
 }
