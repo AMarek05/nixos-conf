@@ -32,11 +32,6 @@
 
     dashboard.alpha.enable = true;
 
-    terminal.toggleterm = {
-      enable = true;
-      lazygit.enable = true;
-    };
-
     lsp = {
       enable = true;
 
