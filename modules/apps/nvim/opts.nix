@@ -1,41 +1,39 @@
 { ... }:
 {
   programs.nvf.settings.vim.options = {
-    options = {
-      expandtab = true;
-      tabstop = 2;
-      shiftwidth = 2;
-      softtabstop = 2;
+    expandtab = true;
+    tabstop = 2;
+    shiftwidth = 2;
+    softtabstop = 2;
 
-      number = true;
-      relativenumber = true;
+    number = true;
+    relativenumber = true;
 
-      mouse = "a";
-      showmode = false;
+    mouse = "a";
+    showmode = false;
 
-      clipboard = "unnamedplus";
-      breakindent = true;
-      undofile = true;
+    clipboard = "unnamedplus";
+    breakindent = true;
+    undofile = true;
 
-      ignorecase = true;
-      smartcase = true;
+    ignorecase = true;
+    smartcase = true;
 
-      signcolumn = "yes";
+    signcolumn = "yes";
 
-      updatetime = 250;
-      timeoutlen = 300;
+    updatetime = 250;
+    timeoutlen = 300;
 
-      splitright = true;
-      splitbelow = true;
+    splitright = true;
+    splitbelow = true;
 
-      list = true;
-      listchars = "tab:» ,trail:· ,nbsp:␣ ";
+    list = true;
+    listchars = "tab:» ,trail:· ,nbsp:␣ ";
 
-      inccommand = "split";
-      cursorline = true;
-      scrolloff = 5;
+    inccommand = "split";
+    cursorline = true;
+    scrolloff = 5;
 
-      hlsearch = true;
-    };
+    hlsearch = true;
   };
 }
