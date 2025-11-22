@@ -18,6 +18,8 @@
       action = "vim.diagnostic.setloclist";
       desc = "Open diagnostic [Q]uickfix list";
     }
+
+    # Windows
     {
       key = "<C-h>";
       mode = [ "n" ];
@@ -66,6 +68,8 @@
       action = "<cmd>resize +5<CR>";
       desc = "Increase width";
     }
+
+    # Tabs
     {
       key = "<C-n>";
       mode = [ "n" ];
@@ -90,10 +94,18 @@
       action = "<cmd>tabc<CR>";
       desc = "[C]lose [T]ab";
     }
+
+    # Telescope
     {
-      key = "<leader>f.";
+      key = "<leader>s.";
       mode = [ "n" ];
       action = "<cmd>Telescope oldfiles<CR>";
+      desc = "Telescope Oldfiles";
+    }
+    {
+      key = "<leader>s/";
+      mode = [ "n" ];
+      action = "<cmd>Telescope current_buffer_fuzzy_find<CR>";
       desc = "Telescope Oldfiles";
     }
   ];
