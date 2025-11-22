@@ -33,6 +33,7 @@
           extraConfig = ''
             set -g @resurrect-capture-pane-contents 'on'
             set -g @resurrect-strategy-nvim 'session'
+            set -g @resurrect-processes 'nvim'
           '';
         }
         pkgs.tmuxPlugins.yank
