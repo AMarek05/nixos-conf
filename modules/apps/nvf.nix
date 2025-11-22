@@ -10,7 +10,7 @@
 
     settings = {
       vim.options = {
-        epandtab = true;
+        expandtab = true;
         tabstop = 2;
         shiftwidth = 2;
         softtabstop = 2;
