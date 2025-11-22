@@ -10,7 +10,7 @@
       key = "<leader>e";
       mode = [ "n" ];
       action = "vim.diagnosctic.open_float";
-      desc = "Show diagnostic [Error] messages";
+      desc = "Show diagnostic [E]rror messages";
     }
     {
       key = "<leader>q";
