@@ -16,6 +16,8 @@
       formatOnSave = true;
       inlayHints.enable = true;
 
+      lightbulb.enable = false;
+
       lspsaga.enable = true;
 
       mappings = {
