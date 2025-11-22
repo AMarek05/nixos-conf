@@ -90,5 +90,11 @@
       action = "<cmd>tabc<CR>";
       desc = "[C]lose [T]ab";
     }
+    {
+      key = "<leader>f.";
+      mode = [ "n" ];
+      action = "<cmd>Telescope oldfiles<CR>";
+      desc = "Telescope Oldfiles";
+    }
   ];
 }
