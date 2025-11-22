@@ -129,6 +129,12 @@
           action = "<cmd>tabnew<CR>";
           desc = "[N]ew [T]ab";
         }
+        {
+          key = "<leader>ct";
+          mode = [ "n" ];
+          action = "<cmd>tabc<CR>";
+          desc = "[C]lose [T]ab";
+        }
       ];
     };
   };
