@@ -8,6 +8,11 @@
 
     visuals.nvim-web-devicons.enable = true;
 
+    autopairs.nvim-autopairs.enable = true;
+
+    languages.nix = {
+        enable = true; };
+
     telescope = {
       enable = true;
 
@@ -40,6 +45,7 @@
 
         layout_config.horizontal.prompt_position = "bottom";
         sorting_strategy = "descending";
+        color_devicons = true;
       };
     };
 
