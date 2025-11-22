@@ -59,7 +59,7 @@
 
         app-notifications = false;
 
-        background-opacity = 0.75;
+        background-opacity = 0.85;
         background-blur = true;
       };
       enableZshIntegration = true;
