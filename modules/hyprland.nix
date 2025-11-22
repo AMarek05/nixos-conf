@@ -46,7 +46,7 @@
       workspaces.max_workspaces = 5;
 
       window_title.mode = "Title";
-      window_title.truncate_title_after_length = 40;
+      window_title.truncate_title_after_length = 60;
 
       appearance = {
         font_name = "JetBrainsMono Nerd Font Propo";
