@@ -5,22 +5,6 @@
     enable32Bit = true;
   };
 
-  environment.systemPackages = with pkgs; [
-    # catppuccin-sddm
-
-    # kdePackages.qt5compat
-    # kdePackages.qtsvg
-
-    uwsm
-  ];
-
-  services.displayManager.sddm = {
-    enable = false;
-    wayland.enable = true;
-    theme = "catppuccin-mocha-mauve";
-    package = pkgs.kdePackages.sddm;
-  };
-
   services.greetd = {
     enable = true;
     settings = {
