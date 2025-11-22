@@ -28,12 +28,7 @@
     splitbelow = true;
 
     list = true;
-    listchars = {
-      tab = "» ";
-      trail = "·";
-      nvsp = "␣";
-    };
-
+    listchars = "tab:» ,tail:·,nbsp:␣";
     inccommand = "split";
     cursorline = true;
     scrolloff = 5;
