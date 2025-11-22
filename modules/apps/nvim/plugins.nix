@@ -148,6 +148,21 @@
         };
       };
     };
+    luaConfigRC.lsp-diagnostics = ''
+    local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
 
+    for type, icon in pairs(signs) do
+      local hl = "DiagnosticSign" .. type
+      vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = hl })
+    end
+
+    vim.diagnostic.config({
+      signs = true,             -- Show the icons in the left column
+      virtual_text = true,      -- Show text after the code line
+      underline = true,         -- Underline the error in the code
+      update_in_insert = false, -- Don't scream at me while I'm typing
+      severity_sort = true,     -- Put errors above warnings
+    })
+  '';
   };
 }
