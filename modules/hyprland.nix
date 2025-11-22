@@ -62,7 +62,7 @@
 
       appearance = {
         font_name = "JetBrainsMono Nerd Font Propo";
-        scale_factor = 1.35;
+        scale_factor = 1.20;
       };
     };
   };
