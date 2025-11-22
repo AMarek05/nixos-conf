@@ -28,9 +28,17 @@
       formatOnSave = true;
       inlayHints.enable = true;
 
-      lightbulb.enable = false;
-
-      lspsaga.enable = true;
+      lspsaga = {
+        enable = true;
+        setupOpts = {
+          lightbulb = {
+            enable = false;
+            enable_in_insert = false;
+            sign = false;
+            virtual_test = false;
+          };
+        };
+      };
 
       mappings = {
         format = "<leader>lf";
