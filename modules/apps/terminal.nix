@@ -52,12 +52,15 @@
         theme = "TokyoNight Night";
 
         window-padding-x = 10;
-        window-padding-y = 10;
+        window-padding-y = 5;
         window-padding-balance = true;
 
         font-family = "JetBrainsMono Nerd Font";
 
         app-notifications = false;
+
+        background-opacity = 0.6;
+        background-blur = true;
       };
       enableZshIntegration = true;
     };
