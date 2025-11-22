@@ -16,6 +16,7 @@
     targets.firefox.enable = false;
 
     targets.ghostty.enable = false;
+    targets.tmux.enable = false;
 
     cursor = {
       package = pkgs.bibata-cursors;
