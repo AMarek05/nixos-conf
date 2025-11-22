@@ -8,7 +8,7 @@
     vim-sleuth = {
       package = pkgs.vimPlugins.vim-sleuth;
     };
-    gitsigns = {
+    gitsigns-nvim = {
       package = pkgs.vimPlugins.gitsigns-nvim;
       setupModule = "gitsigns";
       setupOpts = {
