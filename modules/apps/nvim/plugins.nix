@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   programs.nvf.settings.vim = {
+    startPlugins = [ pkgs.vimPlugins.nvim-lastplace ];
 
     binds.whichKey.enable = true;
     utility.sleuth.enable = true;
@@ -15,22 +16,17 @@
       formatOnSave = true;
       inlayHints.enable = true;
 
-      lightbulb.enable = true;
-      lightbulb.autocmd.enable = true;
-
-      lspconfig.enable = true;
-
       lspsaga.enable = true;
 
       mappings = {
-        format = "<leader>f";
+        format = "<leader>lf";
         goToDefinition = "gd";
         hover = "K";
 
         listImplementations = "<leader>li";
 
         nextDiagnostic = "g]";
-        previousDiagnostic = "g]";
+        previousDiagnostic = "g[";
         openDiagnosticFloat = "<leader>d";
 
         renameSymbol = "<leader>rn";
@@ -44,6 +40,7 @@
       nix = {
         enable = true;
         format.type = "nixfmt";
+        lsp.enable = true;
       };
     };
 
