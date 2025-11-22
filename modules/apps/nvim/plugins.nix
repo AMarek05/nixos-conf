@@ -12,6 +12,9 @@
 
     statusline.lualine = {
       enable = true;
+      setupOpts = {
+        options.theme = "tokyonight";
+      };
     };
 
     binds.whichKey.enable = true;
