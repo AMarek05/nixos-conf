@@ -10,8 +10,13 @@
 
     autopairs.nvim-autopairs.enable = true;
 
-    languages.nix = {
-        enable = true; };
+    languages = {
+      enableFormat = true;
+      enableLSP = true;
+      enableTreesitter = true;
+
+      nix.enable = true;
+    };
 
     telescope = {
       enable = true;
