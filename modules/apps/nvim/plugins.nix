@@ -10,6 +10,16 @@
       };
     };
 
+    languages = {
+      enableFormat = true;
+      enableTreesitter = true;
+
+      nix = {
+        enable = true;
+        format.type = "nixfmt";
+      };
+    };
+
     binds.whichKey.enable = true;
     utility.sleuth.enable = true;
     comments.comment-nvim.enable = true;
@@ -21,10 +31,6 @@
     lsp = {
       enable = true;
 
-      servers = {
-        nixd.enable = true;
-      };
-
       formatOnSave = true;
       inlayHints.enable = true;
 
@@ -35,7 +41,7 @@
             enable = false;
             enable_in_insert = false;
             sign = false;
-            virtual_test = false;
+            virtual_text = false;
           };
         };
       };
@@ -52,17 +58,6 @@
         openDiagnosticFloat = "<leader>d";
 
         renameSymbol = "<leader>rn";
-      };
-    };
-
-    languages = {
-      enableFormat = true;
-      enableTreesitter = true;
-
-      nix = {
-        enable = true;
-        lsp.enable = false;
-        format.type = "nixfmt";
       };
     };
 
