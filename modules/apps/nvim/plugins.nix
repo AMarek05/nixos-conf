@@ -10,7 +10,9 @@
       };
     };
 
-    statusline.lualine.enable = true;
+    statusline.lualine = {
+      enable = true;
+    };
 
     binds.whichKey.enable = true;
     utility.sleuth.enable = true;
