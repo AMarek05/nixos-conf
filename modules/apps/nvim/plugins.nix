@@ -14,6 +14,15 @@
       enable = true;
       setupOpts = {
         options.theme = "tokyonight";
+        sections.lualine_a = [
+          {
+            name = "mode";
+            padding = {
+              left = 0;
+              right = 1;
+            };
+          }
+        ];
       };
     };
 

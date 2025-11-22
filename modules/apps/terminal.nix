@@ -55,7 +55,8 @@
         window-padding-y = 5;
         window-padding-balance = true;
 
-        font-family = "JetBrainsMono NF";
+        font-family = "JetBrainsMono Nerd Font";
+        font-style = "JetBrainsMono NF Regular";
 
         app-notifications = false;
 
