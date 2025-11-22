@@ -48,6 +48,10 @@
       enable = true;
       settings = {
         theme = "TokyoNight Night";
+
+        window-padding-x = 10;
+        window-padding-y = 10;
+        window-padding-balance = true;
       };
       enableZshIntegration = true;
     };
