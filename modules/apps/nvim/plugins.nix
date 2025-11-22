@@ -37,6 +37,9 @@
 
       setupOpts.defaults = {
         path_display = [ "smart" ];
+
+        layout_config.horizontal.prompt_position = "bottom";
+        sorting_strategy = "descending";
       };
     };
 
