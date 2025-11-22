@@ -8,7 +8,6 @@
       };
       vim-obsession = {
         package = pkgs.vimPlugins.vim-obsession;
-        setup = "require('vim-obsession').setup {}";
       };
     };
 
