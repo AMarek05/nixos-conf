@@ -45,11 +45,11 @@
       workspaces.enable_workspace_filling = true;
       workspaces.max_workspaces = 5;
 
-      window_tile.mode = "Class";
+      window_title.mode = "Class";
 
       appearance = {
         font_name = "JetBrainsMono Nerd Font Propo";
-        scale_factor = 2.0;
+        scale_factor = 1.5;
       };
     };
   };
