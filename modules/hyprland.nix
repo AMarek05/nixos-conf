@@ -22,10 +22,10 @@
         kb_layout = "pl,us";
       };
       general = {
-        gaps_in = 4;
-        gaps_out = 6;
+        gaps_in = 5;
+        gaps_out = 10;
 
-        border_size = 3;
+        border_size = 2;
       };
 
       dwindle = {
