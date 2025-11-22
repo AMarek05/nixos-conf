@@ -4,9 +4,11 @@
     extraPlugins = {
       nvim-lastplace = {
         package = pkgs.vimPlugins.nvim-lastplace;
-        setup = ''
-          require("nvim-lastplace").setup {}
-        '';
+        setup = "require('nvim-lastplace').setup {}";
+      };
+      vim-obsession = {
+        package = pkgs.vimPlugins.vim-obsession;
+        setup = "require('vim-obsession').setup {}";
       };
     };
 
@@ -24,6 +26,8 @@
     visuals.nvim-web-devicons.enable = true;
 
     autopairs.nvim-autopairs.enable = true;
+
+    minimap.codewindow.enable = true;
 
     languages = {
       enableFormat = true;
