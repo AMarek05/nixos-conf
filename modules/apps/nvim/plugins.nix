@@ -1,6 +1,7 @@
 { pkgs, ... }:
 {
   programs.nvf.settings.vim = {
+    binds.whichKey.enable = true;
     utility.sleuth.enable = true;
     comments.comment-nvim.enable = true;
     git = {
