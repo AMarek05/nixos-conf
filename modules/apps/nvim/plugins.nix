@@ -1,7 +1,14 @@
 { pkgs, ... }:
 {
   programs.nvf.settings.vim = {
-    startPlugins = [ pkgs.vimPlugins.nvim-lastplace ];
+    extraPlugins = {
+      nvim-lastplace = {
+        package = pkgs.vimPlugins.nvim-lastplace;
+        setup = ''
+          require("nvim-lastplace").setup {}
+        '';
+      };
+    };
 
     binds.whichKey.enable = true;
     utility.sleuth.enable = true;
