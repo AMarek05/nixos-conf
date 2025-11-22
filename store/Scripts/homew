@@ -3,12 +3,12 @@ set -e
 
 REPO="/home/adam/sys"
 
-MODULES="/home/adam/sys/modules"
-STORE="/home/adam/sys/store"
-HOSTS="/home/adam/sys/hosts/"
-FLAKE=/home/adam/sys/flake.nix
+MODULES="${REPO}/modules"
+STORE="${REPO}/store"
+HOSTS="${REPO}/hosts"
+FLAKE="${REPO}/flake.nix"
 
-nvim "$MODULES/defaults.nix"
+nvim "${MODULES}/defaults.nix"
 
 cd "$REPO"
 

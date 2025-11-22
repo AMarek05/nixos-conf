@@ -29,7 +29,27 @@
     enable = true;
 
     settings = {
+      modules = {
+        left = [ "WindowTitle" ];
+        center = [ "Workspaces" ];
+        right = [
+          "SystemInfo"
+          [
+            "Clock"
+            "Privacy"
+          ]
+          "Settings"
+        ];
+      };
 
+      workspaces.max_workspaces = 5;
+
+      window_tile.mode = "Class";
+
+      appearance = {
+        font_name = "JetBrainsMono Nerd Font Propo";
+        scale_factor = 1.2;
+      };
     };
   };
 

@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
 set -e
 
-REPO="/home/adam/sys/"
+REPO="/home/adam/sys"
 
-MODULES="/home/adam/sys/modules"
-HOSTS="/home/adam/sys/hosts"
-STORE="/home/adam/sys/store"
-FLAKE=/home/adam/sys/flake.nix
+MODULES="${REPO}/modules"
+STORE="${REPO}/store"
+HOSTS="${REPO}/hosts"
+FLAKE="${REPO}/flake.nix"
 
 cd "$REPO"
 
