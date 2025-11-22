@@ -10,7 +10,7 @@
   ];
 
   programs.nvf = {
-    enable = true;
+    enable = false;
 
     settings.vim = {
       globals.maplocalleader = " ";
