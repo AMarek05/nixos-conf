@@ -5,5 +5,8 @@
       package = pkgs.vimPlugins.comment-nvim;
       setupModule = "Comment";
     };
+    vim-sleuth = {
+      package = pkgs.vimPlugins.vim-sleuth;
+    };
   };
 }
