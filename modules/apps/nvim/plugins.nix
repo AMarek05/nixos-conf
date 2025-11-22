@@ -10,12 +10,41 @@
 
     autopairs.nvim-autopairs.enable = true;
 
+    lsp = {
+      enable = true;
+      formatOnSave = true;
+      inlayHints.enable = true;
+
+      lightbulb.enable = true;
+      lightbulb.autocmd.enable = true;
+
+      lspconfig.enable = true;
+
+      lspsaga.enable = true;
+
+      mappings = {
+        format = "<leader>f";
+        goToDefinition = "gd";
+        hover = "K";
+
+        listImplementations = "<leader>li";
+
+        nextDiagnostic = "g]";
+        previousDiagnostic = "g]";
+        openDiagnosticFloat = "<leader>d";
+
+        renameSymbol = "<leader>rn";
+      };
+    };
+
     languages = {
       enableFormat = true;
-      enableLSP = true;
       enableTreesitter = true;
 
-      nix.enable = true;
+      nix = {
+        enable = true;
+        format.type = "nixfmt";
+      };
     };
 
     telescope = {
