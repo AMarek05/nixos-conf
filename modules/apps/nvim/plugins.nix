@@ -18,6 +18,25 @@
 
     autopairs.nvim-autopairs.enable = true;
 
+    languages = {
+      enableFormat = true;
+      enableTreesitter = true;
+      enableExtraDiagnostics = true;
+
+      nix = {
+        enable = true;
+        format.type = "nixfmt";
+        lsp.server = "nixd";
+      };
+    };
+
+    dashboard.alpha.enable = true;
+
+    terminal.toggleterm = {
+      enable = true;
+      lazygit.enable = true;
+    };
+
     lsp = {
       enable = true;
 
@@ -55,14 +74,19 @@
       };
     };
 
-    languages = {
-      enableFormat = true;
-      enableTreesitter = true;
-
-      nix = {
-        enable = true;
-        format.type = "nixfmt";
-      };
+    ui = {
+      noice.enable = true;
+      noice.setupOpts.routes = [
+        {
+          filter = {
+            event = "notify";
+            find = "require%('lspconfig'%)";
+          };
+          opts = {
+            skip = true;
+          };
+        }
+      ];
     };
 
     telescope = {
@@ -125,18 +149,5 @@
       };
     };
 
-    ui.noice.enable = true;
-    # Configure noice to filter that specific message
-    ui.noice.setupOpts.routes = [
-      {
-        filter = {
-          event = "notify";
-          find = "require%('lspconfig'%)";
-        };
-        opts = {
-          skip = true;
-        };
-      }
-    ];
   };
 }
