@@ -8,7 +8,14 @@
 
     visuals.nvim-web-devicons.enable = true;
 
-    telescope.enable = true;
+    telescope = {
+      enable = true;
+      mappings.buffers = "<leader><leader>";
+
+      setupOpts.defaults = {
+        path_display = [ "smart" ];
+      };
+    };
 
     git = {
       neogit.enable = true;
