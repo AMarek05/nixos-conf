@@ -60,8 +60,7 @@
       enableTreesitter = true;
 
       nix = {
-        enable = false;
-        treesitter.enable = true;
+        enable = true;
         format.type = "nixfmt";
       };
     };
