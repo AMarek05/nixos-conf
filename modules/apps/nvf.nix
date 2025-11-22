@@ -7,5 +7,9 @@
 
   programs.nvf = {
     enable = false;
+
+    settings = {
+      vim.opt.number = true;
+    };
   };
 }
