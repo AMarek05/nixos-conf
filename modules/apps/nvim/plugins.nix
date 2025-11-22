@@ -35,10 +35,6 @@
     lsp = {
       enable = true;
 
-      servers = {
-        nixd.enable = true;
-      };
-
       formatOnSave = true;
       inlayHints.enable = true;
 
@@ -121,8 +117,8 @@
     };
 
     git = {
-      neogit.enable = true;
       enable = true;
+      neogit.enable = true;
       gitsigns.setupOpts = {
         signs = {
           add = {
@@ -143,6 +139,7 @@
         };
       };
     };
+
     luaConfigRC.lsp-diagnostics = ''
     local signs = { Error = " ", Warn = " ", Hint = " ", Info = " " }
 
