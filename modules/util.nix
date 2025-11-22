@@ -21,6 +21,7 @@ in
 
       nh
       nvd
+      cachix
 
       wl-clipboard
       bat
