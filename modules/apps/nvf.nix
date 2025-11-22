@@ -41,7 +41,7 @@
 
         inccommand = "split";
         cursorline = true;
-        scroloff = 5;
+        scrolloff = 5;
 
         hlsearch = true;
       };
