@@ -8,5 +8,28 @@
     vim-sleuth = {
       package = pkgs.vimPlugins.vim-sleuth;
     };
+    gitsigns = {
+      package = pkgs.vimPlugins.gitsigns-nvim;
+      setupModule = "gitsigns";
+      setupOpts = {
+        signs = {
+          add = {
+            text = "+";
+          };
+          change = {
+            text = "~";
+          };
+          delete = {
+            text = "~";
+          };
+          topdelete = {
+            text = "‾";
+          };
+          changedelete = {
+            text = "~";
+          };
+        };
+      };
+    };
   };
 }
