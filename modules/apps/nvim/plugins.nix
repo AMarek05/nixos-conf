@@ -61,6 +61,7 @@
 
       nix = {
         enable = false;
+        treesitter.enable = true;
         format.type = "nixfmt";
       };
     };
