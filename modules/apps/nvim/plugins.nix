@@ -61,6 +61,7 @@
 
       nix = {
         enable = true;
+        lsp.enable = false;
         format.type = "nixfmt";
       };
     };
@@ -126,13 +127,13 @@
     };
 
     luaConfigRC.suppress-lsp-warning = ''
-    local _notify = vim.notify
-    vim.notify = function(msg, level, opts)
-      if msg:match("require%('lspconfig'%)") and msg:match("framework") then
-        return
+      local _notify = vim.notify
+      vim.notify = function(msg, level, opts)
+        if msg:match("require%('lspconfig'%)") and msg:match("framework") then
+          return
+        end
+        return _notify(msg, level, opts)
       end
-      return _notify(msg, level, opts)
-    end
-  '';
+    '';
   };
 }
