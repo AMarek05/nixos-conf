@@ -20,6 +20,11 @@
 
     lsp = {
       enable = true;
+
+      servers = {
+        nixd.enable = true;
+      };
+
       formatOnSave = true;
       inlayHints.enable = true;
 
@@ -49,7 +54,6 @@
       nix = {
         enable = true;
         format.type = "nixfmt";
-        lsp.enable = true;
       };
     };
 
