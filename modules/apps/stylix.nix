@@ -15,6 +15,8 @@
     targets.starship.enable = false;
     targets.firefox.enable = false;
 
+    targets.ghostty.enable = false;
+
     cursor = {
       package = pkgs.bibata-cursors;
       name = "Bibata-Modern-Classic";
