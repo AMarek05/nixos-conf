@@ -1,6 +1,6 @@
 { ... }:
 {
-  programs.nvf.setting.vim.keymaps = [
+  programs.nvf.settings.vim.keymaps = [
     {
       key = "<Esc>";
       mode = [ "n" ];
