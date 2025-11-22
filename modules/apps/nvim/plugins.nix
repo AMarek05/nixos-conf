@@ -10,16 +10,6 @@
       };
     };
 
-    languages = {
-      enableFormat = true;
-      enableTreesitter = true;
-
-      nix = {
-        enable = true;
-        format.type = "nixfmt";
-      };
-    };
-
     binds.whichKey.enable = true;
     utility.sleuth.enable = true;
     comments.comment-nvim.enable = true;
@@ -31,6 +21,10 @@
     lsp = {
       enable = true;
 
+      servers = {
+        nixd.enable = true;
+      };
+
       formatOnSave = true;
       inlayHints.enable = true;
 
@@ -41,7 +35,7 @@
             enable = false;
             enable_in_insert = false;
             sign = false;
-            virtual_text = false;
+            virtual_test = false;
           };
         };
       };
@@ -58,6 +52,16 @@
         openDiagnosticFloat = "<leader>d";
 
         renameSymbol = "<leader>rn";
+      };
+    };
+
+    languages = {
+      enableFormat = true;
+      enableTreesitter = true;
+
+      nix = {
+        enable = true;
+        format.type = "nixfmt";
       };
     };
 
@@ -121,14 +125,18 @@
       };
     };
 
-    luaConfigRC.suppress-lsp-warning = ''
-      local _notify = vim.notify
-      vim.notify = function(msg, level, opts)
-        if msg:match("require%('lspconfig'%)") and msg:match("framework") then
-          return
-        end
-        return _notify(msg, level, opts)
-      end
-    '';
+    ui.noice.enable = true;
+    # Configure noice to filter that specific message
+    ui.noice.setupOpts.routes = [
+      {
+        filter = {
+          event = "notify";
+          find = "require%('lspconfig'%)";
+        };
+        opts = {
+          skip = true;
+        };
+      }
+    ];
   };
 }
