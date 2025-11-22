@@ -10,7 +10,30 @@
 
     telescope = {
       enable = true;
-      mappings.buffers = "<leader><leader>";
+
+      extensions = [
+        {
+          name = "fzf";
+          packages = [ pkgs.vimPlugins.telescope-fzf-native-nvim ];
+          setup = {
+            fzf = {
+              fuzzy = true;
+            };
+          };
+        }
+      ];
+
+      mappings = {
+        buffers = "<leader><leader>";
+        diagnostics = "<leader>sd";
+        findFiles = "<leader>sf";
+        findProjects = "<leader>sp";
+        helpTags = "<leader>sh";
+        liveGrep = "<leader>sg";
+        open = "<leader>st";
+        resume = "<leader>sr";
+        treesitter = "<leader>ss";
+      };
 
       setupOpts.defaults = {
         path_display = [ "smart" ];

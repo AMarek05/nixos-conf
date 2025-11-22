@@ -19,7 +19,6 @@
 
     settings.vim = {
       theme = {
-        transparent = lib.mkForce true;
         name = lib.mkForce "tokyonight";
         style = "night";
       };
