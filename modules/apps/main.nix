@@ -8,6 +8,8 @@
   imports = [
     ./terminal.nix
     ./stylix.nix
+    ./nvf.nix
+
     inputs.zen-browser.homeModules.beta
   ];
 
