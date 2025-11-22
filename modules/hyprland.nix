@@ -46,11 +46,11 @@
       workspaces.max_workspaces = 5;
 
       window_title.mode = "Title";
-      window_title.truncate_title_after_length = 50;
+      window_title.truncate_title_after_length = 40;
 
       appearance = {
         font_name = "JetBrainsMono Nerd Font Propo";
-        scale_factor = 1.3;
+        scale_factor = 1.35;
       };
     };
   };
