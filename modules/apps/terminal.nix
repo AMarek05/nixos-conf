@@ -56,6 +56,8 @@
         window-padding-balance = true;
 
         font-family = "JetBrainsMono Nerd Font";
+
+        app-notifications = false;
       };
       enableZshIntegration = true;
     };
