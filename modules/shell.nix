@@ -38,9 +38,8 @@
     shellAliases = {
       c = "clear";
 
-      switch = "sudo nixos-rebuild switch";
-
-      gs = "git status";
+      tt = "tmux";
+      tta = "tmux attach";
 
       ls = "eza -1   --icons=auto --sort=name --group-directories-first";
       ll = "eza -lha --icons=auto --sort=name --group-directories-first";
