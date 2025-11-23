@@ -15,8 +15,14 @@
       };
     };
 
+    utility = {
+      sleuth.enable = true;
+      surround.enable = true;
+      undotree.enable = false;
+      motion.leap.enable = true;
+    };
+
     binds.whichKey.enable = true;
-    utility.sleuth.enable = true;
     comments.comment-nvim.enable = true;
     visuals.nvim-web-devicons.enable = true;
     autopairs.nvim-autopairs.enable = true;
@@ -60,6 +66,13 @@
     };
 
     ui = {
+      borders.enable = true;
+      illuminate.enable = true;
+
+      breadcrumbs = {
+        enable = true;
+        navbuddy.enable = true;
+      };
       noice.enable = true;
       noice.setupOpts.routes = [
         {
