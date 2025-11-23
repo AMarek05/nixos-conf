@@ -35,6 +35,7 @@
     autocomplete.blink-cmp = {
       enable = true;
       setupOpts = {
+        cmdLine.keymap.preset = "default";
         keymap = {
           preset = "default";
           "<C-r>" = [
