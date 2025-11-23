@@ -141,7 +141,7 @@
     ];
   };
 
-  # enabke flakes
+  # enable flakes
   nix.settings.experimental-features = [
     "nix-command"
     "flakes"
@@ -156,6 +156,11 @@
     rclone
     alsa-ucm-conf
     alsa-utils
+  ];
+
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc.lib
   ];
 
   # Some programs need SUID wrappers, can be configured further or are
