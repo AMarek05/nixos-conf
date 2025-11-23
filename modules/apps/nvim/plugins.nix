@@ -35,21 +35,6 @@
     autocomplete.blink-cmp = {
       enable = true;
       setupOpts = {
-        cmdLine.keymap = {
-          preset = "none";
-          "<Tab>" = [
-            "show"
-            "select_next"
-            "fallback"
-          ];
-          "<S-Tab>" = [
-            "select_prev"
-            "fallback"
-          ];
-          "<CR>" = [
-            "accept"
-          ];
-        };
         keymap = {
           preset = "default";
           "<C-n>" = [
