@@ -70,6 +70,7 @@
       enableExtraDiagnostics = true;
 
       clang.enable = true;
+      python.enable = true;
 
       nix = {
         enable = true;
