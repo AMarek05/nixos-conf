@@ -48,7 +48,6 @@
           ];
           "<CR>" = [
             "accept"
-            "fallback"
           ];
         };
         keymap = {
