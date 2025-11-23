@@ -19,7 +19,10 @@
       sleuth.enable = true;
       surround.enable = true;
       undotree.enable = false;
-      motion.leap.enable = true;
+      motion = {
+        leap.enable = true;
+        flash-nvim.enable = true;
+      };
     };
 
     binds.whichKey.enable = true;
