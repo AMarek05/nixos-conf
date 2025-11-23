@@ -32,7 +32,22 @@
     minimap.codewindow.enable = true;
     treesitter.context.enable = true;
 
-    autocomplete.blink-cmp.enable = true;
+    autocomplete.blink-cmp = {
+      enable = true;
+      setupOpts = {
+        keymap = {
+          preset = "default";
+          "<C-n>" = [
+            "select_next"
+            "fallback"
+          ];
+          "<C-p>" = [
+            "select_prev"
+            "fallback"
+          ];
+        };
+      };
+    };
 
     languages = {
       enableFormat = true;
