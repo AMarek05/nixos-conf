@@ -153,6 +153,9 @@
     vim
     git
     neovim
+
+    man-pages
+
     rclone
     alsa-ucm-conf
     alsa-utils
