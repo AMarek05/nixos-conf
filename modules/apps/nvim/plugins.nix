@@ -37,11 +37,11 @@
       setupOpts = {
         keymap = {
           preset = "default";
-          "<C-n>" = [
+          "<C-r>" = [
             "select_next"
             "fallback"
           ];
-          "<C-p>" = [
+          "<C-l>" = [
             "select_prev"
             "fallback"
           ];
