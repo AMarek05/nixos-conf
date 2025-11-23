@@ -39,6 +39,8 @@
       enableTreesitter = true;
       enableExtraDiagnostics = true;
 
+      clang.enable = true;
+
       nix = {
         enable = true;
         format.type = "nixfmt";
