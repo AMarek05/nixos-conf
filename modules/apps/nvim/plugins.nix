@@ -38,12 +38,10 @@
         keymap = {
           preset = "default";
           "<C-r>" = [
-            "select_next"
-            "snippet_backward"
+            "snippet_forward"
             "fallback"
           ];
           "<C-l>" = [
-            "select_prev"
             "snippet_backward"
             "fallback"
           ];
