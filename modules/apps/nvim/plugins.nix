@@ -6,9 +6,6 @@
         package = pkgs.vimPlugins.nvim-lastplace;
         setup = "require('nvim-lastplace').setup {}";
       };
-      vim-obsession = {
-        package = pkgs.vimPlugins.vim-obsession;
-      };
     };
 
     statusline.lualine = {
@@ -21,12 +18,12 @@
     binds.whichKey.enable = true;
     utility.sleuth.enable = true;
     comments.comment-nvim.enable = true;
-
     visuals.nvim-web-devicons.enable = true;
-
     autopairs.nvim-autopairs.enable = true;
-
     minimap.codewindow.enable = true;
+    treesitter.context.enable = true;
+
+    autocomplete.blink-cmp.enable = true;
 
     languages = {
       enableFormat = true;
@@ -46,18 +43,6 @@
 
       formatOnSave = true;
       inlayHints.enable = true;
-
-      lspsaga = {
-        enable = true;
-        setupOpts = {
-          lightbulb = {
-            enable = false;
-            enable_in_insert = false;
-            sign = false;
-            virtual_test = false;
-          };
-        };
-      };
 
       mappings = {
         format = "<leader>lf";
