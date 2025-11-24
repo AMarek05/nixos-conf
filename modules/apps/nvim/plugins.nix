@@ -194,23 +194,31 @@
       })
     '';
     luaConfigRC.telescope_fix = inputs.nvf.lib.nvim.dag.entryAfter [ "telescope" ] ''
-          require("telescope").setup({
-            pickers = {
-              find_files = {
-                path_display = { "filename_first" }
-              },
-              live_grep = {
-                path_display = { "filename_first" }
-              },
-              oldfiles = {
-                path_display = { "filename_first" }
-              }
-            }
-          })
-          require("telescope.builtins").find_files = function(opts)
-        opts = opts or {}
-        opts.path_display = { "filename_first" }
-        original_find_files(opts)
+      require("telescope").setup({
+        pickers = {
+          find_files = {
+            path_display = { "filename_first" }
+          },
+          live_grep = {
+            path_display = { "filename_first" }
+          },
+          oldfiles = {
+            path_display = { "filename_first" }
+          }
+        }
+      })
+      local status, builtin = pcall(require, "telescope.builtin")
+
+      if status then
+        local original_find_files = builtin.find_files
+
+        -- Overwrite the function to inject our setting every time it runs
+        builtin.find_files = function(opts)
+          opts = opts or {}
+          -- This acts as a hard override
+          opts.path_display = { "filename_first" }
+          original_find_files(opts)
+        end
       end
     '';
   };
