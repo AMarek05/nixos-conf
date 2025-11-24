@@ -28,6 +28,7 @@ in
 
       fastfetch
     ];
+
     programs.btop = {
       enable = true;
       settings = {
