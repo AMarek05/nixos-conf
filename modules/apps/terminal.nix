@@ -43,7 +43,7 @@
       extraConfig = ''
         set -ga terminal-overrides ",xterm-256color:Tc"
         bind v split-window -v
-        bind V split-window -h
+        bind | split-window -h
 
         bind h select-pane -L
         bind j select-pane -D
