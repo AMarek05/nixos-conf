@@ -25,7 +25,7 @@ in
 
       wl-clipboard
       bat
-      htop
+      btop
 
       fastfetch
     ];
