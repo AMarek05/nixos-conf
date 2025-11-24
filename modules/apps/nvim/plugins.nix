@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  inputs,
   ...
 }:
 {
@@ -190,6 +191,13 @@
         underline = true,         -- Underline the error in the code
         update_in_insert = false, -- Don't scream at me while I'm typing
         severity_sort = true,     -- Put errors above warnings
+      })
+    '';
+    luaConfigRC.telescope_fix = inputs.nvf.lib.nvim.dag.entryAfter [ "telescope" ] ''
+      require("telescope").setup({
+        defaults = {
+          path_display = { "filename_first" }
+        }
       })
     '';
   };
