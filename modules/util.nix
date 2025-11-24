@@ -26,6 +26,8 @@ in
       wl-clipboard
       bat
 
+      vlc
+
       fastfetch
     ];
 
