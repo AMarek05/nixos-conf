@@ -25,9 +25,15 @@ in
 
       wl-clipboard
       bat
-      btop
 
       fastfetch
     ];
+    programs.btop = {
+      enable = true;
+      settings = {
+        color_theme = lib.mkForce "tokyo-night";
+        vim_keys = true;
+      };
+    };
   };
 }
