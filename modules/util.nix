@@ -32,6 +32,7 @@ in
       enable = true;
       settings = {
         color_theme = lib.mkForce "tokyo-night";
+        theme_background = lib.mkForce false;
         vim_keys = true;
       };
     };
