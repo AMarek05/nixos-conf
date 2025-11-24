@@ -139,6 +139,10 @@
         treesitter = "<leader>ss";
       };
 
+      setupOpts = {
+        path_display = [ "path_display" ];
+      };
+
       setupOpts.defaults = {
         # path_display = [ "smart" ];
 
@@ -186,15 +190,6 @@
         underline = true,         -- Underline the error in the code
         update_in_insert = false, -- Don't scream at me while I'm typing
         severity_sort = true,     -- Put errors above warnings
-      })
-    '';
-
-    luaConfigRC.telescope-path-display = ''
-      -- Telescope is already loaded by NVF, so we can just update the setup
-      require("telescope").setup({
-        defaults = {
-          path_display = { "filename_first" }
-        }
       })
     '';
   };
