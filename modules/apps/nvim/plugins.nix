@@ -140,7 +140,7 @@
       };
 
       setupOpts = {
-        path_display = [ "path_display" ];
+        path_display = [ "filename_first" ];
       };
 
       setupOpts.defaults = {
