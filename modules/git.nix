@@ -1,5 +1,5 @@
 { config, lib, ... }:
-let 
+let
   cfg = config.modules.git;
 in
 {
@@ -24,6 +24,7 @@ in
       };
 
       settings = {
+        gpg.ssh.allowedSignersFile = "/home/adam/.ssh/allowed_signers";
         gpg.format = "ssh";
         init.defaultBranch = "main";
       };
