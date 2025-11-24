@@ -42,7 +42,7 @@ case "$MODE" in
         ;;
 esac
 
-rclone copy -P --checkers $((PARALLEL*2)) --transfers $PARALLEL --drive-use-trash=false --filters-from ~/gdrive/filters.txt "$SRC" "$DEST"
+rclone copy -P --checkers $((PARALLEL*2)) --transfers $PARALLEL --drive-use-trash=false --filter-from ~/gdrive/filters.txt "$SRC" "$DEST"
 
 echo "EXIT: Sync completed successfully."
 exit 0
