@@ -195,8 +195,16 @@
     '';
     luaConfigRC.telescope_fix = inputs.nvf.lib.nvim.dag.entryAfter [ "telescope" ] ''
       require("telescope").setup({
-        defaults = {
-          path_display = { "filename_first" }
+        pickers = {
+          find_files = {
+            path_display = { "filename_first" }
+          },
+          live_grep = {
+            path_display = { "filename_first" }
+          },
+          oldfiles = {
+            path_display = { "filename_first" }
+          }
         }
       })
     '';
