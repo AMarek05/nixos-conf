@@ -12,7 +12,7 @@
         "$mod, Space, togglefloating,"
 
         "Alt, Tab, cyclenext,"
-        "Alt Shift, Tab, cycle, prev"
+        "Alt Shift, Tab, cyclenext, prev"
 
         "Alt, Tab, bringactivetotop,"
         "Alt Shift, Tab, bringactivetotop,"
