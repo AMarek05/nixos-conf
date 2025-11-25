@@ -7,6 +7,10 @@
         "$mod, Escape, exit,"
         "$mod, Q, killactive,"
 
+        "$mod, M, fullscreen, 1"
+        "$mod, F, fullscreen, 0"
+        "$mod, Space, togglefloating,"
+
         "$mod, Space, exec, hyprctl switchxkblayout all next"
 
         # apps
