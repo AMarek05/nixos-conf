@@ -18,17 +18,4 @@
 
     libva-vdpau-driver
   ];
-
-  environment.sessionVariables = {
-    LIBVA_DRIVER_NAME = "nvidia";
-
-    # Explicitly tell VDPAU to use the NVIDIA backend
-    VDPAU_DRIVER = "nvidia";
-
-    # Required for firefox/thunderbird if using the nvidia-vaapi-driver
-    MOZ_DISABLE_RDD_SANDBOX = "1";
-
-    # Use the direct backend for the VA-API driver
-    NVD_BACKEND = "direct";
-  };
 }
