@@ -11,6 +11,12 @@
         "$mod, F, fullscreen, 0"
         "$mod, Space, togglefloating,"
 
+        "Alt, Tab, cyclenext,"
+        "Alt Shift, Tab, cycleprevious,"
+
+        "Alt, Tab, bringactivetotop,"
+        "Alt Shift, Tab, bringactivetotop,"
+
         "$mod, Space, exec, hyprctl switchxkblayout all next"
 
         # apps
