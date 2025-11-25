@@ -67,6 +67,9 @@
         lsp.server = "nixd";
         lsp.options = {
           nixd = {
+            nixpkgs = {
+              expr = "(builtins.getFlake (builtins.getEnv NH_FLAKE)).inputs.nixpkgs";
+            };
             nixos = {
               expr = "(builtins.getFlake (builtins.getEnv NH_FLAKE)).nixosConfigurations.nixos.options";
             };
