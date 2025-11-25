@@ -1,4 +1,4 @@
-{ config, ... }:
+{ config, pkgs, ... }:
 {
   services.xserver.videoDrivers = [ "nvidia" ];
 
@@ -10,4 +10,13 @@
 
     package = config.boot.kernelPackages.nvidiaPackages.beta;
   };
+
+  hardware.graphics.extraPackages = with pkgs; [
+    nvidia-vaapi-driver
+
+    vdpauinfo
+    libva-utils
+
+    libva-vdpau-driver
+  ];
 }
