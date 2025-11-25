@@ -65,6 +65,15 @@
         enable = true;
         format.type = "nixfmt";
         lsp.server = "nixd";
+        lsp.options = {
+          nixos = {
+            expr = "(builtins.getFlake (builtins.getEnv NH_FLAKE)).nixosConfigurations.nixos.options";
+          };
+
+          home-manager = {
+            expr = "(builtins.getFlake (builtins.getEnv NH_FLAKE)).homeConfigurations.adam@nixos.options";
+          };
+        };
       };
     };
 
