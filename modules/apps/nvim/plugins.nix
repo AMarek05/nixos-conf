@@ -67,15 +67,15 @@
         lsp.server = "nixd";
         lsp.options = {
           nixpkgs = {
-            expr = "(builtins.getFlake (builtins.getEnv NH_FLAKE)).inputs.nixpkgs";
+            expr = "import (builtins.getFlake (builtins.getEnv \"NH_FLAKE\")).inputs.nixpkgs {}";
           };
-          nixd = {
+          options = {
             nixos = {
               expr = "(builtins.getFlake (builtins.getEnv NH_FLAKE)).nixosConfigurations.nixos.options";
             };
 
             home-manager = {
-              expr = "(builtins.getFlake (builtins.getEnv NH_FLAKE)).homeConfigurations.adam@nixos.options";
+              expr = "(builtins.getFlake (builtins.getEnv NH_FLAKE)).homeConfigurations.\"adam@nixos\".options";
             };
           };
         };
