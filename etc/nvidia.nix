@@ -14,7 +14,6 @@
   hardware.graphics.extraPackages = with pkgs; [
     nvidia-vaapi-driver
 
-    vdpauinfo
     libva-utils
 
     libva-vdpau-driver
