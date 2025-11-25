@@ -1,6 +1,5 @@
 {
   pkgs,
-  lib,
   inputs,
   ...
 }:
@@ -65,6 +64,7 @@
       nix = {
         enable = true;
         format.type = "nixfmt";
+        lsp.server = "nixd";
       };
     };
 
