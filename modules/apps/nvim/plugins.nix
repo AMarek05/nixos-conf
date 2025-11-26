@@ -60,6 +60,7 @@
 
       clang.enable = true;
       python.enable = true;
+      rust.enable = true;
 
       nix = {
         enable = true;
