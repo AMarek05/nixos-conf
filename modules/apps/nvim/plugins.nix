@@ -100,9 +100,14 @@
       clang.enable = true;
       python.enable = true;
       rust.enable = true;
-      zig.enable = true;
-      zig.lsp.package = [ "zls" ];
       go.enable = true;
+
+      zig = {
+        enable = true;
+        lsp = {
+          package = [ ];
+        };
+      };
 
       nix = {
         enable = true;
