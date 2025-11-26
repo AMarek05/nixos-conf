@@ -50,6 +50,7 @@
 
     autocomplete.blink-cmp = {
       enable = true;
+      mappings.next = null;
       setupOpts = {
         cmdline = {
           completion = {
@@ -75,6 +76,11 @@
         };
         keymap = {
           preset = "default";
+          "<Tab>" = [
+            "select_next"
+            "show"
+            "fallback"
+          ];
           "<C-n>" = [
             "snippet_forward"
             "fallback"
