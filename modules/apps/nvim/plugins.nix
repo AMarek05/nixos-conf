@@ -34,11 +34,42 @@
     visuals.nvim-web-devicons.enable = true;
     autopairs.nvim-autopairs.enable = true;
     minimap.codewindow.enable = true;
-    treesitter.context.enable = true;
+    treesitter.context = {
+      enable = true;
+      setupOpts = {
+        maxLines = 5;
+        multiline_threshold = 1;
+        trim_scope = "outer";
+        mode = "cursor";
+      };
+    };
 
     autocomplete.blink-cmp = {
       enable = true;
+      mappings.next = null;
       setupOpts = {
+        cmdline = {
+          completion = {
+            list = {
+              selection = {
+                preselect = true;
+                auto_insert = true;
+              };
+            };
+            menu = {
+              auto_show = false;
+            };
+            ghost_text = {
+              enabled = false;
+            };
+          };
+          keymap = {
+            preset = "default";
+            "<CR>" = [
+              "fallback"
+            ];
+          };
+        };
         keymap = {
           preset = "default";
           "<C-n>" = [
@@ -62,6 +93,7 @@
       python.enable = true;
       rust.enable = true;
       zig.enable = true;
+      zig.lsp.package = [ "zls" ];
       go.enable = true;
 
       nix = {

@@ -166,7 +166,13 @@
     stdenv.cc.cc.lib
   ];
 
-  programs.direnv.enable = true;
+  programs.direnv = {
+    enable = true;
+    silent = true;
+
+    nix-direnv.enable = true;
+    enableZshIntegration = true;
+  };
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
