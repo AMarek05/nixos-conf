@@ -29,6 +29,10 @@
       };
     };
 
+    mini = {
+      surround.enable = true;
+    };
+
     binds.whichKey.enable = true;
     comments.comment-nvim.enable = true;
     visuals.nvim-web-devicons.enable = true;
