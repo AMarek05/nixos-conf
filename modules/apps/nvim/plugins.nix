@@ -61,6 +61,8 @@
       clang.enable = true;
       python.enable = true;
       rust.enable = true;
+      zig.enable = true;
+      go.enable = true;
 
       nix = {
         enable = true;
