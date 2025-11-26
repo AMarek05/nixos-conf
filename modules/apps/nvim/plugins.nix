@@ -50,7 +50,6 @@
 
     autocomplete.blink-cmp = {
       enable = true;
-      mappings.next = null;
       setupOpts = {
         cmdline = {
           completion = {
