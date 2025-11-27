@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+#
+# Sync local ~/gdrive with Google Drive remote gdrive:Laptop
+# Usage: ./sync -[u|d] -[s|c] -[n|i]
+#
+
+set -euo pipefail
+
+# --- Configuration ---
+LOCAL_DIR="$HOME/gdrive"
+REMOTE_DIR="gdrive:Remote"
+FILTER_FILE="$HOME/gdrive/filters.txt"
+PARALLEL=8
+
+# Defaults
+DIRECTION="upload"
+ACTION="sync"
+DRY_RUN=false
+INTERACTIVE=false
+
+# --- Helper Functions ---
+usage() {
+    echo "Usage: $0 [options]"
+    echo ""
+    echo "  -u    Upload: Local -> Remote (Default)"
+    echo "  -d    Download: Remote -> Local"
+    echo "  -s    Sync: Delete destination files to match source (Default)"
+    echo "  -c    Copy: Additive only, no deletions"
+    echo "  -n    Dry-run: Show what would happen without doing it"
+    echo "  -i    Interactive: Ask for confirmation"
+    echo "  -h    Show this help"
+    echo ""
+    exit 1
+}
+
+log() {
+    echo "[$1] $2"
+}
+
+# --- Argument Parsing with getopts ---
+# The string ":udscnih" lists allowed flags.
+# The leading colon ':' allows us to handle errors manually in the \? case.
+
+while getopts ":udscnih" opt; do
+    case ${opt} in
+        u)
+            DIRECTION="upload"
+            ;;
+        d)
+            DIRECTION="download"
+            ;;
+        s)
+            ACTION="sync"
+            ;;
+        c)
+            ACTION="copy"
+            ;;
+        n)
+            DRY_RUN=true
+            ;;
+        i)
+            INTERACTIVE=true
+            ;;
+        h)
+            usage
+            ;;
+        \?)
+            echo "Invalid Option: -$OPTARG" >&2
+            usage
+            ;;
+    esac
+done
+shift $((OPTIND -1))
+
+# --- Pre-flight Checks ---
+
+if ! command -v rclone &>/dev/null; then
+    echo "FATAL: rclone not found. Please install it first." >&2
+    exit 1
+fi
+
+if [ ! -d "$LOCAL_DIR" ]; then
+    log "WARN" "Local directory not found: $LOCAL_DIR"
+    log "INFO" "Creating: $LOCAL_DIR"
+    mkdir -p "$LOCAL_DIR"
+fi
+
+# --- Logic Setup ---
+
+if [ "$DIRECTION" == "upload" ]; then
+    SRC="$LOCAL_DIR"
+    DEST="$REMOTE_DIR"
+    DIR_ICON="⬆️  (Local -> Remote)"
+else
+    SRC="$REMOTE_DIR"
+    DEST="$LOCAL_DIR"
+    DIR_ICON="⬇️  (Remote -> Local)"
+fi
+
+# Build the command options
+CMD_OPTS=(-P --checkers $((PARALLEL*2)) --transfers "$PARALLEL" --drive-use-trash=true --verbose)
+
+if [ -f "$FILTER_FILE" ]; then
+    CMD_OPTS+=(--filter-from "$FILTER_FILE")
+fi
+
+if [ "$DRY_RUN" = true ]; then
+    CMD_OPTS+=(--dry-run)
+    log "INFO" "⚠️  DRY RUN MODE: No changes will be applied."
+fi
+
+if [ "$INTERACTIVE" = true ]; then
+    CMD_OPTS+=(--interactive)
+fi
+
+# --- Execution ---
+
+echo "========================================"
+echo "Direction : $DIR_ICON"
+echo "Action    : $ACTION"
+echo "Source    : $SRC"
+echo "Dest      : $DEST"
+echo "========================================"
+echo
+
+rclone "$ACTION" "${CMD_OPTS[@]}" "$SRC" "$DEST"
+
+echo
+log "EXIT" "Sync completed."
