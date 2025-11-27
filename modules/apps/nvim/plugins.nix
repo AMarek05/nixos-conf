@@ -78,7 +78,6 @@
           preset = "default";
           "<Tab>" = [
             "select_next"
-            "show"
             "fallback"
           ];
           "<C-n>" = [
