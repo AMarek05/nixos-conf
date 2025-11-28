@@ -2,26 +2,32 @@
   inputs,
   pkgs,
   lib,
+  config,
   ...
 }:
 {
   imports = [
-    ./terminal.nix
-    ./stylix.nix
-    ./nvf.nix
+    # ./stylix.nix
+    # ./nvf.nix
 
     inputs.zen-browser.homeModules.beta
   ];
 
-  home.packages = with pkgs; [
-    heroic
-    keepassxc
-  ];
-
-  gtk = {
-    colorScheme = "dark";
+  options.modules.apps = {
+    enable = lib.mkEnableOption "apps";
   };
 
-  programs.firefox.enable = true;
-  programs.zen-browser.enable = true;
+  config = lib.mkIf config.modules.apps.enable {
+    home.packages = with pkgs; [
+      heroic
+      keepassxc
+    ];
+
+    gtk = {
+      colorScheme = "dark";
+    };
+
+    programs.firefox.enable = true;
+    programs.zen-browser.enable = true;
+  };
 }

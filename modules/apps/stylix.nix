@@ -1,35 +1,52 @@
-{ pkgs, ... }:
 {
-  stylix = {
-    enable = true;
-    base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-dark.yaml";
+  inputs,
+  pkgs,
+  lib,
+  config,
+  ...
+}:
+{
+  imports = [
+    inputs.stylix.homeModules.stylix
+  ];
 
-    polarity = "dark";
+  options.modules.apps.stylix = {
+    enable = lib.mkEnableOption "stylix";
+  };
 
-    # Change to match about:profiles
-    targets.zen-browser.profileNames = [ "adam" ];
+  config = lib.mkIf config.modules.apps.stylix.enable {
 
-    targets.gtk.enable = true;
-    targets.gnome.enable = false;
+    stylix = {
+      enable = true;
+      base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-dark.yaml";
 
-    targets.starship.enable = false;
-    targets.firefox.enable = false;
+      polarity = "dark";
 
-    targets.ghostty.enable = false;
-    targets.tmux.enable = false;
+      # Change to match about:profiles
+      targets.zen-browser.profileNames = [ "adam" ];
 
-    cursor = {
-      package = pkgs.bibata-cursors;
-      name = "Bibata-Modern-Classic";
-      size = 24;
-    };
+      targets.gtk.enable = false;
+      targets.gnome.enable = false;
 
-    image = ../../store/wallpaper.webp;
+      targets.starship.enable = false;
+      targets.firefox.enable = false;
 
-    fonts = {
-      monospace = {
-        package = pkgs.nerd-fonts.jetbrains-mono;
-        name = "JetBrainsMono Nerd Font";
+      targets.ghostty.enable = false;
+      targets.tmux.enable = false;
+
+      cursor = {
+        package = pkgs.bibata-cursors;
+        name = "Bibata-Modern-Classic";
+        size = 24;
+      };
+
+      image = ../../store/wallpaper.webp;
+
+      fonts = {
+        monospace = {
+          package = pkgs.nerd-fonts.jetbrains-mono;
+          name = "JetBrainsMono Nerd Font";
+        };
       };
     };
   };

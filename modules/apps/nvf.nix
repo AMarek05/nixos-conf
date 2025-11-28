@@ -1,6 +1,6 @@
 {
   inputs,
-  pkgs,
+  config,
   lib,
   ...
 }:
@@ -14,16 +14,24 @@
     ./nvim/plugins.nix
   ];
 
-  programs.nvf = {
-    enable = true;
+  options.modules.apps.nvf = {
+    enable = lib.mkEnableOption "nvf";
+  };
 
-    settings.vim = {
-      theme = {
-        name = lib.mkForce "tokyonight";
-        style = "night";
+  config = lib.mkIf config.modules.apps.nvf.enable {
+
+    programs.nvf = {
+      enable = true;
+
+      settings.vim = {
+        theme = {
+          name = lib.mkForce "tokyonight";
+          style = "night";
+        };
+
+        globals.maplocalleader = " ";
       };
 
-      globals.maplocalleader = " ";
     };
   };
 }

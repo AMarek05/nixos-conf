@@ -1,5 +1,11 @@
-{ inputs, ... }:
+{ inputs, lib, config, ... }:
+let
+  cfg = config.modules.hyprland;
+in
 {
+  options.modules.hyprland = {
+    enable = lib.mkEnableOption "hyprland";
+  };
   imports = [
     ./hyprland/binds.nix
     ./hyprland/decoration.nix
@@ -10,7 +16,9 @@
     inputs.walker.homeManagerModules.default
   ];
 
-  wayland.windowManager.hyprland = {
+  config = lib.mkIf cfg.enable {
+
+    wayland.windowManager.hyprland = {
     enable = true;
     systemd.enable = false;
 
@@ -93,5 +101,6 @@
       hide-scrollbar = true;
       sidebar-mode = true;
     };
+  };
   };
 }
