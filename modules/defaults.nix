@@ -10,9 +10,8 @@
     ./hyprland.nix
 
     ./apps/main.nix
-    ./apps/stylix.nix
-
     ./apps/nvf.nix
+    ./apps/stylix.nix
     ./apps/terminal.nix
   ];
 
@@ -22,9 +21,13 @@
     util.enable = lib.mkDefault true;
     links.enable = lib.mkDefault true;
 
-    apps.stylix.enable = lib.mkDefault true;
-    apps.nvf.enable = lib.mkDefault true;
-
     hyprland.enable = lib.mkDefault true;
+
+    apps = {
+      enable = lib.mkDefault true;
+      stylix.enable = lib.mkDefault true;
+      nvf.enable = lib.mkDefault true;
+      terminal.enable = lib.mkDefault true;
+    };
   };
 }
