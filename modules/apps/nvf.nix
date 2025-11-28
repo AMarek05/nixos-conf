@@ -25,6 +25,7 @@
 
       settings.vim = {
         theme = {
+          enable = lib.mkForce true;
           name = lib.mkForce "tokyonight";
           style = "night";
         };
