@@ -2,18 +2,29 @@
 {
   imports = [
     ./git.nix
-    ./nvim.nix
     ./shell.nix
     ./util.nix
     ./env.nix
     ./links.nix
+
     ./hyprland.nix
+
+    ./apps/main.nix
+    ./apps/stylix.nix
+
+    ./apps/nvf.nix
+    ./apps/terminal.nix
   ];
 
-  modules.env.enable = lib.mkDefault true;
-  modules.git.enable = lib.mkDefault true;
-  modules.util.enable = lib.mkDefault true;
-  modules.links.enable = lib.mkDefault true;
-  modules.nvim.enable = lib.mkDefault true;
-  # modules.shell.enable = lib.mkDefault true;
+  modules = {
+    env.enable = lib.mkDefault true;
+    git.enable = lib.mkDefault true;
+    util.enable = lib.mkDefault true;
+    links.enable = lib.mkDefault true;
+
+    apps.stylix.enable = lib.mkDefault true;
+    apps.nvf.enable = lib.mkDefault true;
+
+    hyprland.enable = lib.mkDefault true;
+  };
 }

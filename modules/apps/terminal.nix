@@ -1,85 +1,97 @@
-{ pkgs, ... }:
 {
-  programs = {
-    tmux = {
-      enable = true;
+  pkgs,
+  config,
+  lib,
+  ...
+}:
+{
+  options.modules.apps.terminal = {
+    enable = lib.mkEnableOption "terminal";
+  };
 
-      terminal = "xterm-256color";
-      shell = "${pkgs.zsh}/bin/zsh";
+  config = lib.mkIf config.modules.apps.terminal.enable {
 
-      sensibleOnTop = true;
+    programs = {
+      tmux = {
+        enable = true;
 
-      prefix = "C-a";
-      keyMode = "vi";
-      mouse = true;
-      disableConfirmationPrompt = true;
+        terminal = "xterm-256color";
+        shell = "${pkgs.zsh}/bin/zsh";
 
-      escapeTime = 0;
-      baseIndex = 1;
+        sensibleOnTop = true;
 
-      newSession = true;
+        prefix = "C-a";
+        keyMode = "vi";
+        mouse = true;
+        disableConfirmationPrompt = true;
 
-      plugins = [
-        {
-          plugin = pkgs.tmuxPlugins.tokyo-night-tmux;
-          extraConfig = ''
-            set -g @tokyo-night-tmux_date_format DMY
-            set -g @tokyo-night-tmux_time_format 24H
-            set -g @tokyo-night-tmux_show_battery_widget 0
-            set -g @tokyo-night-tmux_window_id_style fsquare
-          '';
-        }
-        {
-          plugin = pkgs.tmuxPlugins.resurrect;
-          extraConfig = ''
-            set -g @resurrect-capture-pane-contents 'on'
-            set -g @resurrect-processes 'nvim'
-          '';
-        }
-        pkgs.tmuxPlugins.yank
-        pkgs.tmuxPlugins.continuum
-      ];
+        escapeTime = 0;
+        baseIndex = 1;
 
-      extraConfig = ''
-        set -ga terminal-overrides ",xterm-256color:Tc"
-        bind \\ split-window -v
-        bind v split-window -h
+        newSession = true;
 
-        bind h select-pane -L
-        bind j select-pane -D
-        bind k select-pane -U
-        bind l select-pane -R
+        plugins = [
+          {
+            plugin = pkgs.tmuxPlugins.tokyo-night-tmux;
+            extraConfig = ''
+              set -g @tokyo-night-tmux_date_format DMY
+              set -g @tokyo-night-tmux_time_format 24H
+              set -g @tokyo-night-tmux_show_battery_widget 0
+              set -g @tokyo-night-tmux_window_id_style fsquare
+            '';
+          }
+          {
+            plugin = pkgs.tmuxPlugins.resurrect;
+            extraConfig = ''
+              set -g @resurrect-capture-pane-contents 'on'
+              set -g @resurrect-processes 'nvim'
+            '';
+          }
+          pkgs.tmuxPlugins.yank
+          pkgs.tmuxPlugins.continuum
+        ];
 
-        # moving between windows with vim movement keys
-        bind -r C-h select-window -t :-
-        bind -r C-l select-window -t :+
+        extraConfig = ''
+          set -ga terminal-overrides ",xterm-256color:Tc"
+          bind \\ split-window -v
+          bind v split-window -h
 
-        # resize panes with vim movement keys
-        bind -r H resize-pane -L 5
-        bind -r J resize-pane -D 5
-        bind -r K resize-pane -U 5
-        bind -r L resize-pane -R 5
-      '';
-    };
+          bind h select-pane -L
+          bind j select-pane -D
+          bind k select-pane -U
+          bind l select-pane -R
 
-    ghostty = {
-      enable = true;
-      settings = {
-        theme = "TokyoNight Night";
+          # moving between windows with vim movement keys
+          bind -r C-h select-window -t :-
+          bind -r C-l select-window -t :+
 
-        window-padding-x = 10;
-        window-padding-y = 5;
-        window-padding-balance = true;
-
-        font-family = "JetBrainsMono Nerd Font";
-        font-style = "JetBrainsMono NF Regular";
-
-        app-notifications = false;
-
-        background-opacity = 0.85;
-        background-blur = true;
+          # resize panes with vim movement keys
+          bind -r H resize-pane -L 5
+          bind -r J resize-pane -D 5
+          bind -r K resize-pane -U 5
+          bind -r L resize-pane -R 5
+        '';
       };
-      enableZshIntegration = true;
+
+      ghostty = {
+        enable = true;
+        settings = {
+          theme = "TokyoNight Night";
+
+          window-padding-x = 10;
+          window-padding-y = 5;
+          window-padding-balance = true;
+
+          font-family = "JetBrainsMono Nerd Font";
+          font-style = "JetBrainsMono NF Regular";
+
+          app-notifications = false;
+
+          background-opacity = 0.85;
+          background-blur = true;
+        };
+        enableZshIntegration = true;
+      };
     };
   };
 }

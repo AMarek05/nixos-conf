@@ -4,6 +4,9 @@
   inputs = {
     # Nixpkgs is the primary source of packages
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+
+    nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
+
     hyprland.url = "github:hyprwm/Hyprland";
 
     home-manager = {
@@ -73,6 +76,21 @@
             }
           ];
         };
+        nixos-wsl = nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
+
+          modules = [
+            inputs.nixos-wsl.nixosModules.default
+            ./etc/configuration-wsl.nix
+            {
+              networking.hostName = nixpkgs.lib.mkForce "nixos-wsl";
+              system.stateVersion = "25.05";
+              wsl.enable = true;
+              wsl.defaultUser = "adam";
+            }
+          ];
+        };
       };
       homeConfigurations = {
         "adam@nixos" = home-manager.lib.homeManagerConfiguration {
@@ -97,6 +115,17 @@
                 "$mod" = nixpkgs.lib.mkForce "Alt";
               };
             }
+          ];
+
+          extraSpecialArgs = {
+            inherit inputs;
+          };
+        };
+        "adam@nixos-wsl" = home-manager.lib.homeManagerConfiguration {
+          pkgs = nixpkgs.legacyPackages."x86_64-linux";
+
+          modules = [
+            ./hosts/nixos-wsl.nix
           ];
 
           extraSpecialArgs = {
