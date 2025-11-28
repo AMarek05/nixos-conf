@@ -102,6 +102,7 @@
       rust.enable = true;
       zig.enable = true;
       go.enable = true;
+      bash.enable = true;
 
       nix = {
         enable = true;
