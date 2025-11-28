@@ -7,9 +7,6 @@
 }:
 {
   imports = [
-    # ./stylix.nix
-    # ./nvf.nix
-
     inputs.zen-browser.homeModules.beta
   ];
 

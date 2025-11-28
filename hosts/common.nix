@@ -1,23 +1,14 @@
-{ inputs, pkgs, ... }:
-let
-
-in
+{ lib, ... }:
 {
-  home.username = "adam";
-  home.homeDirectory = "/home/adam";
-
-  home.packages = with pkgs; [
-    gnumake
-    shellcheck
-    python3
-    gcc
-    nodejs
-    zig
-
-    kitty
-    ghostty
+  imports = [
+    ../modules/defaults.nix
   ];
 
-  programs.home-manager.enable = true;
-  home.stateVersion = "24.11"; # Please read the comment before changing.
+  programs.home-manager.enable = lib.mkForce true;
+
+  home = {
+    username = "adam";
+    homeDirectory = "/home/adam";
+    stateVersion = "24.11"; # Please read the comment before changing.
+  };
 }

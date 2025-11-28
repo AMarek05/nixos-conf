@@ -29,7 +29,15 @@ in
       vlc
 
       fastfetch
+
+      gnumake
+      shellcheck
+      python3
+      gcc
+      nodejs
+      zig
     ];
+
 
     programs.btop = {
       enable = true;

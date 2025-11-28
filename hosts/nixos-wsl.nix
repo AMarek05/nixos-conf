@@ -1,17 +1,17 @@
-{ ... }:
+{ lib, ... }:
 {
   imports = [
-    ../modules/defaults.nix
-    ../modules/apps/nvf.nix
+    ./common.nix
   ];
 
-  modules.hyprland.enable = false;
-  modules.apps.enable = false;
-  modules.apps.stylix.enable = false;
+  modules = {
+    hyprland.enable = lib.mkForce false;
+    apps.enable = lib.mkForce false;
+    apps.stylix.enable = lib.mkForce false;
+  };
 
-  home.username = "adam";
-  home.homeDirectory = "/home/adam";
-
-  programs.home-manager.enable = true;
-  home.stateVersion = "24.11"; # Please read the comment before changing.
+  programs = {
+    firefox.enable = lib.mkForce false;
+    zen-browser.enable = lib.mkForce false;
+  };
 }
