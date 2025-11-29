@@ -14,7 +14,7 @@ PARALLEL=8
 
 # --- Defaults ---
 DIRECTION="upload"
-ACTION="sync"
+ACTION="copy"
 DRY_RUN=false
 INTERACTIVE=false
 USE_FILTER=true
@@ -29,8 +29,8 @@ usage() {
     echo ""
     echo "  -u    Upload: Local -> Remote (Default)"
     echo "  -d    Download: Remote -> Local"
-    echo "  -s    Sync: Delete destination files to match source (Default)"
-    echo "  -c    Copy: Additive only, no deletions"
+    echo "  -s    Sync: Delete destination files to match source"
+    echo "  -c    Copy: Additive only, no deletions (Default)"
     echo "  -n    Dry-run: Show what would happen without doing it"
     echo "  -i    Interactive: Ask for confirmation"
     echo "  -N    No Filter: Do not use filters.txt (Sync everything)"
