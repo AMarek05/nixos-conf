@@ -99,10 +99,14 @@
 
       clang.enable = true;
       python.enable = true;
-      rust.enable = true;
       zig.enable = true;
       go.enable = true;
       bash.enable = true;
+
+      rust = {
+        enable = true;
+        lsp.package = [ "rust-analyzer" ];
+      };
 
       nix = {
         enable = true;
