@@ -106,7 +106,7 @@
       rust = {
         enable = true;
         lsp.enable = true;
-        lsp.package = [ ];
+        lsp.package = [ "rust-analyzer" ];
       };
 
       nix = {
