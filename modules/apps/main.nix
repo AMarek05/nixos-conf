@@ -20,6 +20,8 @@
       keepassxc
 
       rustlings
+
+      yazi
     ];
 
     gtk = {
