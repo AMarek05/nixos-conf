@@ -20,6 +20,9 @@
 
       rustlings
 
+      grim
+      slurp
+
       yazi
 
       mullvad-vpn
