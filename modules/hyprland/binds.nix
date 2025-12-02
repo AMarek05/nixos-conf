@@ -27,7 +27,7 @@
         "$mod, Return, exec, uwsm app -- ghostty"
 
         # screenshot
-        "Ctrl, Print, exec, grimblast active copy"
+        "Ctrl, Print, exec, grimblast copy active"
         ", Print, exec, slurp | grim -g - - | wl-copy"
 
         # move focus
