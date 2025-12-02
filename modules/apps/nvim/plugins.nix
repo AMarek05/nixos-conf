@@ -92,21 +92,10 @@
       };
     };
 
-    lsp.servers.basedpyright.extraConfig.settings.basedpyright.analysis.diagnosticsSeverityOverrides = {
-      # Suppress specific diagnostics here
-      reportUnknownMemberType = "none";
-      reportUnknownVariableType = "none";
-      reportUnknownParameterType = "none";
-      reportAny = "none";
-
-      # Optional: You can also set them to "warning"
-      # reportImplicitAny = "warning";
-    };
-
     languages = {
       enableFormat = true;
       enableTreesitter = true;
-      enableExtraDiagnostics = true;
+      enableExtraDiagnostics = false;
 
       clang.enable = true;
       python.enable = true;
