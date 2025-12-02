@@ -16,7 +16,6 @@
 
   config = lib.mkIf config.modules.apps.enable {
     home.packages = with pkgs; [
-      heroic
       keepassxc
 
       rustlings
@@ -24,6 +23,8 @@
       yazi
 
       umu-launcher
+      steam
+      flatpak
     ];
 
     gtk = {
