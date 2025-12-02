@@ -22,6 +22,8 @@
       rustlings
 
       yazi
+
+      umu-launcher
     ];
 
     gtk = {
