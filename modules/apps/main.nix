@@ -22,6 +22,8 @@
 
       yazi
 
+      mullvad-vpn
+
       umu-launcher
       steam
       flatpak
