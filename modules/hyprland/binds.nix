@@ -27,7 +27,7 @@
         "$mod, Return, exec, uwsm app -- ghostty"
 
         # screenshot
-        "Ctrl, Print, exec, hyprctl -j activewindow | jq -r '\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])' | grim -g - screenshot.png"
+        "Ctrl, Print, exec, grimblast active copy"
         ", Print, exec, slurp | grim -g - - | wl-copy"
 
         # move focus
