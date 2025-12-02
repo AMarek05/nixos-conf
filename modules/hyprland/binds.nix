@@ -4,24 +4,31 @@
     settings = {
       "$mod" = "Super";
       bind = [
+        # main
         "$mod, Escape, exit,"
         "$mod, Q, killactive,"
 
+        # window
         "$mod, M, fullscreen, 1"
         "$mod, F, fullscreen, 0"
         "$mod, Space, togglefloating,"
 
+        # focus
         "Alt, Tab, cyclenext,"
         "Alt Shift, Tab, cyclenext, prev"
-
         "Alt, Tab, bringactivetotop,"
         "Alt Shift, Tab, bringactivetotop,"
 
+        # keyboard
         "$mod, Space, exec, hyprctl switchxkblayout all next"
 
         # apps
         "$mod Control, Return, exec, uwsm app -- walker"
         "$mod, Return, exec, uwsm app -- ghostty"
+
+        # screenshot
+        "Ctrl, Print, exec, hyprctl -j activewindow | jq -r '\(.at[0]),\(.at[1]) \(.size[0])x\(.size[1])' | grim -g - screenshot.png"
+        ", Print, exec, slurp | grim -g - - | wl-copy"
 
         # move focus
         "$mod, H, movefocus, l"
