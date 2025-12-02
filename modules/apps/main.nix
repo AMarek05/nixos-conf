@@ -22,6 +22,7 @@
 
       grim
       slurp
+      grimblast
 
       yazi
 
