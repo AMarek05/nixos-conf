@@ -92,7 +92,7 @@
       };
     };
 
-    lsp.servers.basedpyright.extraConfig.settings.basedpyright.analysis.diagnosticsSecurityOverrides = {
+    lsp.servers.basedpyright.extraConfig.settings.basedpyright.analysis.diagnosticsSeverityOverrides = {
       # Suppress specific diagnostics here
       reportUnknownMemberType = "none";
       reportUnknownVariableType = "none";
