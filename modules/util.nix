@@ -19,6 +19,8 @@ in
       p7zip
       zstd
 
+      ripgrep
+
       nh
       nvd
       cachix
@@ -37,7 +39,6 @@ in
       nodejs
       zig
     ];
-
 
     programs.btop = {
       enable = true;
