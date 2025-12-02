@@ -25,6 +25,7 @@
     ];
 
     gtk = {
+      enable = lib.mkForce true;
       colorScheme = "dark";
     };
 
