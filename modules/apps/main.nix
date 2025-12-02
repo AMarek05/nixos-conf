@@ -25,6 +25,7 @@
       umu-launcher
       steam
       flatpak
+      gamemode
     ];
 
     gtk = {
