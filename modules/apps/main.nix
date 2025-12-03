@@ -34,6 +34,7 @@
       steam
       flatpak
       gamemode
+      prismlauncher
     ];
 
     gtk = {

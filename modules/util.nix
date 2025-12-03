@@ -40,6 +40,7 @@ in
       gcc
       nodejs
       zig
+      openjdk
     ];
 
     programs.btop = {
