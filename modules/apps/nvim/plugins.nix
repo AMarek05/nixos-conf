@@ -103,6 +103,8 @@
       go.enable = true;
       bash.enable = true;
 
+      java.enable = true;
+
       rust = {
         enable = true;
         lsp.enable = true;
