@@ -51,6 +51,9 @@
       st = "/mnt/Shared/SillyTavern/SillyTavern/start.sh";
 
       polluks = "ssh inf164182@polluks.cs.put.poznan.pl";
+
+      nhc = "nh clean all --keep 3 --no-gcroots";
+      nhco = "nh clean all --keep 3 --no-gcroots --optimise";
     };
   };
 
