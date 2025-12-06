@@ -20,6 +20,8 @@
 
       rustlings
 
+      vlc
+
       grim
       slurp
       grimblast
