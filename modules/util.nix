@@ -20,6 +20,7 @@ in
       zstd
 
       ripgrep
+      brightnessctl
 
       nh
       nvd
