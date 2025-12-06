@@ -31,10 +31,11 @@
       mullvad-vpn
 
       umu-launcher
-      flatpak
       steam
+      flatpak
       gamemode
       prismlauncher
+      lutris-free
     ];
 
     gtk = {
