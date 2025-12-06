@@ -118,6 +118,15 @@
                   scroll_factor = 0.3;
                 };
               };
+              programs.ashell.settings.modules.right = nixpkgs.lib.mkForce [
+                "SystemInfo"
+                [
+                  "Clock"
+                  "Privacy"
+                ]
+                "Battery"
+                "Settings"
+              ];
             }
           ];
 
