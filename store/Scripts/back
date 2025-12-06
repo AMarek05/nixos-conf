@@ -10,7 +10,7 @@
 set -euo pipefail
 
 # === CONFIG ===
-BACKUP_DIR="$HOME/gdrive/Backup"
+BACKUP_DIR="$HOME/Backup"
 REMOTE_DIR="gdrive:Backup"
 mkdir -p "$BACKUP_DIR"
 
@@ -50,8 +50,8 @@ compress_dir() {
     local archive="${BACKUP_DIR}/${base}.tar.zst"
 
     echo "LOG: Compressing $src → $archive"
-    tar --zstd -cvf "$archive" -C "$(dirname "$src")" "$base" \
-        | pv -lep -s "$(du -sb "$src" | awk '{print $1}')" > /dev/null
+    tar --zstd -cvf "$archive" -C "$(dirname "$src")" "$base" |
+        pv -lep -s "$(du -sb "$src" | awk '{print $1}')" >/dev/null
 
     echo "LOG: Done: $(du -h "$archive" | awk '{print $1}')"
 }
@@ -75,7 +75,7 @@ compress_dir() {
     echo
     echo "LOG: Syncing backups to Google Drive..."
     script -q -a "$LOG_FILE" -c \
-        "rclone sync -P --checkers $((PARALLEL*2)) --transfers $PARALLEL --drive-use-trash=false \"$BACKUP_DIR\" \"$REMOTE_DIR\""
+        "rclone copy -P --checkers $((PARALLEL * 2)) --transfers $PARALLEL --drive-use-trash=false \"$BACKUP_DIR\" \"$REMOTE_DIR\""
 
     echo
     echo "EXIT: Backup and sync completed successfully."
