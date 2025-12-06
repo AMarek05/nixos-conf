@@ -21,6 +21,7 @@ in
 
       ripgrep
       brightnessctl
+      acpi
 
       nh
       nvd
