@@ -18,6 +18,7 @@ in
       unrar-free
       p7zip
       zstd
+      pv
 
       brightnessctl
       playerctl
