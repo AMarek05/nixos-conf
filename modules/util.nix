@@ -29,7 +29,7 @@ in
       wl-clipboard
       bat
 
-      vlc
+      wget2
 
       fastfetch
 
