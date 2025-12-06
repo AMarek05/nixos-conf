@@ -73,6 +73,7 @@
               boot.loader.grub.enable = nixpkgs.lib.mkForce false;
               boot.loader.systemd-boot.enable = nixpkgs.lib.mkForce true;
               boot.loader.efi.canTouchEfiVariables = nixpkgs.lib.mkForce true;
+              boot.kernelParams = [ "i915.enable_dpcd_backlight=3" ];
             }
           ];
         };
@@ -112,7 +113,10 @@
             {
               wayland.windowManager.hyprland.settings = {
                 monitor = nixpkgs.lib.mkForce [ ", 1920x1080@59.997000, auto, 1" ];
-                "$mod" = nixpkgs.lib.mkForce "Alt";
+                input.touchpad = {
+                  natural_scroll = true;
+                  scroll_factor = 0.3;
+                };
               };
             }
           ];
