@@ -31,7 +31,6 @@
       mullvad-vpn
 
       umu-launcher
-      steam
       flatpak
       gamemode
       prismlauncher
