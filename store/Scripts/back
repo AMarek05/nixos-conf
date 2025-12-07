@@ -68,8 +68,7 @@ compress_dir() {
 
     echo
     echo "LOG: Syncing backups to Google Drive..."
-    script -q -a "$LOG_FILE" -c \
-        "rclone copy -P --checkers $((PARALLEL * 2)) --transfers $PARALLEL --drive-use-trash=false \"$BACKUP_DIR\" \"$REMOTE_DIR\""
+    rclone copy -P --checkers $((PARALLEL * 2)) --transfers $PARALLEL --drive-use-trash=false "$BACKUP_DIR" "$REMOTE_DIR"
 
     echo
     echo "EXIT: Backup and sync completed successfully."
