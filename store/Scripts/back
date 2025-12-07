@@ -31,11 +31,6 @@ if ! command -v zstd &>/dev/null; then
     exit 1
 fi
 
-if ! command -v pv &>/dev/null; then
-    echo "FATAL: pv not found. Please install it" >&2
-    exit 1
-fi
-
 if [ "$#" -eq 0 ]; then
     echo "FATAL: No directories provided to back up." >&2
     echo "Usage: $0 /path/to/dir1 [/path/to/dir2 ...]" >&2
@@ -50,8 +45,7 @@ compress_dir() {
     local archive="${BACKUP_DIR}/${base}.tar.zst"
 
     echo "LOG: Compressing $src → $archive"
-    tar --zstd -cvf "$archive" -C "$(dirname "$src")" "$base" |
-        pv -lep -s "$(du -sb "$src" | awk '{print $1}')" >/dev/null
+    tar --zstd -cvf "$archive" -C "$(dirname "$src")" "$base"
 
     echo "LOG: Done: $(du -h "$archive" | awk '{print $1}')"
 }
