@@ -36,8 +36,6 @@
       gamemode
       prismlauncher
       lutris-free
-
-      sillytavern
     ];
 
     gtk = {
