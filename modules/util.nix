@@ -29,6 +29,7 @@ in
 
       wl-clipboard
       bat
+      fzf
 
       wget2
 
