@@ -32,6 +32,7 @@
 
       umu-launcher
       flatpak
+      steam
       gamemode
       prismlauncher
     ];
