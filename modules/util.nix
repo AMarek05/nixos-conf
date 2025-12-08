@@ -32,6 +32,7 @@ in
       fzf
 
       wget2
+      nauty
 
       fastfetch
 
