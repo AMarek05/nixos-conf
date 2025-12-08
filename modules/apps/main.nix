@@ -36,6 +36,10 @@
       gamemode
       prismlauncher
       lutris-free
+
+      nautilus
+      alacarte
+      evince
     ];
 
     gtk = {
