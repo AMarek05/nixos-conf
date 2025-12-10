@@ -75,7 +75,7 @@
           };
         };
         keymap = {
-          preset = "default";
+          preset = "none";
           "<Tab>" = [
             "select_next"
             "fallback"
@@ -86,6 +86,14 @@
           ];
           "<C-p>" = [
             "snippet_backward"
+            "fallback"
+          ];
+          "<A-k>" = [
+            "scroll_documentation_up"
+            "fallback"
+          ];
+          "<A-j>" = [
+            "scroll_documentation_down"
             "fallback"
           ];
         };
