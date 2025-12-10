@@ -37,6 +37,8 @@
       targets.ghostty.enable = false;
       targets.tmux.enable = false;
 
+      targets.nvf.transparentBackground = true;
+
       cursor = {
         package = pkgs.bibata-cursors;
         name = "Bibata-Modern-Classic";
