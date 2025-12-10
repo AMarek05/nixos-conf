@@ -201,6 +201,8 @@
     };
   };
 
+  systemd.services.NetweorkManager-wait-online.enable = lib.mkForce false;
+
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
   # networking.firewall.allowedUDPPorts = [ ... ];
