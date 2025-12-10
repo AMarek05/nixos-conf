@@ -78,7 +78,7 @@
         settings = {
           theme = "TokyoNight Night";
 
-          window-padding-x = 10;
+          window-padding-x = 5;
           window-padding-y = 5;
           window-padding-balance = true;
 
@@ -87,7 +87,7 @@
 
           app-notifications = false;
 
-          background-opacity = 0.85;
+          background-opacity = 0.92;
           background-blur = true;
         };
         enableZshIntegration = true;
