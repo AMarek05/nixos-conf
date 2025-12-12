@@ -49,9 +49,13 @@
   boot.kernelPackages = pkgs.linuxPackages_zen;
 
   networking.hostName = lib.mkDefault "nixos"; # Define your hostname.
+
   # Pick only one of the below networking options.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
+
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
+  systemd.services.NetworkManager-wait-online.enable = false;
+
   services.mullvad-vpn.enable = true;
 
   # Set your time zone.
@@ -200,8 +204,6 @@
       PermitRootLogin = "no";
     };
   };
-
-  systemd.services.NetweorkManager-wait-online.enable = lib.mkForce false;
 
   # Open ports in the firewall.
   # networking.firewall.allowedTCPPorts = [ ... ];
