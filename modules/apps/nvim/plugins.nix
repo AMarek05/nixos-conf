@@ -100,6 +100,21 @@
       };
     };
 
+    lsp.servers.nixd.init_options = {
+      nixpkgs = {
+        expr = "import (builtins.getFlake (builtins.getEnv \"NH_FLAKE\")).inputs.nixpkgs {}";
+      };
+      options = {
+        nixos = {
+          expr = "(builtins.getFlake (builtins.getEnv \"NH_FLAKE\")).nixosConfigurations.nixos.options";
+        };
+
+        home-manager = {
+          expr = "(builtins.getFlake (builtins.getEnv \"NH_FLAKE\")).homeConfigurations.\"adam@nixos\".options";
+        };
+      };
+    };
+
     languages = {
       enableFormat = true;
       enableTreesitter = true;
@@ -121,22 +136,8 @@
 
       nix = {
         enable = true;
-        format.type = "nixfmt";
-        lsp.server = "nixd";
-        lsp.options = {
-          nixpkgs = {
-            expr = "import (builtins.getFlake (builtins.getEnv \"NH_FLAKE\")).inputs.nixpkgs {}";
-          };
-          options = {
-            nixos = {
-              expr = "(builtins.getFlake (builtins.getEnv \"NH_FLAKE\")).nixosConfigurations.nixos.options";
-            };
-
-            home-manager = {
-              expr = "(builtins.getFlake (builtins.getEnv \"NH_FLAKE\")).homeConfigurations.\"adam@nixos\".options";
-            };
-          };
-        };
+        format.type = [ "nixfmt" ];
+        lsp.servers = [ "nixd" ];
       };
     };
 
