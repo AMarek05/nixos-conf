@@ -28,7 +28,7 @@
 
         # screenshot
         "Ctrl, Print, exec, grimblast copy active"
-        ", Print, exec, slurp | grim -g - - | wl-copy"
+        ", Print, exec, grimblast --freeze copy area"
 
         # move focus
         "$mod, H, movefocus, l"

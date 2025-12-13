@@ -25,7 +25,23 @@
       undotree.enable = false;
       motion = {
         leap.enable = true;
-        flash-nvim.enable = true;
+        flash-nvim = {
+          enable = true;
+          setupOpts = {
+            modes = {
+              char = {
+                highlight = {
+                  backdrop = false;
+                };
+              };
+              search = {
+                highlight = {
+                  backdrop = false;
+                };
+              };
+            };
+          };
+        };
       };
     };
 
@@ -173,17 +189,40 @@
         navbuddy.enable = true;
       };
       noice.enable = true;
-      noice.setupOpts.routes = [
-        {
+      noice.setupOpts = {
+        cmdline.format = {
           filter = {
-            event = "notify";
-            find = "require%('lspconfig'%)";
+            pattern = "^:%s*!"; # Detects :!
+            icon = ""; # Change this to any icon you want
+            lang = "bash"; # Force Bash syntax highlighting
+
+            # Optional: changing the title of the input box
+            title = " Shell ";
           };
-          opts = {
-            skip = true;
-          };
-        }
-      ];
+        };
+        routes = [
+          {
+            view = "popup";
+            filter = {
+              event = "msg_show";
+              kind = "shell_out"; # Standard command output usually has no "kind"
+              find = ".*"; # Catch all output text
+            };
+            opts = {
+              persistent = true; # if you want it to stay until you close it manually
+            };
+          }
+          {
+            filter = {
+              event = "notify";
+              find = "require%('lspconfig'%)";
+            };
+            opts = {
+              skip = true;
+            };
+          }
+        ];
+      };
     };
 
     telescope = {
