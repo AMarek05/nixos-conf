@@ -33,10 +33,10 @@
                 highlight = {
                   backdrop = false;
                 };
-              };
-              search = {
-                highlight = {
-                  backdrop = false;
+                search = {
+                  highlight = {
+                    backdrop = false;
+                  };
                 };
               };
             };
