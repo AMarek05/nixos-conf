@@ -12,7 +12,6 @@
     mouse = "a";
     showmode = false;
 
-    clipboard = "unnamedplus";
     breakindent = true;
     undofile = true;
 
@@ -35,4 +34,20 @@
 
     hlsearch = true;
   };
+  programs.nvf.settings.vim.luaConfigRC.clipboard-setup = ''
+    -- Create an autocommand group to prevent duplication
+    local clip_group = vim.api.nvim_create_augroup("YankToSystem", { clear = true })
+
+    vim.api.nvim_create_autocmd("TextYankPost", {
+      group = clip_group,
+      pattern = "*",
+      callback = function()
+        -- Only sync if the operator was 'y' (yank)
+        if vim.v.event.operator == "y" then
+          -- Copy the contents of the unnamed register (") to the system register (+)
+          vim.fn.setreg("+", vim.fn.getreg('"'))
+        end
+      end,
+    })
+  '';
 }

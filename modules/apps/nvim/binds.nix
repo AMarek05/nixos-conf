@@ -9,14 +9,28 @@
     {
       key = "<leader>e";
       mode = [ "n" ];
-      action = "vim.diagnosctic.open_float";
+      action = "<cmd>lua vim.diagnostic.open_float()<cr>";
       desc = "Show diagnostic [E]rror messages";
     }
     {
       key = "<leader>q";
       mode = [ "n" ];
-      action = "vim.diagnostic.setloclist";
+      action = "<cmd>lua vim.diagnostic.setloclist()<cr>";
       desc = "Open diagnostic [Q]uickfix list";
+    }
+
+    # Clipboard
+    {
+      key = "<leader>y";
+      mode = [ "n" ];
+      action = "\"+y";
+      desc = "[Y]ank into system cliboard";
+    }
+    {
+      key = "<leader>p";
+      mode = [ "n" ];
+      action = "\"+p";
+      desc = "[Y]ank into system cliboard";
     }
 
     # Windows
