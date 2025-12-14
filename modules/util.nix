@@ -33,6 +33,7 @@ in
 
       wget2
       nauty
+      koboldcpp
 
       fastfetch
 
