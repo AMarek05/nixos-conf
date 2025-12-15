@@ -24,11 +24,14 @@ in
   config = lib.mkIf cfg.enable {
     wayland.windowManager.hyprland = {
       enable = true;
-      systemd.enable = false;
+      systemd.variables = [ "--all" ];
+
+      package = null;
+      portalPackage = null;
 
       settings = {
         exec-once = [
-          "uwsm app -- ashell"
+          "ashell"
         ];
         input = {
           kb_layout = "pl,us";
@@ -84,7 +87,6 @@ in
       runAsService = true;
 
       config = {
-        app_launch_prefix = "uwsm app -- ";
         terminal = "ghostty";
 
         disable_mouse = true;
