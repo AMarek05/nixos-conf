@@ -9,7 +9,12 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet --time --cmd 'uwsm start hyprland-uwsm.desktop'";
+        command = "${pkgs.tuigreet}/bin/tuigreet \
+          --time \
+          --asterisks \
+          --user-menu \
+          --theme \"border=magenta;text=cyan;prompt=green;time=yellow;action=blue;button=magenta;container=black;input=yellow\" \
+          --cmd 'start-hyprland'";
         user = "greeter";
       };
     };
@@ -22,7 +27,6 @@
     portalPackage =
       inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
 
-    withUWSM = true;
     xwayland.enable = true;
   };
 }

@@ -23,8 +23,8 @@
         "$mod, Space, exec, hyprctl switchxkblayout all next"
 
         # apps
-        "$mod Control, Return, exec, uwsm app -- walker"
-        "$mod, Return, exec, uwsm app -- ghostty"
+        "$mod Control, Return, exec, walker"
+        "$mod, Return, exec, ghostty"
 
         # screenshot
         "Ctrl, Print, exec, grimblast copy active"
