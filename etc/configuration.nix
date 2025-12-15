@@ -171,7 +171,41 @@
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
-    stdenv.cc.cc.lib
+    # --- The Basics ---
+    stdenv.cc.cc.lib # Standard C++ library (crucial)
+    zlib # Compression (almost always needed)
+    glib # Core C library
+
+    # --- The Crash Fixes (Image & Graphics) ---
+    libwebp
+    SDL2 # Core graphics
+    SDL2_image # Loads images (png, jpg, webp)
+    SDL2_ttf # Fonts
+    SDL2_mixer # Audio
+    libpng
+    libjpeg
+    freetype
+    fontconfig
+
+    # --- X11 / Windowing (The game expects these to exist) ---
+    xorg.libX11
+    xorg.libXext
+    xorg.libXrender
+    xorg.libXcursor # Mouse cursor support
+    xorg.libXrandr # Resolution support
+    xorg.libXinerama # Multi-monitor support
+    xorg.libXi # Input devices
+    xorg.libXScrnSaver
+
+    # --- OpenGL & Audio ---
+    libglvnd # OpenGL support
+    alsa-lib # Audio support
+    pulseaudio # Audio support
+
+    # --- Video / Extras ---
+    ffmpeg # Video playback (opening movies)
+    dbus # System messaging (notifications)
+    gtk3 # File pickers/dialogs (sometimes needed)
   ];
 
   programs.direnv = {
