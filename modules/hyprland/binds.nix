@@ -15,8 +15,8 @@
 
         # focus
         "Alt, Tab, cyclenext,"
-        "Alt Shift, Tab, cyclenext, prev"
         "Alt, Tab, bringactivetotop,"
+        "Alt Shift, Tab, cyclenext, prev"
         "Alt Shift, Tab, bringactivetotop,"
 
         # keyboard
