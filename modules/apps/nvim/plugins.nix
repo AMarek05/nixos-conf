@@ -237,7 +237,7 @@
             view = "popup";
             filter = {
               event = "msg_show";
-              kind = "shell_out"; # Standard command output usually has no "kind"
+              kind = "shell_out";
               find = ".*"; # Catch all output text
             };
             opts = {
