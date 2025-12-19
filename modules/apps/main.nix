@@ -36,6 +36,7 @@
       gamemode
       prismlauncher
       lutris-free
+      heroic
 
       nautilus
       alacarte

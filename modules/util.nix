@@ -39,6 +39,7 @@ in
       fastfetch
 
       gnumake
+      parallel
       shellcheck
       python3
       gcc
