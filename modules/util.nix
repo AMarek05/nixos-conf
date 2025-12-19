@@ -19,7 +19,6 @@ in
       p7zip
       zstd
 
-      ripgrep
       brightnessctl
       acpi
 
@@ -30,6 +29,8 @@ in
       wl-clipboard
       bat
       fzf
+      fd
+      ripgrep
 
       wget2
       nauty
