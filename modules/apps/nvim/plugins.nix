@@ -22,9 +22,42 @@
     utility = {
       sleuth.enable = true;
       surround.enable = true;
-      undotree.enable = false;
+      undotree.enable = true;
+
+      oil-nvim = {
+        enable = true;
+        gitStatus.enable = true;
+        setupOpts = {
+          float = {
+            border = "rounded";
+
+            max_width = 0.7;
+            max_height = 0.5;
+
+            padding = 2;
+          };
+
+          preview = {
+            border = "rounded";
+          };
+
+          keymaps = {
+            "q" = "actions.close";
+            "w" = ":w";
+            "x" = ":wq";
+          };
+        };
+      };
+
+      outline.aerial-nvim = {
+        enable = true;
+        setupOpts = {
+          show_guides = true;
+          default_direction = "float";
+        };
+      };
+
       motion = {
-        leap.enable = true;
         flash-nvim = {
           enable = true;
           setupOpts = {
@@ -53,7 +86,6 @@
     comments.comment-nvim.enable = true;
     visuals.nvim-web-devicons.enable = true;
     autopairs.nvim-autopairs.enable = true;
-    minimap.codewindow.enable = true;
     treesitter.context = {
       enable = true;
       setupOpts = {

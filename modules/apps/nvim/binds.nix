@@ -30,7 +30,7 @@
       key = "<leader>p";
       mode = [ "n" ];
       action = "\"+p";
-      desc = "[Y]ank into system cliboard";
+      desc = "[P]aste from system cliboard";
     }
 
     # Windows
@@ -121,6 +121,26 @@
       mode = [ "n" ];
       action = "<cmd>Telescope current_buffer_fuzzy_find<CR>";
       desc = "Telescope Oldfiles";
+    }
+    {
+      key = "<leader>sa";
+      mode = [ "n" ];
+      action = "<cmd>Telescope aerial<CR>";
+      desc = "Telescope AerialNvim";
+    }
+
+    # Oil
+    {
+      key = "-";
+      mode = [ "n" ];
+      action = "<cmd>Oil<CR>";
+      desc = "Open Oil";
+    }
+    {
+      key = "<leader>o";
+      mode = [ "n" ];
+      action = "<cmd>Oil --float<CR>";
+      desc = "Open [O]il floating window";
     }
   ];
 }
