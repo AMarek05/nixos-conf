@@ -8,6 +8,10 @@
         "$mod, Escape, exit,"
         "$mod, Q, killactive,"
 
+        # session
+        "$mod, L, exec, hyprlock"
+        "$mod Shift, L, exec, systemctl suspend"
+
         # window
         "$mod, M, fullscreen, 1"
         "$mod, F, fullscreen, 0"
