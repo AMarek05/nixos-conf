@@ -1,4 +1,5 @@
 {
+  pkgs,
   inputs,
   config,
   lib,
@@ -23,6 +24,7 @@
       enable = true;
 
       settings.vim = {
+        options.shell = "${pkgs.zsh}/bin/zsh";
         theme = {
           enable = lib.mkForce true;
           name = lib.mkForce "tokyonight";
