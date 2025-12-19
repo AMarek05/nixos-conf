@@ -113,7 +113,10 @@
   # Enable sound.
   # services.pulseaudio.enable = true;
   # OR
+
   security.rtkit.enable = true;
+
+  security.pam.services.hyprlock = { };
 
   services.pipewire = {
     enable = true;
