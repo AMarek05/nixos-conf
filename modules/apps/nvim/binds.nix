@@ -129,7 +129,8 @@
       desc = "Telescope AerialNvim";
     }
 
-    # Oil
+    # Plugins
+    ## Oil
     {
       key = "-";
       mode = [ "n" ];
@@ -141,6 +142,14 @@
       mode = [ "n" ];
       action = "<cmd>Oil --float<CR>";
       desc = "Open [O]il floating window";
+    }
+
+    ## Undotree
+    {
+      key = "<leader>u";
+      mode = [ "n" ];
+      action = "<cmd>UndotreeToggle";
+      desc = "Open [U]ndotree";
     }
   ];
 }

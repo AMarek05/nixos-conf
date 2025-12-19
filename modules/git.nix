@@ -11,10 +11,15 @@ in
     programs.git = {
       enable = true;
 
-      settings.user = {
-        name = "Adam Marek";
-        email = "118975111+AMarek05@users.noreply.github.com";
-        useConfigOnly = true;
+      settings = {
+        alias = {
+          lg = "log --graph --abbrev-commit --decorate --format=format:'%C(bold blue)%h%C(reset) - %C(bold green)(%ar)%C(reset) %C(white)%s%C(reset) %C(dim white)- %an%C(reset)%C(auto)%d%C(reset)' --all";
+        };
+        user = {
+          name = "Adam Marek";
+          email = "118975111+AMarek05@users.noreply.github.com";
+          useConfigOnly = true;
+        };
       };
 
       signing = {
