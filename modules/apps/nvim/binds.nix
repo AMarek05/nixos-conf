@@ -148,7 +148,7 @@
     {
       key = "<leader>u";
       mode = [ "n" ];
-      action = "<cmd>UndotreeToggle";
+      action = "<cmd>UndotreeToggle<CR>";
       desc = "Open [U]ndotree";
     }
   ];
