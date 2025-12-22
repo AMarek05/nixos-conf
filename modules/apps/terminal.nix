@@ -86,6 +86,7 @@
           font-style = "JetBrainsMono NF Regular";
 
           app-notifications = false;
+          shell-integration-features = "ssh-terminfo";
 
           background-opacity = 0.92;
           background-blur = true;
