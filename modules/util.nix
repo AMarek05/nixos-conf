@@ -21,6 +21,7 @@ in
 
       brightnessctl
       acpi
+      jmtpfs
 
       nh
       nvd
