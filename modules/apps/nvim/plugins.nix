@@ -98,8 +98,14 @@
 
     autocomplete.blink-cmp = {
       enable = true;
+      friendly-snippets.enable = true;
       mappings.next = null;
       setupOpts = {
+        sources.default = [
+          "lsp"
+          "path"
+          "snippets"
+        ];
         cmdline = {
           completion = {
             list = {

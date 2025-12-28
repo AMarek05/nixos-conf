@@ -2,9 +2,9 @@
 {
   programs.nvf.settings.vim.options = {
     expandtab = true;
-    tabstop = 2;
-    shiftwidth = 2;
-    softtabstop = 2;
+    tabstop = 4;
+    shiftwidth = 4;
+    softtabstop = 4;
 
     number = true;
     relativenumber = true;
