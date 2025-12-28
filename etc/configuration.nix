@@ -145,6 +145,7 @@
     extraGroups = [
       "wheel"
       "video"
+      "adbusers"
     ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
@@ -171,6 +172,8 @@
     alsa-ucm-conf
     alsa-utils
   ];
+
+  programs.adb.enable = true;
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
