@@ -43,8 +43,8 @@
 
           keymaps = {
             "q" = "actions.close";
-            "w" = ":w";
-            "x" = ":wq";
+            "w" = ":w<CR>";
+            "x" = ":wq<CR>";
           };
         };
       };
