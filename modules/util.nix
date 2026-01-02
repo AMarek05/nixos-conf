@@ -20,6 +20,7 @@ in
       zstd
 
       brightnessctl
+      playerctl
       acpi
       jmtpfs
 
