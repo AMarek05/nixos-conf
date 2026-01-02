@@ -2,7 +2,6 @@
   description = "My NixOS Flake Configuration";
 
   inputs = {
-    # Nixpkgs is the primary source of packages
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
