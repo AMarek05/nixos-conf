@@ -45,7 +45,7 @@
         size = 24;
       };
 
-      image = ../../store/wallpaper.webp;
+      image = "${inputs.self}/store/wallpaper.webp";
 
       fonts = {
         monospace = {
