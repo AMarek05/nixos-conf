@@ -171,9 +171,9 @@
     rclone
     alsa-ucm-conf
     alsa-utils
-  ];
 
-  programs.adb.enable = true;
+    android-tools
+  ];
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
