@@ -85,7 +85,7 @@
           font-style = "JetBrainsMono NF Regular";
 
           app-notifications = false;
-          shell-integration-features = "ssh-terminfo,ssh-env";
+          shell-integration-features = "ssh-env,cursor,sudo,title";
 
           background-opacity = 0.92;
           background-blur = true;
