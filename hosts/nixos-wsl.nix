@@ -13,5 +13,8 @@
   programs = {
     firefox.enable = lib.mkForce false;
     zen-browser.enable = lib.mkForce false;
+    ghostty.enable = lib.mkForce false;
   };
+
+  home.sessionVariables.TERM = "xterm-256color";
 }
