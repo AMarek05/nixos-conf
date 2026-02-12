@@ -176,7 +176,7 @@
 
       clang.enable = true;
       python.enable = true;
-      zig.enable = true;
+      zig.enable = false;
       go.enable = true;
       bash.enable = true;
 
