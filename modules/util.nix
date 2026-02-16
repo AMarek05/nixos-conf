@@ -48,7 +48,7 @@ in
       gcc
       nodejs
       zig
-      openjdk
+      openjdk25
     ];
 
     programs.btop = {
