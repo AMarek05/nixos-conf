@@ -48,8 +48,12 @@ in
       gcc
       nodejs
       zig
-      openjdk25
     ];
+
+    programs.java = {
+      enable = true;
+      package = pkgs.openjdk25;
+    };
 
     programs.btop = {
       enable = true;
