@@ -35,6 +35,7 @@
       flatpak
       gamemode
       prismlauncher
+      ftb-app
       lutris-free
       heroic
 
