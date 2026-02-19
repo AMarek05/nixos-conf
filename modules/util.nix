@@ -24,7 +24,7 @@ in
       playerctl
       acpi
       jmtpfs
-      wine64
+      wine
 
       nh
       nvd
