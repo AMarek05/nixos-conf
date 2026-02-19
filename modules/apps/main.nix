@@ -50,6 +50,9 @@
     };
 
     programs.firefox.enable = true;
-    programs.zen-browser.enable = true;
+    programs.zen-browser = {
+      enable = true;
+      suppressXdgMigrationWarning = true;
+    };
   };
 }
