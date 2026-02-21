@@ -76,7 +76,7 @@
               boot.kernelParams = [ "i915.enable_dpcd_backlight=3" ];
 
               systemd.tmpfiles.rules = [
-                "w /sys/class/power_supply/BAT1/charge_control_end_threshold - - - - 80"
+                "w /sys/class/power_supply/BAT1/charge_control_end_threshold - - - - 85"
               ];
             }
           ];
