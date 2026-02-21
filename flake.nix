@@ -68,10 +68,16 @@
 
             {
               networking.hostName = nixpkgs.lib.mkForce "nixos-laptop";
+
               boot.loader.grub.enable = nixpkgs.lib.mkForce false;
               boot.loader.systemd-boot.enable = nixpkgs.lib.mkForce true;
               boot.loader.efi.canTouchEfiVariables = nixpkgs.lib.mkForce true;
+
               boot.kernelParams = [ "i915.enable_dpcd_backlight=3" ];
+
+              systemd.tmpfiles.rules = [
+                "w /sys/class/power_supply/BAT1/charge_control_end_threshold - - - - 80"
+              ];
             }
           ];
         };
