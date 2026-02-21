@@ -194,14 +194,16 @@
     fontconfig
 
     # --- X11 / Windowing ---
-    xorg.libX11
-    xorg.libXext
-    xorg.libXrender
-    xorg.libXcursor
-    xorg.libXrandr
-    xorg.libXinerama
-    xorg.libXi
-    xorg.libXScrnSaver
+    libX11
+    libXext
+    libXrender
+    libXcursor
+    libXrandr
+    libXinerama
+    libXi
+    libXScrnSaver
+    libxcb
+    libxcb-cursor
 
     # --- OpenGL & Audio ---
     libglvnd
