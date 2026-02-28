@@ -45,6 +45,13 @@
         size = 24;
       };
 
+      icons = {
+        enable = true;
+        package = pkgs.dracula-icon-theme;
+        dark = "Dracula";
+        light = "Dracula";
+      };
+
       image = "${inputs.self}/store/wallpaper.webp";
 
       fonts = {
