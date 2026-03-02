@@ -54,6 +54,7 @@
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   networking.networkmanager.enable = true; # Easiest to use and most distros use this by default.
+  programs.nm-applet.enable = true;
   systemd.services.NetworkManager-wait-online.enable = false;
 
   services.mullvad-vpn.enable = true;
