@@ -204,6 +204,8 @@
     libXScrnSaver
     libxcb
     libxcb-cursor
+    glew
+    glfw
 
     # --- OpenGL & Audio ---
     libglvnd
