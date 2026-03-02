@@ -174,6 +174,8 @@
     alsa-utils
 
     android-tools
+
+    openssl
   ];
 
   programs.nix-ld.enable = true;
