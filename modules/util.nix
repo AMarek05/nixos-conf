@@ -49,6 +49,7 @@ in
       gcc
       nodejs
       zig
+      R
     ];
 
     programs.java = {
