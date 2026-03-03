@@ -42,6 +42,8 @@
       nautilus
       alacarte
       evince
+
+      rstudio
     ];
 
     gtk = {
