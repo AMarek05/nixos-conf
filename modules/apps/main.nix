@@ -31,6 +31,7 @@
       yazi
 
       mullvad-vpn
+      snx-rs
 
       umu-launcher
       steam
@@ -46,6 +47,7 @@
       evince
 
       rstudio
+      dbeaver-bin
     ];
 
     gtk = {
