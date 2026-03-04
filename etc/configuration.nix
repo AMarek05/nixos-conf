@@ -232,6 +232,8 @@
     enableZshIntegration = true;
   };
 
+  programs.dconf.enable = true;
+
   services.flatpak.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
