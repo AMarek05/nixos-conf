@@ -219,6 +219,8 @@
     ffmpeg
     dbus
     gtk3
+
+    expat
   ];
 
   programs.direnv = {
