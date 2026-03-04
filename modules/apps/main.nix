@@ -16,6 +16,8 @@
 
   config = lib.mkIf config.modules.apps.enable {
     home.packages = with pkgs; [
+      thunderbird
+
       keepassxc
 
       rustlings
