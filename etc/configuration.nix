@@ -221,6 +221,7 @@
     gtk3
 
     expat
+    libxft
   ];
 
   programs.direnv = {
