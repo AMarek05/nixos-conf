@@ -43,6 +43,7 @@ in
       fastfetch
 
       gnumake
+      cmake
       parallel
       shellcheck
       python3
