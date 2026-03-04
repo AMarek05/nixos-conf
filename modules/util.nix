@@ -32,6 +32,7 @@ in
 
       wl-clipboard
       bat
+      imv
       fzf
       fd
       ripgrep
