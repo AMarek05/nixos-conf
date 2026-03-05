@@ -10,6 +10,14 @@
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
+  environment.systemPackages = with pkgs; [
+    (koboldcpp.override {
+      config.cudaSupport = true;
+      cublasSupport = true;
+      cudaArches = [ "sm_120" ];
+    })
+  ];
+
   hardware.nvidia = {
     modesetting.enable = true;
 
