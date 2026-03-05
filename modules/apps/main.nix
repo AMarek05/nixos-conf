@@ -48,6 +48,8 @@
 
       rstudio
       dbeaver-bin
+      onlyoffice-desktopeditors
+      libreoffice-fresh
     ];
 
     gtk = {
