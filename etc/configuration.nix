@@ -5,6 +5,7 @@
 {
   lib,
   pkgs,
+  config,
   ...
 }:
 
@@ -70,6 +71,8 @@
 
     guiAddress = "0.0.0.0:8384";
   };
+
+  services.tailscale.enable = true;
 
   # Set your time zone.
   time.timeZone = "Europe/Warsaw";
@@ -275,6 +278,10 @@
     8000
     8384
   ];
+
+  networking.firewall.trustedInterfaces = [ "tailscale0" ];
+
+  networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
 
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
