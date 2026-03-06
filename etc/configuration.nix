@@ -59,6 +59,18 @@
 
   services.mullvad-vpn.enable = true;
 
+  services.syncthing = {
+    enable = true;
+
+    user = "adam";
+    openDefaultPorts = true;
+
+    dataDir = "/home/adam";
+    configDir = "/home/adam/.config/syncthing";
+
+    guiAddress = "0.0.0.0:8384";
+  };
+
   # Set your time zone.
   time.timeZone = "Europe/Warsaw";
 
@@ -207,13 +219,14 @@
     libXScrnSaver
     libxcb
     libxcb-cursor
-    glew
-    glfw
 
     # --- OpenGL & Audio ---
     libglvnd
     alsa-lib
     pulseaudio
+
+    glew
+    glfw
 
     # --- Video / Extras ---
     ffmpeg
@@ -258,7 +271,11 @@
   };
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 8000 ];
+  networking.firewall.allowedTCPPorts = [
+    8000
+    8384
+  ];
+
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
