@@ -275,7 +275,7 @@
   };
 
   # resolve DNS conflicts
-  services.resolved.enable = true;
+  # services.resolved.enable = true;
 
   # Open ports in the firewall.
   networking.firewall.allowedTCPPorts = [
@@ -283,10 +283,10 @@
     8384
   ];
 
-  networking.firewall.trustedInterfaces = [ "tailscale0" ];
-  networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
-
-  networking.firewall.checkReversePath = "loose";
+  # networking.firewall.trustedInterfaces = [ "tailscale0" ];
+  # networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
+  #
+  # networking.firewall.checkReversePath = "loose";
 
   # networking.firewall.allowedUDPPorts = [ ... ];
   # Or disable the firewall altogether.
