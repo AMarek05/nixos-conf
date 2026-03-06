@@ -72,7 +72,8 @@
     guiAddress = "0.0.0.0:8384";
   };
 
-  services.tailscale.enable = true;
+  # Enable tailscale
+  services.tailscale.enable = false;
 
   # Set your time zone.
   time.timeZone = "Europe/Warsaw";
