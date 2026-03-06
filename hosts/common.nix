@@ -7,6 +7,7 @@
   programs.home-manager.enable = lib.mkForce true;
 
   nixpkgs.config.allowUnfree = true;
+
   home = {
     username = "adam";
     homeDirectory = "/home/adam";
