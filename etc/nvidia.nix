@@ -10,6 +10,15 @@
 
   services.xserver.videoDrivers = [ "nvidia" ];
 
+  environment.sessionVariables = {
+    LIBVA_DRIVER_NAME = "nvidia";
+    XDG_SESSION_TYPE = "wayland";
+    GBM_BACKEND = "nvidia-drm";
+    __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    # Forces Mozilla to use the Wayland EGL backend properly
+    MOZ_ENABLE_WAYLAND = "1";
+  };
+
   environment.systemPackages = with pkgs; [
     (
       (koboldcpp.override {
