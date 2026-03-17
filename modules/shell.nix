@@ -41,6 +41,8 @@
       tt = "tmux";
       tta = "tmux attach";
 
+      up = "nho -u && sleep 3 && nhh";
+
       gs = "git status";
 
       ls = "eza -1   --icons=auto --sort=name --group-directories-first";
