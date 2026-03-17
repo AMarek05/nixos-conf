@@ -40,7 +40,6 @@
       prismlauncher
       ftb-app
       lutris-free
-      heroic
 
       nautilus
       alacarte
