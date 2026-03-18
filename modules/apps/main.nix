@@ -45,7 +45,6 @@
       alacarte
       evince
 
-      rstudio
       dbeaver-bin
       onlyoffice-desktopeditors
       libreoffice-fresh
