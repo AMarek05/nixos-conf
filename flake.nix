@@ -54,6 +54,8 @@
             ./etc/nvidia.nix
             {
               networking.hostName = nixpkgs.lib.mkForce "nixos";
+
+              programs.git.config.safe.directory = "/mnt/Shared/SillyTavern/";
             }
           ];
         };
