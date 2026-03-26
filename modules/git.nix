@@ -25,12 +25,11 @@ in
       signing = {
         key = "/home/adam/.ssh/git";
         signByDefault = true;
-        signer = "ssh";
+        format = "ssh";
       };
 
       settings = {
         gpg.ssh.allowedSignersFile = "/home/adam/.ssh/allowed_signers";
-        gpg.format = "ssh";
         init.defaultBranch = "main";
       };
     };

@@ -53,6 +53,7 @@
     gtk = {
       enable = lib.mkForce true;
       colorScheme = "dark";
+      gtk4.theme = config.gtk.theme;
     };
 
     programs.firefox.enable = true;
