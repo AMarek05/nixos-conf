@@ -106,8 +106,6 @@
 
   systemd.sockets."systemd-userdb".enable = false;
 
-  system.nssModules = lib.mkForce [ pkgs.glibc ];
-
   services.mullvad-vpn.enable = true;
 
   services.syncthing = {
