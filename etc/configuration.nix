@@ -39,14 +39,54 @@
 
   # Use the systemd-boot EFI boot loader.
   # boot.loader.systemd-boot.enable = true;
-  # boot.loader.efi.canTouchEfiVariables = true;
 
-  boot.loader = {
-    grub = {
-      enable = true;
-      device = "nodev";
-      efiSupport = true;
+  boot.loader.efi.canTouchEfiVariables = false;
+  boot.loader.timeout = null;
+
+  boot.loader.grub = {
+    enable = true;
+
+    device = "nodev";
+    efiSupport = true;
+    efiInstallAsRemovable = true;
+
+    default = "saved";
+
+    gfxmodeEfi = "keep";
+    splashImage = null;
+    theme = pkgs.sleek-grub-theme.override {
+      withStyle = "dark";
+      withBanner = "Hello, Adam";
     };
+
+    useOSProber = false;
+    extraEntriesBeforeNixOS = true;
+    extraEntries = ''
+      menuentry "Windows 11" --class windows --class os {
+        insmod part_gpt
+        insmod fat
+        insmod search_fs_uuid
+        insmod chain
+
+        search --fs-uuid --set=root 8826-661B
+        chainloader /EFI/Microsoft/Boot/bootmgfw.efi
+      }
+    '';
+
+    extraPerEntryConfig = ''
+      set gfxpayload=text
+      terminal_output console
+      clear
+    '';
+
+    extraInstallCommands = ''
+      ${pkgs.coreutils}/bin/cat <<'EOF' >> /boot/grub/grub.cfg
+
+      menuentry "UEFI Firmware Settings" --class efi {
+        fwsetup
+      }
+      EOF
+    '';
   };
 
   # Use latest kernel.
