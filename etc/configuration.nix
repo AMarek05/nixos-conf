@@ -101,6 +101,13 @@
   programs.nm-applet.enable = true;
   systemd.services.NetworkManager-wait-online.enable = false;
 
+  systemd.services."systemd-userdb".enable = false;
+  systemd.services."systemd-homed".enable = false;
+
+  systemd.sockets."systemd-userdb".enable = false;
+
+  system.nssModules = lib.mkForce [ pkgs.glibc ];
+
   services.mullvad-vpn.enable = true;
 
   services.syncthing = {
