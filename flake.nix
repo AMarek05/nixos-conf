@@ -54,8 +54,6 @@
             ./etc/nvidia.nix
             {
               networking.hostName = nixpkgs.lib.mkForce "nixos";
-
-              programs.git.config.safe.directory = "/mnt/Shared/SillyTavern/";
             }
           ];
         };
@@ -73,7 +71,7 @@
 
               boot.loader.grub.enable = nixpkgs.lib.mkForce false;
               boot.loader.systemd-boot.enable = nixpkgs.lib.mkForce true;
-              boot.loader.efi.canTouchEfiVariables = nixpkgs.lib.mkForce true;
+              # boot.loader.efi.canTouchEfiVariables = nixpkgs.lib.mkForce true;
 
               boot.kernelParams = [ "i915.enable_dpcd_backlight=3" ];
 
