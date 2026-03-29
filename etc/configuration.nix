@@ -63,6 +63,8 @@
     extraEntriesBeforeNixOS = true;
     extraEntries = ''
       menuentry "Windows 11" --class windows --class os {
+        savedefault
+
         insmod part_gpt
         insmod fat
         insmod search_fs_uuid
