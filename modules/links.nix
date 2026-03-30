@@ -11,8 +11,6 @@ in
     home.file = {
       ".config/starship.toml".source = /. + dotsPath + "/starship/starship.toml";
       ".config/.transient_prompt".source = /. + dotsPath + "/starship/.transient_prompt";
-      # ".config/nvim".source = /. + dotsPath + "/nvim";
-      "Scripts".source = /. + dotsPath + "/Scripts";
     };
   };
 }
