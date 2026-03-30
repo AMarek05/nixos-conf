@@ -41,8 +41,6 @@
       tt = "tmux";
       tta = "tmux attach";
 
-      up = "nho -u && sleep 3 && nhh";
-
       gs = "git status";
 
       ls = "eza -1   --icons=auto --sort=name --group-directories-first";
@@ -56,7 +54,7 @@
 
       nhc = "nh clean all --keep 3 --no-gcroots";
       nhco = "nh clean all --keep 3 --no-gcroots --optimise";
-      nhu = "nh os switch -u && nh home switch -u";
+      nhu = "nho -u && sleep 3 && nhh";
 
       nho = "nh os switch";
       nhh = "nh home switch";
