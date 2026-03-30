@@ -3,6 +3,9 @@
   home.packages = with pkgs; [
     eza
   ];
+
+  imports = [ ./scripts.nix ];
+
   # zsh setup
   programs.zsh = {
     enable = true;
