@@ -151,5 +151,36 @@
       action = "<cmd>UndotreeToggle<CR>";
       desc = "Open [U]ndotree";
     }
+
+    ## FLash
+    {
+      key = "s";
+      mode = [
+        "n"
+        "x"
+        "o"
+      ];
+      action = "<cmd>lua require('flash').jump()<CR>";
+      silent = true;
+      desc = "Flash Jump";
+    }
+    {
+      key = "S";
+      mode = [
+        "n"
+        "x"
+        "o"
+      ];
+      action = "<cmd>lua require('flash').treesitter()<CR>";
+      silent = true;
+      desc = "Flash Treesitter";
+    }
+    {
+      key = "r";
+      mode = "o";
+      action = "<cmd>lua require('flash').remote()<CR>";
+      silent = true;
+      desc = "Remote Flash";
+    }
   ];
 }
