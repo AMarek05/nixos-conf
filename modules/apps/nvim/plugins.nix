@@ -12,6 +12,28 @@
       };
     };
 
+    lazy.plugins."flash.nvim" = {
+      package = pkgs.vimPlugins.flash-nvim;
+      setupModule = "flash";
+
+      lazy = false;
+
+      setupOpts = {
+        modes = {
+          char = {
+            highlight = {
+              backdrop = false;
+            };
+            search = {
+              highlight = {
+                backdrop = false;
+              };
+            };
+          };
+        };
+      };
+    };
+
     statusline.lualine = {
       enable = true;
       setupOpts = {
@@ -54,26 +76,6 @@
         setupOpts = {
           show_guides = true;
           default_direction = "float";
-        };
-      };
-
-      motion = {
-        flash-nvim = {
-          enable = true;
-          setupOpts = {
-            modes = {
-              char = {
-                highlight = {
-                  backdrop = false;
-                };
-                search = {
-                  highlight = {
-                    backdrop = false;
-                  };
-                };
-              };
-            };
-          };
         };
       };
     };
