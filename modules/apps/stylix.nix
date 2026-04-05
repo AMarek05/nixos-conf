@@ -52,8 +52,6 @@
         light = "Dracula";
       };
 
-      image = "${inputs.self}/store/wallpapers/wallpaper.webp";
-
       fonts = {
         monospace = {
           package = pkgs.nerd-fonts.jetbrains-mono;

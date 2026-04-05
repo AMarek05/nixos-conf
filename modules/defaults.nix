@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 {
   imports = [
     ./git.nix
@@ -22,6 +22,7 @@
     links.enable = lib.mkDefault true;
 
     hyprland.enable = lib.mkDefault true;
+    hyprland.caelestia.enable = lib.mkDefault true;
 
     apps = {
       enable = lib.mkDefault true;
