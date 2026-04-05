@@ -1,4 +1,4 @@
-{ lib, nixpkgs, ... }:
+{ lib, ... }:
 {
   imports = [
     ../modules/defaults.nix
