@@ -32,6 +32,11 @@
     nvf = {
       url = "github:notashelf/nvf";
     };
+
+    caelestia-shell = {
+      url = "github:caelestia-dots/shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -122,15 +127,8 @@
                   scroll_factor = 0.3;
                 };
               };
-              programs.ashell.settings.modules.right = nixpkgs.lib.mkForce [
-                "SystemInfo"
-                [
-                  "Clock"
-                  "Privacy"
-                ]
-                "Battery"
-                "Settings"
-              ];
+
+              programs.caelestia.settings.bar.status.showBattery = nixpkgs.lib.mkForce true;
             }
           ];
 
