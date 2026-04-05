@@ -52,7 +52,7 @@
         light = "Dracula";
       };
 
-      image = "${inputs.self}/store/wallpaper.webp";
+      image = "${inputs.self}/store/wallpapers/wallpaper.webp";
 
       fonts = {
         monospace = {
