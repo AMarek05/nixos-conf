@@ -128,8 +128,6 @@
                   scroll_factor = 0.3;
                 };
               };
-
-              programs.caelestia.settings.bar.status.showBattery = nixpkgs.lib.mkForce true;
             }
           ];
 
