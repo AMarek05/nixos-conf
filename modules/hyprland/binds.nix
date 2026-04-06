@@ -22,7 +22,7 @@ in
               # window
               "$mod, M, fullscreen, 1"
               "$mod, F, fullscreen, 0"
-              "$mod, Space, togglefloating,"
+              "$mod Shift, Space, togglefloating,"
 
               # focus
               "Alt, Tab, cyclenext,"
@@ -34,7 +34,7 @@ in
               "Alt, Space, exec, hyprctl switchxkblayout all next"
 
               # apps
-              "$mod, Return, exec, ghostty"
+              "$mod, Space, exec, ghostty -e tmux new-session -A -s main"
               "$mod, B, exec, zen-beta"
               "$mod Shift, B, exec, firefox"
 
@@ -103,7 +103,7 @@ in
         wayland.windowManager.hyprland.settings.bind = [
           "$mod, Escape, exit,"
           "$mod, L, exec, hyprlock"
-          "$mod Control, Return, exec, walker"
+          "$mod, Return, exec, walker"
         ];
       })
 
@@ -111,7 +111,7 @@ in
         wayland.windowManager.hyprland.settings.bind = [
           "$mod, Escape, global, caelestia:powermenu"
           "$mod, L, global, caelestia:lock"
-          "$mod Control, Return, global, caelestia:launcher"
+          "$mod, Return, global, caelestia:launcher"
         ];
       })
     ]
