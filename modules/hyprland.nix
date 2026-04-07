@@ -63,6 +63,13 @@ in
               smart_split = false;
               smart_resizing = false;
             };
+
+            misc = {
+              force_default_wallpaper = 0;
+              disable_hyprland_logo = true;
+              disable_splash_rendering = true;
+              background_color = lib.mkForce "rgb(1a1a1a)";
+            };
           };
         };
       }
