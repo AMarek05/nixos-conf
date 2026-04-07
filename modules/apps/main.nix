@@ -36,7 +36,6 @@
       umu-launcher
       steam
       flatpak
-      gamemode
       prismlauncher
       ftb-app
       lutris-free
