@@ -175,7 +175,8 @@
   };
 
   # Enable CUPS to print documents.
-  services.printing.enable = true;
+
+  programs.gamemode.enable = true;
 
   # Enable sound.
   # services.pulseaudio.enable = true;
