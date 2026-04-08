@@ -30,6 +30,7 @@
 
       targets.gtk.enable = true;
       targets.gnome.enable = true;
+      targets.qt.enable = true;
 
       targets.starship.enable = false;
       targets.firefox.enable = false;
@@ -47,9 +48,9 @@
 
       icons = {
         enable = true;
-        package = pkgs.papirus-icon-theme;
-        dark = "Papirus-Dark";
-        light = "Papirus-Light";
+        package = pkgs.dracula-icon-theme;
+        dark = "Dracula";
+        light = "Dracula";
       };
 
       fonts = {
