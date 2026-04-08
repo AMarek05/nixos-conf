@@ -15,6 +15,7 @@
       NH_FLAKE = "/home/adam/sys";
       EDITOR = "nvim";
       VISUAL = "nvim";
+      QS_ICON_THEME = "Dracula";
     };
   };
 }
