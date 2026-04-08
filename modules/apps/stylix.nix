@@ -28,8 +28,8 @@
       # Change to match about:profiles
       targets.zen-browser.profileNames = [ "adam" ];
 
-      targets.gtk.enable = false;
-      targets.gnome.enable = false;
+      targets.gtk.enable = true;
+      targets.gnome.enable = true;
 
       targets.starship.enable = false;
       targets.firefox.enable = false;
@@ -47,9 +47,9 @@
 
       icons = {
         enable = true;
-        package = pkgs.dracula-icon-theme;
-        dark = "Dracula";
-        light = "Dracula";
+        package = pkgs.papirus-icon-theme;
+        dark = "Papirus-Dark";
+        light = "Papirus-Light";
       };
 
       fonts = {
