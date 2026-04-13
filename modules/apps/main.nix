@@ -30,7 +30,6 @@
 
       yazi
 
-      mullvad-vpn
       snx-rs
 
       umu-launcher

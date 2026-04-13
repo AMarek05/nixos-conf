@@ -26,6 +26,7 @@ in
       acpi
       jmtpfs
       wine
+      winetricks
 
       nh
       nvd
