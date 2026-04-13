@@ -108,7 +108,10 @@
 
   systemd.sockets."systemd-userdb".enable = false;
 
-  services.mullvad-vpn.enable = true;
+  services.mullvad-vpn = {
+    enable = true;
+    package = pkgs.mullvad-vpn;
+  };
 
   services.syncthing = {
     enable = true;
@@ -264,6 +267,16 @@
     android-tools
 
     openssl
+
+    mullvad-vpn
+    (symlinkJoin {
+      name = "mullvad-completions";
+      paths = [ mullvad ];
+      postBuild = ''
+        # Delete the bin directory so the incompatible CLI isn't added to your PATH
+        rm -rf $out/bin
+      '';
+    })
   ];
 
   programs.nix-ld.enable = true;
