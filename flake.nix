@@ -35,8 +35,11 @@
 
     caelestia-shell = {
       url = "github:caelestia-dots/shell";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    openclaw.url = "github:Scout-DJ/openclaw-nix";
+
+    sops-nix.url = "github:Mic92/sops-nix";
   };
 
   outputs =
@@ -44,16 +47,27 @@
       self,
       nixpkgs,
       home-manager,
+      openclaw,
+      sops-nix,
       ...
     }@inputs:
+
+    let
+      sharedModules = [
+        ./etc/configuration.nix
+
+        openclaw.nixosModules.default
+        sops-nix.nixosModules.sops
+      ];
+    in
+
     {
       nixosConfigurations = {
         nixos = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
 
-          modules = [
-            ./etc/configuration.nix
+          modules = sharedModules ++ [
             ./etc/hosts/nixos-hardware.nix
 
             ./etc/nvidia.nix
@@ -66,9 +80,7 @@
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
 
-          modules = [
-            ./etc/configuration.nix
-
+          modules = sharedModules ++ [
             ./etc/hosts/laptop-hardware.nix
 
             {
@@ -91,9 +103,10 @@
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
 
-          modules = [
-            inputs.nixos-wsl.nixosModules.default
+          modules = sharedModules ++ [
             ./etc/configuration-wsl.nix
+
+            inputs.nixos-wsl.nixosModules.default
             {
               networking.hostName = nixpkgs.lib.mkForce "nixos-wsl";
               system.stateVersion = "25.05";
