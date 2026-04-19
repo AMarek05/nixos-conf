@@ -37,9 +37,15 @@
       url = "github:caelestia-dots/shell";
     };
 
-    openclaw.url = "github:Scout-DJ/openclaw-nix";
+    nix-openclaw = {
+      url = "github:openclaw/nix-openclaw";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
-    sops-nix.url = "github:Mic92/sops-nix";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -47,7 +53,7 @@
       self,
       nixpkgs,
       home-manager,
-      openclaw,
+      nix-openclaw,
       sops-nix,
       ...
     }@inputs:
@@ -56,7 +62,9 @@
       sharedModules = [
         ./etc/configuration.nix
 
-        openclaw.nixosModules.default
+        ./etc/openclaw.nix
+
+        nix-openclaw.nixosModules.openclaw-gateway
         sops-nix.nixosModules.sops
       ];
     in
