@@ -63,6 +63,8 @@
       nhh = "nh home switch";
 
       hellfire = "sudo snx-rs -s hellfire.put.poznan.pl -u adam.marek@student.put.poznan.pl -o vpn_Username_Password";
+
+      oclt = "sudo -H -u openclaw openclaw tui";
     };
   };
 
