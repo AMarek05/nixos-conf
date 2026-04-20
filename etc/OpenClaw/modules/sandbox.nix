@@ -18,8 +18,8 @@ in
     # AppArmor profile for additional sandboxing (optional but recommended)
     security.apparmor.policies = lib.mkIf config.security.apparmor.enable {
       openclaw = {
-        enable = true;
-        enforce = true;
+        state = "enforce";
+
         profile = ''
           ${lib.getExe cfg.package} {
             # Basic capabilities
