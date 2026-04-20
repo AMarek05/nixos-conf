@@ -159,9 +159,9 @@ in
   config = {
     services.openclaw = {
       enable = true;
-
-      security.apparmor.enable = lib.mkForce true;
     };
+
+    security.apparmor.enable = true;
 
     nixpkgs.config.permittedInsecurePackages = [
       "openclaw-2026.4.11"
