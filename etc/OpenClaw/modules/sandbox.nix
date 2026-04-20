@@ -12,11 +12,50 @@
 
 let
   cfg = config.services.openclaw;
-  execCfg = cfg.sandboxedExecss;
+  execCfg = cfg.sandboxedExecs;
 
   workspace = cfg.workspace or "/var/lib/openclaw";
 
-  coreutilsBins = builtins.attrNames (builtins.readDir "${pkgs.coreutils}/bin");
+  coreutilsBins = [
+    # File Ops
+    "ls"
+    "cat"
+    "cp"
+    "mv"
+    "rm"
+    "mkdir"
+    "touch"
+    "tee"
+
+    # Text Processing
+    "head"
+    "tail"
+    "wc"
+    "cut"
+    "tr"
+    "sort"
+    "uniq"
+
+    # Path Resolution
+    "pwd"
+    "basename"
+    "dirname"
+    "realpath"
+    "readlink"
+    "stat"
+
+    # Scripting Helpers
+    "echo"
+    "printf"
+    "test"
+    "["
+    "true"
+    "false"
+    "expr"
+    "seq"
+    "sleep"
+    "date"
+  ];
 
   # ── Bubblewrap wrapper builder ─────────────────────────────────────
   mkBwrapWrapper =
@@ -28,7 +67,6 @@ let
         "/etc"
         "/run/current-system"
         "/run/wrappers"
-        "${workspace}/.openclaw"
       ]
       ++ execCfg.extraReadOnlyDirs;
       rwDirs = [
@@ -44,8 +82,13 @@ let
         ++ [
           "--proc /proc"
           "--dev /dev"
+
           "--tmpfs /tmp"
-          "--unshare-all"
+          "--tmpfs ${workspace}/.openclaw"
+
+          "--unshare-user"
+          "--unshare-ipc"
+
           "--die-with-parent"
           "--new-session"
         ]
@@ -64,7 +107,8 @@ let
     name = "openclaw-sandboxed-bins";
     paths =
       (map (name: mkBwrapWrapper name pkgs.coreutils) coreutilsBins)
-      ++ (lib.mapAttrsToList (name: pkg: mkBwrapWrapper name pkg) execCfg.extraBins);
+      ++ (lib.mapAttrsToList (name: pkg: mkBwrapWrapper name pkg) execCfg.extraBins)
+      ++ cfg.tools.packages;
   };
 in
 {
@@ -113,37 +157,40 @@ in
 
     security.apparmor.policies = lib.mkIf config.security.apparmor.enable {
       openclaw = {
-        state = "enforce";
+        state = "complain";
 
         profile = ''
-          ${lib.getExe cfg.package} {
-            # Basic capabilities
-            capability dac_read_search,
-            capability dac_override,
+          #include <tunables/global>
 
+          # Point this directly at the launcher or the package binary
+          ${lib.getExe cfg.package} flags=(attach_disconnected) {
+            #include <abstractions/base>
+            #include <abstractions/nameservice>
 
-            # Network access for API calls
-            network inet stream,
-            network inet6 stream,
-            network unix stream,
+            # Allow the process to execute itself and its sub-processes
+            # while keeping the environment (the 'n' flag is for Nix compatibility)
+            file,
+            capability,
+            network,
 
+            /nix/store/** rmix,
+            
+            # Allow the service to manage its own configuration
+            ${cfg.workspace}/.openclaw/** rwl,
+            ${cfg.workspace}/.openclaw/ rwl,
 
-            # Read access to system files
-            /etc/resolv.conf r,
-            /etc/hosts r,
-            /etc/nsswitch.conf r,
-            /etc/ssl/certs/** r,
-            /nix/store/** r,
-
-            # Full access to workspace
+            # Full access to the rest of the workspace
             ${cfg.workspace}/** rwl,
-            ${cfg.workspace}/workspace/** rwl,
-            ${cfg.workspace}/tools/** rwl,
+            
+            # Allow essential Node.js/V8 devices
+            /dev/urandom r,
+            /dev/null rw,
+            /dev/zero rw,
+            
+            owner @{PROC}/@{pid}/maps r,
+            owner @{PROC}/@{pid}/status r,
 
-            # Deny everything else
-            deny /** rwlx,
-            deny /proc/** rwlx,
-            deny /sys/** rwlx,
+            signal (receive) set=("term"),
           }
         '';
       };
