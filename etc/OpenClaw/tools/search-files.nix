@@ -4,8 +4,6 @@
 # Uses ripgrep for fast, efficient searching.
 
 {
-  config,
-  lib,
   pkgs,
   cfg,
   ...
@@ -113,8 +111,14 @@
         echo "{\"error\": \"Search path outside workspace\"}" >&2
         exit 2
       fi
+
+      if [[ "$resolved" == "$CONFIG_DIR"* ]]; then
+        echo "{\"error\": \"Access denied: AI cannot read system configuration or secrets\"}" >&2
+        return 2
+      fi
+
     else
-      SEARCH_PATH="$WORKSPACE/workspace"
+      SEARCH_PATH="$WORKSPACE"
     fi
 
     # Build search command
@@ -128,6 +132,9 @@
         if [[ "$CASE_SENSITIVE" != true ]]; then
           cmd="$cmd --ignore-case"
         fi
+
+        # Add forced exclusion from .openclaw
+        cmd="$cmd --glob '!.openclaw/**'"
         
         cmd="$cmd --max-count=$MAX_RESULTS_ARG"
         cmd="$cmd -- '$PATTERN' '$SEARCH_PATH'"
@@ -145,7 +152,7 @@
           grep_opts="$grep_opts -i"
         fi
         
-        cmd="find '$SEARCH_PATH' $type_flag 2>/dev/null | grep $grep_opts '$PATTERN' | head -n $MAX_RESULTS_ARG"
+        cmd="find '$SEARCH_PATH' -path '$WORKSPACE/.openclaw' -prune -o $type_flag -print 2>/dev/null | grep $grep_opts '$PATTERN' | head -n $MAX_RESULTS_ARG"
       fi
       
       echo "$cmd"

@@ -120,7 +120,6 @@
         return 2
       fi
 
-      # 2. CRITICAL: Block read access to the config directory
       if [[ "$resolved" == "$CONFIG_DIR"* ]]; then
         echo "{\"error\": \"Access denied: AI cannot read system configuration or secrets\"}" >&2
         return 2

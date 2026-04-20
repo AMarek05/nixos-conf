@@ -4,8 +4,6 @@
 # Includes safety checks to prevent accidental data loss.
 
 {
-  config,
-  lib,
   pkgs,
   cfg,
   ...
@@ -121,7 +119,7 @@
       local path="$1"
       
       for protected in "''${PROTECTED_PATHS[@]}"; do
-        if [[ "$path" == "$protected" ]]; then
+        if [[ "$path" == "$protected" || "$path" == "$protected"/* ]]; then
           return 0
         fi
       done

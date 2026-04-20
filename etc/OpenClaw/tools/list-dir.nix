@@ -4,8 +4,6 @@
 # Returns structured JSON with file metadata.
 
 {
-  config,
-  lib,
   pkgs,
   cfg,
   ...
@@ -45,6 +43,7 @@
     set -euo pipefail
 
     WORKSPACE="${cfg.workspace}"
+    CONFIG_DIR="$WORKSPACE/.openclaw"
     MAX_DEPTH=5
     MAX_ITEMS=1000
 
@@ -104,6 +103,12 @@
       if [[ ! "$resolved" =~ ^"$WORKSPACE"(/|$) ]]; then
         return 2
       fi
+
+      if [[ "$resolved" == "$CONFIG_DIR"* ]]; then
+        echo "{\"error\": \"Access denied: AI cannot read system configuration or secrets\"}" >&2
+        return 2
+      fi
+
       
       echo "$resolved"
     }
@@ -154,6 +159,10 @@
       entries=($(ls -1 "$dir" 2>/dev/null | sort))
       
       for entry in "''${entries[@]}"; do
+        if [[ "$target_path/$entry" == "$WORKSPACE/.openclaw" ]]; then
+            continue
+        fi
+
         ((count++))
         if [[ $count -gt $MAX_ITEMS ]]; then
           echo '    {"warning": "Max items reached, truncating"}'
@@ -238,6 +247,10 @@
         local count=0
         
         for entry in "''${entries[@]}"; do
+          if [[ "$target_path/$entry" == "$WORKSPACE/.openclaw" ]]; then
+            continue
+          fi
+
           ((count++))
           if [[ $count -gt $MAX_ITEMS ]]; then
             echo '    {"warning": "Max items reached, truncating"},'
