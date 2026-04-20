@@ -19,6 +19,7 @@
     coreutils
     file
     jq
+    xxd
   ];
 
   script = ''
@@ -46,10 +47,12 @@
     #   0 - Success
     #   1 - Invalid input or file not found
     #   2 - Permission denied or outside workspace
-
     set -euo pipefail
 
     WORKSPACE="${cfg.workspace}"
+    # Explicitly define the forbidden config directory
+    CONFIG_DIR="$WORKSPACE/.openclaw"
+
     MAX_FILE_SIZE=$((10 * 1024 * 1024))  # 10MB max
     MAX_LINES=10000
     DEFAULT_LINES=1000
@@ -95,25 +98,31 @@
       exit 1
     fi
 
-    # Resolve and validate path
+    # Secure Path Resolution
     resolve_path() {
       local input_path="$1"
-      local resolved
       
       # Handle relative paths
       if [[ "$input_path" != /* ]]; then
         input_path="$WORKSPACE/$input_path"
       fi
       
-      # Resolve to absolute path
-      if [[ ! -e "$input_path" ]]; then
+      # Use realpath -e to ensure the file actually exists and canonicalize it
+      local resolved
+      resolved="$(realpath -e "$input_path" 2>/dev/null)" || {
+        echo "{\"error\": \"File not found: $1\"}" >&2
         return 1
-      fi
+      }
       
-      resolved="$(readlink -f "$input_path")"
-      
-      # Validate it's within workspace
+      # 1. Validate it's within workspace
       if [[ ! "$resolved" =~ ^"$WORKSPACE"(/|$) ]]; then
+        echo "{\"error\": \"Access denied: path outside workspace\"}" >&2
+        return 2
+      fi
+
+      # 2. CRITICAL: Block read access to the config directory
+      if [[ "$resolved" == "$CONFIG_DIR"* ]]; then
+        echo "{\"error\": \"Access denied: AI cannot read system configuration or secrets\"}" >&2
         return 2
       fi
       
@@ -130,14 +139,8 @@
     main() {
       local target_path
       
-      target_path="$(resolve_path "$PATH_ARG")" || {
-        local ret=$?
-        case $ret in
-          1) echo "{\"error\": \"File not found: $PATH_ARG\"}" >&2 ;;
-          2) echo "{\"error\": \"Access denied: path outside workspace\"}" >&2 ;;
-        esac
-        exit 1
-      }
+      # We capture the output of resolve_path. If it fails, it prints JSON to stderr and exits.
+      target_path="$(resolve_path "$PATH_ARG")" || exit 1
       
       # Check if it's a directory
       if [[ -d "$target_path" ]]; then
@@ -160,7 +163,7 @@
       
       case "$ENCODING" in
         auto)
-          if [[ "$mime_type" == text/* ]]; then
+          if [[ "$mime_type" == text/* || "$mime_type" == application/json* ]]; then
             detected_encoding="text"
           else
             detected_encoding="base64"
@@ -196,9 +199,9 @@
           content="$(head -n "$read_lines" "$target_path")"
         fi
         
-        lines_read="$(echo "$content" | wc -l)"
+        lines_read="$(printf '%s\n' "$content" | wc -l)"
 
-        # Build JSON output
+        # Build JSON output safely using jq
         cat <<EOF
     {
       "success": true,
@@ -210,13 +213,13 @@
       "total_lines": $total_lines,
       "lines_read": $lines_read,
       "offset": ''${OFFSET:-0},
-      "content": $(echo "$content" | jq -Rs .)
+      "content": $(printf '%s' "$content" | jq -Rs .)
     }
     EOF
       else
         # Binary encoding
         if [[ "$detected_encoding" == "base64" ]]; then
-          content="$(base64 "$target_path")"
+          content="$(base64 -w 0 "$target_path")"
         else
           content="$(xxd -p "$target_path" | tr -d '\n')"
         fi

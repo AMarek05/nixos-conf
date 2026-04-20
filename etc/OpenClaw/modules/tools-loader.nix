@@ -49,12 +49,18 @@ let
   # We wrap the script to ensure its specific dependencies are in its PATH
   toolPackages = map (
     tool:
+    let
+      innerScript = pkgs.writeScript "${tool.name}-inner" tool.script;
+    in
     pkgs.writeShellScriptBin tool.name ''
-      # Inject tool-specific dependencies into the PATH
+      #!/usr/bin/env bash
+      set -euo pipefail
+      export OPENCLAW_TOOL="${tool.name}"
+      export WORKSPACE="${cfg.workspace}"
       export PATH="${lib.makeBinPath (tool.dependencies or [ ])}:$PATH"
 
-      # Execute the original tool script
-      ${tool.script}
+      # Safely execute the inner script with all arguments passed
+      exec ${innerScript} "$@"
     ''
   ) loadedTools;
 
@@ -70,6 +76,9 @@ in
     # This allows you, the admin, to run tools like `list-dir` or `read-file`
     # directly from your terminal to test them.
     environment.systemPackages = toolPackages;
+
+    # Explose to the module
+    services.openclaw.tools.packages = toolPackages;
 
     # 3. Create symlink for TOOLS.md (agent capabilities documentation)
     systemd.services.openclaw.preStart = lib.mkBefore ''

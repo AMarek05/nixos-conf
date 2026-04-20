@@ -53,8 +53,6 @@
     PROTECTED_PATHS=(
       "$WORKSPACE"
       "$WORKSPACE/.openclaw"
-      "$WORKSPACE/tools"
-      "$WORKSPACE/workspace"
     )
 
     # Parse arguments
