@@ -183,6 +183,9 @@ in
     ];
 
     users.users.adam.extraGroups = [ cfg.group ];
-    environment.systemPackages = [ pkgs.openclaw ];
+    environment.systemPackages = with pkgs; [
+      openclaw
+      ollama-cuda
+    ];
   };
 }
