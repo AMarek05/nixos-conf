@@ -4,6 +4,7 @@
 {
   config,
   lib,
+  pkgs,
   ...
 }:
 
@@ -17,6 +18,7 @@ in
       group = cfg.group;
       home = cfg.workspace;
       description = "OpenClaw AI Gateway service user";
+      shell = pkgs.bash;
 
       # No password login
       hashedPassword = "!";

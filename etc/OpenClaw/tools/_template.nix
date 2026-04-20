@@ -67,7 +67,6 @@
   # Required: The shell script content
   # Use ${cfg.workspace} as a placeholder for the workspace path
   script = ''
-    #!/usr/bin/env bash
     # OpenClaw Tool: my-tool
     # Description: A template tool for OpenClaw
     #

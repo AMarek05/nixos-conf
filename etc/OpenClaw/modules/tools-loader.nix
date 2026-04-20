@@ -20,7 +20,11 @@ let
   basePath = ../../OpenClaw;
   toolsPath = basePath + "/tools";
 
-  basePackages = with pkgs; [ coreutils ];
+  basePackages = with pkgs; [
+    coreutils
+    bash
+    jq
+  ];
 
   # Function to load all tool files
   loadTool =
@@ -109,43 +113,45 @@ let
   toolPackages = map (
     tool:
     let
-      innerScript = pkgs.writeScript "${tool.name}-inner" tool.script;
+      innerScript = pkgs.writeShellScript "${tool.name}-inner" tool.script;
     in
     pkgs.writeShellScriptBin tool.name ''
-      #!/usr/bin/env bash
       set -euo pipefail
       export OPENCLAW_TOOL="${tool.name}"
       export WORKSPACE="${cfg.workspace}"
-      export PATH="${lib.makeBinPath (tool.dependencies or [ ])}"
+      export PATH="${lib.makeBinPath (tool.dependencies or [ ])}:${lib.makeBinPath basePackages}"
 
       # Safely execute the inner script with all arguments passed
       exec ${innerScript} "$@"
     ''
   ) loadedTools;
 
+  openclawLauncher = pkgs.writeShellScript "openclaw-launcher" ''
+    set -euo pipefail
+
+    # Re-hydrate the PATH from nothing
+    export PATH="${lib.makeBinPath (basePackages ++ toolPackages)}"
+
+    # Pass all arguments to the real binary
+    exec ${lib.getExe cfg.package} gateway --verbose "$@"
+  '';
 in
 {
   config = lib.mkIf (cfg.enable && cfg.tools.enable) {
+    systemd.services.openclaw.serviceConfig.ExecStart = lib.mkForce "${openclawLauncher}";
 
-    # 1. Add tools directly to the OpenClaw service PATH
-    # Systemd will expose all binaries in these packages to the service automatically
-    systemd.services.openclaw.path = lib.mkForce (basePackages ++ toolPackages);
+    cfg.extraConfig.tools.exec.pathPrepend = basePackages ++ toolPackages;
 
-    # 2. Add tools to the system environment (Optional, but highly recommended)
-    # This allows you, the admin, to run tools like `list-dir` or `read-file`
-    # directly from your terminal to test them.
-    environment.systemPackages = toolPackages;
-
-    # Explose to the module
     services.openclaw.tools.allowedPackages = toolPackages;
 
-    # 3. Create symlink for TOOLS.md (agent capabilities documentation)
+    environment.systemPackages = toolPackages;
+
     systemd.services.openclaw.preStart = lib.mkBefore ''
       TOOLS_DOC="${cfg.workspace}/TOOLS.md"
 
       # Remove old symlink/file and link the freshly compiled Nix store document
-      rm -f "$TOOLS_DOC"
-      cp "${generatedToolsDoc}" "$TOOLS_DOC" || exit 1
+      ${pkgs.coreutils}/bin/rm -f "$TOOLS_DOC"
+      ${pkgs.coreutils}/bin/cp "${generatedToolsDoc}" "$TOOLS_DOC" || exit 1
 
       echo "Dynamically generated TOOLS.md copied to workspace."
     '';
