@@ -24,6 +24,8 @@ let
   # List of executables
   binNames = builtins.attrNames (builtins.readDir "${sandbox.package}/bin/");
 
+  formattedBinNames = lib.concatMapStringsSep ", " (name: "\`${name}\`") binNames;
+
   # Function to load all tool files
   loadTool =
     file:
@@ -81,7 +83,7 @@ let
 
     To interact with the system, you must use the custom tools defined below via your `exec` capability. **Do not attempt to use shell pipes (`|`), redirections (`>`), or command chaining (`&&`) unless striclty necessary for inline processing.**
 
-    Your allowed executables include: ${binNames}
+    Your allowed executables include: [ ${formattedBinNames} ]
 
     All of these are overwritten to only work in your workspace
 
@@ -133,6 +135,8 @@ in
 {
   config = lib.mkIf (cfg.enable && cfg.tools.enable) {
     environment.systemPackages = toolPackages;
+
+    services.openclaw.tools.packages = toolPackages;
 
     systemd.services.openclaw.preStart = lib.mkBefore ''
       TOOLS_DOC="${cfg.workspace}/TOOLS.md"
