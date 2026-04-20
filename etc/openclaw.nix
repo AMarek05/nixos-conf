@@ -169,7 +169,6 @@ in
       sandboxedExecs.extraBins = {
         "jq" = pkgs.jq.bin;
         "rg" = pkgs.ripgrep;
-        "find" = pkgs.findutils;
         "sed" = pkgs.gnused;
       };
 
