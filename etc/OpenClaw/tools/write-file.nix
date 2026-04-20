@@ -5,8 +5,6 @@
 # Creates parent directories if needed.
 
 {
-  config,
-  lib,
   pkgs,
   cfg,
   ...
@@ -20,6 +18,7 @@
   dependencies = with pkgs; [
     coreutils
     jq
+    xxd
   ];
 
   script = ''
@@ -54,6 +53,8 @@
     set -euo pipefail
 
     WORKSPACE="${cfg.workspace}"
+
+    CONFIG_DIR="$WORKSPACE/.openclaw"
     MAX_FILE_SIZE=$((10 * 1024 * 1024))  # 10MB max
 
     # Parse arguments
@@ -118,7 +119,7 @@
       exit 1
     fi
 
-    # Resolve and validate path
+    # Secure Path Resolution
     resolve_path() {
       local input_path="$1"
       
@@ -127,18 +128,19 @@
         input_path="$WORKSPACE/$input_path"
       fi
       
-      # Canonicalize path (resolve .. and .)
+      # Use realpath -m to securely resolve traversals without needing the file to exist
       local resolved
-      resolved="$(cd "$(dirname "$input_path")" 2>/dev/null && pwd)/$(basename "$input_path")" || {
-        # Directory doesn't exist, manually construct
-        resolved="$input_path"
-      }
+      resolved="$(realpath -m "$input_path")"
       
-      # Normalize the path
-      resolved="$(echo "$resolved" | sed 's#/\./#/#g; s#/[^/]*/\.\./#/#g')"
-      
-      # Validate it's within workspace
+      # 1. Validate it's within workspace
       if [[ ! "$resolved" =~ ^"$WORKSPACE"(/|$) ]]; then
+        echo "{\"error\": \"Access denied: path outside workspace\"}" >&2
+        return 2
+      fi
+
+      # 2. CRITICAL: Validate it is NOT trying to write to .openclaw
+      if [[ "$resolved" == "$CONFIG_DIR"* ]]; then
+        echo "{\"error\": \"Access denied: AI cannot modify OpenClaw configuration files\"}" >&2
         return 2
       fi
       
@@ -148,14 +150,11 @@
     # Main logic
     main() {
       local target_path parent_dir
-      
-      target_path="$(resolve_path "$PATH_ARG")" || {
-        echo "{\"error\": \"Access denied: path outside workspace\"}" >&2
-        exit 2
-      }
-      
+
+      target_path="$(resolve_path "$PATH_ARG")" || exit 2
+
       parent_dir="$(dirname "$target_path")"
-      
+
       # Create parent directories if needed
       if [[ ! -d "$parent_dir" ]]; then
         if [[ "$MKDIR" == true ]]; then
@@ -168,7 +167,7 @@
       
       # Check size limit
       local content_size
-      content_size="$(echo -n "$CONTENT" | wc -c)"
+      content_size="$(printf '%s' "$CONTENT" | wc -c)"
       
       if [[ $content_size -gt $MAX_FILE_SIZE ]]; then
         echo "{\"error\": \"Content too large: $content_size bytes (max $MAX_FILE_SIZE)\"}" >&2
@@ -188,23 +187,23 @@
       case "$ENCODING" in
         text|utf-8)
           if [[ "$APPEND" == true ]]; then
-            echo "$CONTENT" >> "$target_path"
+            printf '%s\n' "$CONTENT" >> "$target_path"
           else
-            echo "$CONTENT" > "$target_path"
+            printf '%s\n' "$CONTENT" > "$target_path"
           fi
           ;;
         base64)
           if [[ "$APPEND" == true ]]; then
-            echo "$CONTENT" | base64 -d >> "$target_path"
+            printf '%s' "$CONTENT" | base64 -d >> "$target_path"
           else
-            echo "$CONTENT" | base64 -d > "$target_path"
+            printf '%s' "$CONTENT" | base64 -d > "$target_path"
           fi
           ;;
         hex)
           if [[ "$APPEND" == true ]]; then
-            echo "$CONTENT" | xxd -r -p >> "$target_path"
+            printf '%s' "$CONTENT" | xxd -r -p >> "$target_path"
           else
-            echo "$CONTENT" | xxd -r -p > "$target_path"
+            printf '%s' "$CONTENT" | xxd -r -p > "$target_path"
           fi
           ;;
         *)
