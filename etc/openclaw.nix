@@ -129,16 +129,16 @@ in
       description = "Environment variables to set for OpenClaw.";
     };
 
+    servicePath = lib.mkOption {
+      type = lib.types.listOf lib.types.pkgs;
+      default = [ cfg.sandboxedExecs.package ];
+      descrpition = "List of packages to be appended to the path and accessible to the systemd";
+    };
+
     # Tools configuration
     tools = {
       enable = lib.mkEnableOption "the OpenClaw tool system" // {
         default = true;
-      };
-
-      allowedPackages = lib.mkOption {
-        type = lib.types.listOf lib.types.package;
-        default = [ ];
-        description = "List of packages to be dynamically added to the allowList";
       };
 
       toolsStore = lib.mkOption {
@@ -159,6 +159,12 @@ in
   config = {
     services.openclaw = {
       enable = true;
+
+      sandboxedExecs.extraBins = {
+        "jq" = pkgs.jq;
+        "rg" = pkgs.ripgrep;
+        "find" = pkgs.findutils;
+      };
     };
 
     security.apparmor.enable = true;
