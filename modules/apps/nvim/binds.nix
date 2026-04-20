@@ -138,10 +138,42 @@
       desc = "Open Oil";
     }
     {
-      key = "<leader>o";
+      key = "<leader>oo";
       mode = [ "n" ];
       action = "<cmd>Oil --float<CR>";
-      desc = "Open [O]il floating window";
+      desc = "[O]pen [O]il floating window";
+    }
+
+    ## Overseer
+    {
+      key = "<leader>or";
+      mode = [ "n" ];
+      action = "<cmd>OverseerRun<CR>";
+      desc = "Run task";
+    }
+    {
+      key = "<leader>ot";
+      mode = [ "n" ];
+      action = "<cmd>OverseerToggle<CR>";
+      desc = "Toggle task list";
+    }
+    {
+      key = "<leader>oc";
+      mode = [ "n" ];
+      action = "<cmd>OverseerRunCmd<CR>";
+      desc = "Run command";
+    }
+    {
+      key = "<leader>oq";
+      mode = [ "n" ];
+      action = "<cmd>OverseerQuickAction<CR>";
+      desc = "Quick Action";
+    }
+    {
+      key = "<leader>oi";
+      mode = [ "n" ];
+      action = "<cmd>OverseerInfo<CR>";
+      desc = "Overseer Info";
     }
 
     ## Undotree

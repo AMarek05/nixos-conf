@@ -34,6 +34,22 @@
       };
     };
 
+    lazy.plugins."overseer.nvim" = {
+      package = pkgs.vimPlugins.overseer-nvim;
+      setupModule = "overseer";
+
+      setupOpts = {
+        strategy = "terminal";
+        templates = [ "builtin" ];
+        task_list = {
+          direction = "bottom";
+          min_height = 10;
+          max_height = 20;
+          default_detail = 1;
+        };
+      };
+    };
+
     statusline.lualine = {
       enable = true;
       setupOpts = {
