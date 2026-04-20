@@ -130,9 +130,9 @@ in
     };
 
     servicePath = lib.mkOption {
-      type = lib.types.listOf lib.types.pkgs;
+      type = lib.types.listOf lib.types.package;
       default = [ cfg.sandboxedExecs.package ];
-      descrpition = "List of packages to be appended to the path and accessible to the systemd";
+      description = "List of packages to be appended to the path and accessible to the systemd service";
     };
 
     # Tools configuration
@@ -145,6 +145,12 @@ in
         type = lib.types.path;
         default = cfg.workspace + "/tools";
         description = "Path where pending tools are stored.";
+      };
+
+      packages = lib.mkOption {
+        type = lib.types.listOf lib.types.package;
+        default = [ ];
+        description = "Custom-built packages for and by the agent";
       };
     };
 
@@ -161,10 +167,13 @@ in
       enable = true;
 
       sandboxedExecs.extraBins = {
-        "jq" = pkgs.jq;
+        "jq" = pkgs.jq.bin;
         "rg" = pkgs.ripgrep;
         "find" = pkgs.findutils;
+        "sed" = pkgs.gnused;
       };
+
+      servicePath = with pkgs; [ bash ];
     };
 
     security.apparmor.enable = true;
