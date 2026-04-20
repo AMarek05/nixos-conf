@@ -135,6 +135,12 @@ in
         default = true;
       };
 
+      allowedPackages = lib.mkOption {
+        type = lib.types.listOf lib.types.package;
+        default = [ ];
+        description = "List of packages to be dynamically added to the allowList";
+      };
+
       toolsStore = lib.mkOption {
         type = lib.types.path;
         default = cfg.workspace + "/tools";
@@ -151,7 +157,11 @@ in
   };
 
   config = {
-    services.openclaw.enable = lib.mkDefault true;
+    services.openclaw = {
+      enable = true;
+
+      security.apparmor.enable = lib.mkForce true;
+    };
 
     nixpkgs.config.permittedInsecurePackages = [
       "openclaw-2026.4.11"
