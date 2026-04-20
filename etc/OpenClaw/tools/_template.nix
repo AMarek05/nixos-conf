@@ -23,21 +23,39 @@
 # Alternatively, use the forge-tool tool to create tools interactively!
 
 {
-  config,
-  lib,
   pkgs,
   cfg,
 }:
 
 {
   # Required: Tool name (becomes the filename)
-  name = "my-tool";
+  name = "my-example-tool";
 
   # Required: Human-readable description
   description = "A template tool for OpenClaw";
 
   # Optional: File permissions (default: 0750)
   permissions = "0750";
+
+  usage = "_template [arguments]";
+
+  arguments = [
+    {
+      name = "arg1";
+      desc = "Example first argument (path)";
+      default = "required";
+    }
+    {
+      name = "arg2";
+      desc = "Example second argument (options)";
+      default = "-";
+    }
+  ];
+
+  examples = [
+    "_template workspace/test-file.txt"
+    "cat _template.nix > my-new-tool.nix"
+  ];
 
   # Optional: Dependencies from nixpkgs
   dependencies = with pkgs; [
@@ -46,7 +64,7 @@
   ];
 
   # Required: The shell script content
-  # Use {workspace} as a placeholder for the workspace path
+  # Use ${cfg.workspace} as a placeholder for the workspace path
   script = ''
     #!/usr/bin/env bash
     # OpenClaw Tool: my-tool

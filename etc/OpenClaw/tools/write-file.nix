@@ -12,8 +12,51 @@
 
 {
   name = "write-file";
-  description = "Write a file to the OpenClaw workspace";
+  description = "Create, overwrite, or append to files in the workspace.";
   permissions = "0750";
+
+  usage = "write-file <path> <content> [--append] [--mkdir] [--mode=MODE] [--encoding=ENC]";
+
+  arguments = [
+    {
+      name = "path";
+      desc = "Relative or absolute path to file (required)";
+      default = "-";
+    }
+    {
+      name = "content";
+      desc = "Text or encoded payload to write (required)";
+      default = "-";
+    }
+    {
+      name = "--append";
+      desc = "Append content to the end of the file";
+      default = "false";
+    }
+    {
+      name = "--mkdir";
+      desc = "Automatically create missing parent directories";
+      default = "false";
+    }
+    {
+      name = "--mode";
+      desc = "Octal file permissions (e.g., 0755)";
+      default = "0644";
+    }
+    {
+      name = "--encoding";
+      desc = "Payload encoding: text, base64, hex";
+      default = "text";
+    }
+  ];
+
+  examples = [
+    "write-file my-project/TODO.md \"- [ ] Setup database\\n- [ ] Write API\" --mkdir"
+    "write-file my-project/script.sh \"#!/usr/bin/env bash\\necho hi\" --mode=0755"
+    "write-file my-project/TODO.md \"- [ ] Setup database\\n- [ ] Write API\" --mkdir"
+    "write-file my-project/TODO.md \"- [x] Setup database\\n\" --append"
+    "write-file my-project/script.sh \"#!/usr/bin/env bash\\necho hi\" --mode=0755"
+  ];
 
   dependencies = with pkgs; [
     coreutils
