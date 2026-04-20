@@ -19,7 +19,6 @@ let
 
   basePath = ../../OpenClaw;
   toolsPath = basePath + "/tools";
-  docsPath = basePath + "/TOOLS.md";
 
   # Function to load all tool files
   loadTool =
@@ -38,7 +37,7 @@ let
     let
       dir = toolsPath;
       files = builtins.attrNames (builtins.readDir dir);
-      nixFiles = builtins.filter (f: lib.hasSuffix ".nix" f && f != "_template.nix") files;
+      nixFiles = builtins.filter (f: lib.hasSuffix ".nix" f) files;
     in
     map (f: dir + "/${f}") nixFiles;
 
