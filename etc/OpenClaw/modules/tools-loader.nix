@@ -85,7 +85,7 @@ let
 
     Your allowed executables include: [ ${formattedBinNames} ]
 
-    All of these are overwritten to only work in your workspace
+    All of these are overwritten to only work in your workspace. If at any point you are confused about the usage, refer to this file, to the docs below.
 
     ---
 
