@@ -23,12 +23,13 @@ let
         ask = "on-miss";
         askFallback = "deny";
         autoAllowSkills = false;
+        allowlist = [ "${sandbox.package}/bin/*" ];
       };
 
       agents.main = {
         security = "allowlist";
         ask = "on-miss";
-        allowlist = map (path: { pattern = path; }) absolutePaths;
+        allowlist = [ "${sandbox.package}/bin/*" ];
       };
     }
   );
@@ -53,11 +54,17 @@ let
     ];
 
     tools.exec = {
-      host = "auto";
+      host = "gateway";
 
-      pathPrepend = absolutePaths;
+      security = "allowlist";
+      ask = "on-miss";
+
+      pathPrepend = [ "${sandbox.package}/bin" ];
 
       strictInlineEval = true; # Forces prompts for python/node inline evals
+
+      safeBinTrustedDirs = [ "${sandbox.package}/bin" ];
+
       safeBins = [
         "cut"
         "uniq"
@@ -67,6 +74,34 @@ let
         "wc"
         "jq"
       ];
+
+      safeBinProfiles = {
+        jq = {
+          minPositional = 0;
+          maxPositional = 0;
+          allowedValueFlags = [
+            "-n"
+            "-e"
+            "-r"
+            "-j"
+            "-c"
+            "-M"
+            "-C"
+            "-S"
+            "-R"
+            "-s"
+          ];
+          deniedFlags = [
+            "-f"
+            "--from-file"
+            "--argfile"
+            "--rawfile"
+            "--slurpfile"
+            "-L"
+            "--library-path"
+          ];
+        };
+      };
     };
 
     env.shellEnv.enabled = false;
@@ -94,15 +129,19 @@ in
       after = [
         "network-online.target"
         "sops-nix.service"
+        "apparmor.service"
       ];
+      requires = [ "apparmor.service" ];
       wants = [
         "network-online.target"
         "sops-nix.service"
       ];
 
+      path = cfg.servicePath;
+
       environment = {
         SHELL = "${pkgs.bash}/bin/bash";
-        OPENCLAW_LOAD_SHELL_ENV = 0;
+        OPENCLAW_LOAD_SHELL_ENV = "0";
       }
       // cfg.environment;
 
@@ -112,15 +151,11 @@ in
         Group = cfg.group;
         WorkingDirectory = cfg.workspace;
 
-        # Load environment variables from SOPS template
-        EnvironmentFile = config.sops.templates."openclaw-env".path;
-        UnsetEnvironment = "PATH";
-
         ExecStart = lib.mkForce "${openclawLauncher}";
         ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
 
         # Hardening & Memory
-        ProtectSystem = "strict";
+        ProtectSystem = "full";
         ProtectControlGroups = true;
         ProtectKernelModules = true;
         ProtectKernelTunables = true;
@@ -141,6 +176,7 @@ in
         ];
 
         ReadWritePaths = [ cfg.workspace ];
+
         RestrictAddressFamilies = [
           "AF_INET"
           "AF_INET6"
@@ -185,28 +221,23 @@ in
 
             APPROVALS_FILE="${cfg.workspace}/.openclaw/exec-approvals.json"
 
-        # 1. SMART MERGE: Exec Approvals
-            if [ -f "$APPROVALS_FILE" ]; then
-              # If the file exists, we preserve the socket token AND any tools you manually 
-              # clicked "Always Allow" for in the UI, while enforcing the Nix baseline tools.
-                ${pkgs.jq}/bin/jq --slurpfile base ${baselineApprovals} '
-                # Start with the Nix baseline
-                $base[0] * . | 
-                # But force the socket to be whatever was already in the file
-                .socket = .socket | 
-                # And safely combine the Nix allowlist with any UI-added allowlist items, removing duplicates
-                .agents.main.allowlist = (
-                  ($base[0].agents.main.allowlist // []) + (.agents.main.allowlist // []) 
-                  | unique_by(.pattern)
-                )
-              ' "$APPROVALS_FILE" > "$APPROVALS_FILE.tmp"
-              
-              ${pkgs.coreutils}/bin/mv "$APPROVALS_FILE.tmp" "$APPROVALS_FILE"
-              else
-                # If it's a completely fresh install, just copy the baseline. 
-                # OpenClaw will generate its own socket block upon startup.
-                ${pkgs.coreutils}/bin/cp --no-preserve=mode,ownership ${baselineApprovals} "$APPROVALS_FILE"
-              fi
+        if [ -f "$APPROVALS_FILE" ]; then
+          # We merge the Nix baseline with the existing file.
+          # We map all entries to objects to fix the "Cannot index string" error.
+          ${pkgs.jq}/bin/jq --slurpfile base ${baselineApprovals} '
+            ($base[0] * .) | 
+            .agents.main.allowlist = (
+              (($base[0].agents.main.allowlist // []) + (.agents.main.allowlist // [])) 
+              | map(if type == "string" then {pattern: .} else . end) 
+              | unique_by(.pattern)
+            )
+          ' "$APPROVALS_FILE" > "$APPROVALS_FILE.tmp"
+          
+          ${pkgs.coreutils}/bin/mv "$APPROVALS_FILE.tmp" "$APPROVALS_FILE"
+        else
+          # Fresh install: just copy the baseline
+          ${pkgs.coreutils}/bin/cp --no-preserve=mode,ownership ${baselineApprovals} "$APPROVALS_FILE"
+        fi
 
             ${pkgs.coreutils}/bin/chmod 600 ${cfg.workspace}/.openclaw/openclaw.json
             ${pkgs.coreutils}/bin/chmod 600 ${cfg.workspace}/.openclaw/agents/main/agent/auth-profiles.json
