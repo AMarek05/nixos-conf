@@ -20,6 +20,8 @@ let
   basePath = ../../OpenClaw;
   toolsPath = basePath + "/tools";
 
+  basePackages = with pkgs; [ coreutils ];
+
   # Function to load all tool files
   loadTool =
     file:
@@ -75,7 +77,7 @@ let
 
     You are an OpenClaw AI agent running in a highly secure, NixOS-based sandboxed environment. Your native `fs.read`, `fs.write`, and `shell` capabilities have been disabled for security. 
 
-    To interact with the system, you must use the custom tools defined below via your `exec` capability. **Do not attempt to use shell pipes (`|`), redirections (`>`), or command chaining (`&&`).**
+    To interact with the system, you must use the custom tools defined below via your `exec` capability. **Do not attempt to use shell pipes (`|`), redirections (`>`), or command chaining (`&&`) unless striclty necessary for inline processing.**
 
     ---
 
@@ -95,8 +97,9 @@ let
 
     ## 🛑 Critical System Constraints
     1. **Output Format:** All tools return strict JSON.
-    2. **Path Constraints:** Tools run `realpath`. Using `../` to break out will result in `Access denied`.
+    2. **Path Constraints:** Tools run `realpath`. Using `../` to break out will result in `Access denied`. Accessing ~/.openclaw is disallowed, it contains secrets and configs.
     3. **Execution:** You do not have a shell. You must use the tools listed above via your native `exec`.
+    4. **exec limitation:** Each exec of most of the ordinary coreutils will need approval. Prioritise the above as much as possible.
   '';
 
   generatedToolsDoc = pkgs.writeText "TOOLS.md" fullMarkdown;
@@ -113,7 +116,7 @@ let
       set -euo pipefail
       export OPENCLAW_TOOL="${tool.name}"
       export WORKSPACE="${cfg.workspace}"
-      export PATH="${lib.makeBinPath (tool.dependencies or [ ])}:$PATH"
+      export PATH="${lib.makeBinPath (tool.dependencies or [ ])}"
 
       # Safely execute the inner script with all arguments passed
       exec ${innerScript} "$@"
@@ -126,7 +129,7 @@ in
 
     # 1. Add tools directly to the OpenClaw service PATH
     # Systemd will expose all binaries in these packages to the service automatically
-    systemd.services.openclaw.path = toolPackages;
+    systemd.services.openclaw.path = lib.mkForce (basePackages ++ toolPackages);
 
     # 2. Add tools to the system environment (Optional, but highly recommended)
     # This allows you, the admin, to run tools like `list-dir` or `read-file`
@@ -134,17 +137,17 @@ in
     environment.systemPackages = toolPackages;
 
     # Explose to the module
-    services.openclaw.tools.packages = toolPackages;
+    services.openclaw.tools.allowedPackages = toolPackages;
 
     # 3. Create symlink for TOOLS.md (agent capabilities documentation)
     systemd.services.openclaw.preStart = lib.mkBefore ''
-      TOOLS_DOC_LINK="${cfg.workspace}/TOOLS.md"
+      TOOLS_DOC="${cfg.workspace}/TOOLS.md"
 
       # Remove old symlink/file and link the freshly compiled Nix store document
-      rm -f "$TOOLS_DOC_LINK"
-      ln -sf "${generatedToolsDoc}" "$TOOLS_DOC_LINK"
+      rm -f "$TOOLS_DOC"
+      cp "${generatedToolsDoc}" "$TOOLS_DOC" || exit 1
 
-      echo "Dynamically generated TOOLS.md symlinked to workspace."
+      echo "Dynamically generated TOOLS.md copied to workspace."
     '';
 
     # Environment variables for tools and documentation

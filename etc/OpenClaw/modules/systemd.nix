@@ -22,7 +22,7 @@ let
       agents.main = {
         security = "allowlist";
         ask = "on-miss";
-        allowlist = map (pkg: { pattern = "${lib.getExe pkg}"; }) cfg.tools.packages;
+        allowlist = map (pkg: { pattern = "${lib.getExe pkg}"; }) cfg.tools.allowedPackages;
       };
     }
   );
@@ -37,13 +37,14 @@ let
 
     agents.defaults.workspace = cfg.workspace;
 
-    agents.defaults.capabilities = {
-      exec = true;
-      shell = false;
-
-      "fs.write" = false; # Disables OpenClaw's native read and write tool
-      "fs.read" = false;
-    };
+    tools.deny = [
+      "group:fs"
+      "group:ui"
+      "group:media"
+      "shell"
+      "cron"
+      "code_execution"
+    ];
 
     tools.exec = {
       host = "auto";
@@ -188,15 +189,5 @@ in
       '';
 
     };
-
-    networking.firewall.extraCommands = lib.mkIf config.networking.firewall.enable ''
-      iptables -A nixos-fw -p tcp --dport ${toString cfg.port} -s 127.0.0.1 -j ACCEPT
-
-      iptables -A nixos-fw -p tcp --dport ${toString cfg.port} -j DROP
-
-      ip6tables -A nixos-fw -p tcp --dport ${toString cfg.port} -s ::1 -j ACCEPT
-
-      ip6tables -A nixos-fw -p tcp --dport ${toString cfg.port} -j DROP
-    '';
   };
 }
