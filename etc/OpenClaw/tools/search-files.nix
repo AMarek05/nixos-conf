@@ -14,6 +14,47 @@
   description = "Search for files or content in the OpenClaw workspace";
   permissions = "0750";
 
+  usage = "search-files <pattern> [--path=DIR] [--type=TYPE] [--max-results=N] [--content|-c] [--case-sensitive|-s]";
+
+  arguments = [
+    {
+      name = "pattern";
+      desc = "Search pattern (regex supported)";
+      default = "required";
+    }
+    {
+      name = "--path";
+      desc = "Directory to search";
+      default = "workspace root";
+    }
+    {
+      name = "--type";
+      desc = "Filter by type: file, dir, symlink";
+      default = "all";
+    }
+    {
+      name = "--max-results";
+      desc = "Maximum results to return";
+      default = "100";
+    }
+    {
+      name = "--content";
+      desc = "Search inside file contents instead of filenames";
+      default = "false";
+    }
+    {
+      name = "--case-sensitive";
+      desc = "Enforce case matching";
+      default = "false";
+    }
+  ];
+
+  examples = [
+    "search-files \"\\.txt$\""
+    "search-files \"error\" --content --path=logs"
+    "search-files \"TODO\" --content --max-results=50"
+  ];
+
   dependencies = with pkgs; [
     coreutils
     ripgrep

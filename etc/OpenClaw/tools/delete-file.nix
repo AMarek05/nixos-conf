@@ -14,6 +14,31 @@
   description = "Delete files or directories in the OpenClaw workspace";
   permissions = "0750";
 
+  usage = "delete-file <path> [--recursive|-r] [--force|-f]";
+
+  arguments = [
+    {
+      name = "path";
+      desc = "Path to file or directory to delete";
+      default = "required";
+    }
+    {
+      name = "--recursive";
+      desc = "Required to delete directories";
+      default = "false";
+    }
+    {
+      name = "--force";
+      desc = "Skip confirmation warnings";
+      default = "false";
+    }
+  ];
+
+  examples = [
+    "delete-file my-project/old-script.py"
+    "delete-file abandoned-project --recursive"
+  ];
+
   dependencies = with pkgs; [
     coreutils
     jq
@@ -129,24 +154,24 @@
     # Main logic
     main() {
       local target_path
-      
+
       target_path="$(resolve_path "$PATH_ARG")" || {
         echo "{\"error\": \"Access denied: path outside workspace\"}" >&2
         exit 2
       }
-      
+
       # Check if exists
       if [[ ! -e "$target_path" ]]; then
         echo "{\"error\": \"Path does not exist: $PATH_ARG\"}" >&2
         exit 1
       fi
-      
+
       # Check if protected
       if is_protected "$target_path"; then
         echo "{\"error\": \"Cannot delete protected path: $PATH_ARG\"}" >&2
         exit 2
       fi
-      
+
       # Determine type
       local type="file"
       if [[ -d "$target_path" ]]; then

@@ -5,8 +5,6 @@
 # Generated tools are placed in the tools directory for user review.
 
 {
-  config,
-  lib,
   pkgs,
   cfg,
   ...
@@ -16,6 +14,35 @@
   name = "forge-tool";
   description = "Create a new OpenClaw tool definition";
   permissions = "0750";
+
+  usage = "forge-tool <name> <script> [--description=DESC] [--dependencies=DEPS] [--auto-approve]";
+
+  arguments = [
+    {
+      name = "name";
+      desc = "Tool name (lowercase, alphanumeric, dashes)";
+      default = "required";
+    }
+    {
+      name = "script";
+      desc = "Raw bash script content";
+      default = "required";
+    }
+    {
+      name = "--description";
+      desc = "Brief explanation of what the tool does";
+      default = "-";
+    }
+    {
+      name = "--dependencies";
+      desc = "Comma-separated list of nixpkgs required (e.g., jq,curl)";
+      default = "-";
+    }
+  ];
+
+  examples = [
+    "forge-tool format-json 'cat \"$1\" | jq .' --description=\"Format JSON\" --dependencies=\"jq\""
+  ];
 
   dependencies = with pkgs; [
     coreutils
@@ -28,7 +55,7 @@
         # Description: Create a new OpenClaw tool definition
         #
         # Usage: forge-tool <name> <script> [--description=DESC] [--dependencies=DEPS]
-        
+
         set -euo pipefail
 
         WORKSPACE="${cfg.workspace}"
