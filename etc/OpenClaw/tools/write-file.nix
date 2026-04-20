@@ -1,9 +1,8 @@
 # OpenClaw Tool: write-file
 #
 # Safely writes a file within the OpenClaw workspace.
+# Content is read from stdin to avoid shell interpretation issues.
 # Supports text and binary content with various encodings.
-# Creates parent directories if needed.
-
 {
   pkgs,
   cfg,
@@ -12,21 +11,14 @@
 
 {
   name = "write-file";
-  description = "Create, overwrite, or append to files in the workspace.";
+  description = "Create, overwrite, or append to files in the workspace. Content is read from stdin.";
   permissions = "0750";
-
-  usage = "write-file <path> <content> [--append] [--mkdir] [--mode=MODE] [--encoding=ENC]";
-
+  usage = "write-file <path> [--append] [--mkdir] [--mode=MODE] [--encoding=ENC] < content";
   arguments = [
     {
       name = "path";
       desc = "Relative or absolute path to file (required)";
-      default = "-";
-    }
-    {
-      name = "content";
-      desc = "Text or encoded payload to write (required)";
-      default = "-";
+      default = "required";
     }
     {
       name = "--append";
@@ -45,17 +37,15 @@
     }
     {
       name = "--encoding";
-      desc = "Payload encoding: text, base64, hex";
+      desc = "Payload encoding on stdin: text, base64, hex";
       default = "text";
     }
   ];
-
   examples = [
-    "write-file my-project/TODO.md \"- [ ] Setup database\\n- [ ] Write API\" --mkdir"
-    "write-file my-project/script.sh \"#!/usr/bin/env bash\\necho hi\" --mode=0755"
-    "write-file my-project/TODO.md \"- [ ] Setup database\\n- [ ] Write API\" --mkdir"
-    "write-file my-project/TODO.md \"- [x] Setup database\\n\" --append"
-    "write-file my-project/script.sh \"#!/usr/bin/env bash\\necho hi\" --mode=0755"
+    "write-file my-project/TODO.md < todo.txt"
+    "echo '{\"key\": \"value\"}' | write-file data.json --mkdir"
+    "cat script.sh | write-file my-project/script.sh --mode=0755"
+    "base64-content | write-file image.png --encoding=base64"
   ];
 
   dependencies = with pkgs; [
@@ -66,86 +56,47 @@
 
   script = ''
     #!/usr/bin/env bash
-    # OpenClaw Tool: write-file
-    # Description: Write a file to the OpenClaw workspace
+    # OpenClaw Tool: write-file (v2 — stdin-based)
     #
-    # Usage: write-file <path> [content|--stdin] [--encoding=ENC] [--append] [--mode=MODE]
+    # DESIGN CHANGE FROM v1:
+    #   Content is read from stdin, NOT passed as a positional argument.
+    #   This avoids ALL shell interpretation issues with file content.
+    #   The old design ($2 as content) broke on any content containing
+    #   $, backticks, !, unbalanced quotes, Nix '''' escapes, etc.
     #
-    # Arguments:
-    #   path           - Relative or absolute path to file (within workspace)
-    #   content        - Content to write (or use --stdin)
-    #   --encoding=ENC - Content encoding (text, base64, hex)
-    #   --append       - Append to file instead of overwriting
-    #   --mode=MODE    - File permissions (default: 0644)
-    #   --mkdir        - Create parent directories if needed
-    #
-    # Output:
-    #   JSON object with result or error
-    #
-    # Examples:
-    #   write-file workspace/hello.txt "Hello, World!"
-    #   write-file workspace/data.json '{"key": "value"}'
-    #   write-file workspace/binary.bin "SGVsbG8=" --encoding=base64
-    #   echo "content" | write-file workspace/file.txt --stdin
-    #
-    # Exit codes:
-    #   0 - Success
-    #   1 - Invalid input
-    #   2 - Permission denied or outside workspace
+    # Usage: write-file <path> [options] < content
+    #   echo "hello" | write-file greeting.txt
+    #   write-file notes.txt < notes.txt
+    #   base64-data | write-file binary.bin --encoding=base64
 
     set -euo pipefail
 
     WORKSPACE="${cfg.workspace}"
-
     CONFIG_DIR="$WORKSPACE/.openclaw"
-    MAX_FILE_SIZE=$((10 * 1024 * 1024))  # 10MB max
+    MAX_FILE_SIZE=$((10 * 1024 * 1024)) # 10MiB
 
     # Parse arguments
     PATH_ARG=""
-    CONTENT=""
     ENCODING="text"
     APPEND=false
     MODE="0644"
-    USE_STDIN=false
     MKDIR=false
 
     while [[ $# -gt 0 ]]; do
       case "$1" in
-        --stdin)
-          USE_STDIN=true
-          shift
-          ;;
-        --encoding=*)
-          ENCODING="''${1#*=}"
-          shift
-          ;;
-        --append)
-          APPEND=true
-          shift
-          ;;
-        --mode=*)
-          MODE="''${1#*=}"
-          shift
-          ;;
-        --mkdir)
-          MKDIR=true
-          shift
-          ;;
-        -*)
-          echo "{\"error\": \"Unknown option: $1\"}" >&2
-          exit 1
-          ;;
+        --encoding=*)  ENCODING="''${1#*=}"; shift ;;
+        --append)      APPEND=true; shift ;;
+        --mode=*)      MODE="''${1#*=}"; shift ;;
+        --mkdir)       MKDIR=true; shift ;;
+        -*)            echo "{\"error\": \"Unknown option: $1\"}" >&2; exit 1 ;;
         *)
           if [[ -z "$PATH_ARG" ]]; then
             PATH_ARG="$1"
-            shift
-          elif [[ -z "$CONTENT" ]]; then
-            CONTENT="$1"
-            shift
           else
             echo "{\"error\": \"Unexpected argument: $1\"}" >&2
             exit 1
           fi
+          shift
           ;;
       esac
     done
@@ -155,46 +106,56 @@
       exit 1
     fi
 
-    if [[ "$USE_STDIN" == true ]]; then
-      CONTENT="$(cat)"
-    elif [[ -z "$CONTENT" ]]; then
-      echo '{"error": "Missing required argument: content (or use --stdin)"}' >&2
+    # Validate --mode is a proper octal
+    if [[ ! "$MODE" =~ ^[0-7]{3,4}$ ]]; then
+      echo "{\"error\": \"Invalid mode: $MODE (must be 3-4 digit octal, e.g., 0644)\"}" >&2
       exit 1
     fi
+
+    # Validate --encoding
+    case "$ENCODING" in
+      text|utf-8|base64|hex) ;; # valid
+      *) echo "{\"error\": \"Unknown encoding: $ENCODING (valid: text, base64, hex)\"}" >&2; exit 1 ;;
+    esac
 
     # Secure Path Resolution
     resolve_path() {
       local input_path="$1"
-      
-      # Handle relative paths
+
       if [[ "$input_path" != /* ]]; then
         input_path="$WORKSPACE/$input_path"
       fi
-      
-      # Use realpath -m to securely resolve traversals without needing the file to exist
+
       local resolved
       resolved="$(realpath -m "$input_path")"
-      
-      # 1. Validate it's within workspace
+
       if [[ ! "$resolved" =~ ^"$WORKSPACE"(/|$) ]]; then
-        echo "{\"error\": \"Access denied: path outside workspace\"}" >&2
         return 2
       fi
 
-      # 2. CRITICAL: Validate it is NOT trying to write to .openclaw
       if [[ "$resolved" == "$CONFIG_DIR"* ]]; then
-        echo "{\"error\": \"Access denied: AI cannot modify OpenClaw configuration files\"}" >&2
-        return 2
+        return 3
       fi
-      
+
       echo "$resolved"
+    }
+
+    # JSON-escape a string
+    json_escape() {
+      printf '%s' "$1" | jq -Rs .
     }
 
     # Main logic
     main() {
       local target_path parent_dir
-
-      target_path="$(resolve_path "$PATH_ARG")" || exit 2
+      target_path="$(resolve_path "$PATH_ARG")" || {
+        local ret=$?
+        case $ret in
+          2) echo '{"error": "Access denied: path outside workspace"}' >&2 ;;
+          3) echo '{"error": "Access denied: cannot modify .openclaw configuration"}' >&2 ;;
+        esac
+        exit "$ret"
+      }
 
       parent_dir="$(dirname "$target_path")"
 
@@ -203,21 +164,30 @@
         if [[ "$MKDIR" == true ]]; then
           mkdir -p "$parent_dir"
         else
-          echo "{\"error\": \"Parent directory does not exist: $parent_dir (use --mkdir to create)\"}" >&2
+          echo "{\"error\": \"Parent directory does not exist (use --mkdir to create)\"}" >&2
           exit 1
         fi
       fi
-      
-      # Check size limit
-      local content_size
-      content_size="$(printf '%s' "$CONTENT" | wc -c)"
-      
-      if [[ $content_size -gt $MAX_FILE_SIZE ]]; then
-        echo "{\"error\": \"Content too large: $content_size bytes (max $MAX_FILE_SIZE)\"}" >&2
-        exit 1
-      fi
-      
-      # Decode and write content
+
+      # Read content from stdin into a temp file
+      # This avoids ANY shell interpretation of the content
+      local tmpfile
+      tmpfile="$(mktemp)"
+
+      # Read stdin with size limit
+      local content_size=0
+      local chunk_size=4096
+      while IFS= read -r -n "$chunk_size" chunk; do
+        printf '%s' "$chunk" >> "$tmpfile"
+        content_size=$((content_size + ''${#chunk}))
+        if [[ $content_size -gt $MAX_FILE_SIZE ]]; then
+          rm -f "$tmpfile"
+          echo "{\"error\": \"Content too large: exceeds $MAX_FILE_SIZE bytes\"}" >&2
+          exit 1
+        fi
+      done
+
+      # Decode if needed, writing to final target
       local write_op="created"
       if [[ -f "$target_path" ]]; then
         if [[ "$APPEND" == true ]]; then
@@ -226,54 +196,67 @@
           write_op="overwritten"
         fi
       fi
-      
+
+      local redirect=">"
+      if [[ "$APPEND" == true ]]; then
+        redirect=">>"
+      fi
+
       case "$ENCODING" in
         text|utf-8)
+          # Write raw from temp file — no printf, no trailing newline injection
           if [[ "$APPEND" == true ]]; then
-            printf '%s\n' "$CONTENT" >> "$target_path"
+            cat "$tmpfile" >> "$target_path"
           else
-            printf '%s\n' "$CONTENT" > "$target_path"
+            cat "$tmpfile" > "$target_path"
           fi
           ;;
         base64)
           if [[ "$APPEND" == true ]]; then
-            printf '%s' "$CONTENT" | base64 -d >> "$target_path"
+            base64 -d < "$tmpfile" >> "$target_path"
           else
-            printf '%s' "$CONTENT" | base64 -d > "$target_path"
+            base64 -d < "$tmpfile" > "$target_path"
           fi
           ;;
         hex)
           if [[ "$APPEND" == true ]]; then
-            printf '%s' "$CONTENT" | xxd -r -p >> "$target_path"
+            xxd -r -p < "$tmpfile" >> "$target_path"
           else
-            printf '%s' "$CONTENT" | xxd -r -p > "$target_path"
+            xxd -r -p < "$tmpfile" > "$target_path"
           fi
           ;;
-        *)
-          echo "{\"error\": \"Unknown encoding: $ENCODING\"}" >&2
-          exit 1
-          ;;
       esac
-      
-      # Set file permissions
+
+      # Cleanup temp file
+      rm -f "$tmpfile"
+
+      # Set permissions
       chmod "$MODE" "$target_path"
-      
+
       # Get final file info
-      local final_size final_mode
+      local final_size final_mode escaped_path escaped_rel
       final_size="$(stat -c%s "$target_path")"
       final_mode="$(stat -c%a "$target_path")"
-      
-      cat <<EOF
-    {
-      "success": true,
-      "path": "$target_path",
-      "relative_path": "$PATH_ARG",
-      "operation": "$write_op",
-      "encoding": "$ENCODING",
-      "size_bytes": $final_size,
-      "mode": "$final_mode"
-    }
-    EOF
+      escaped_path="$(json_escape "$target_path")"
+      escaped_rel="$(json_escape "$PATH_ARG")"
+
+      # Build output JSON safely with jq
+      jq -n \
+        --arg path "$target_path" \
+        --arg rel "$PATH_ARG" \
+        --arg op "$write_op" \
+        --arg enc "$ENCODING" \
+        --argjson size "$final_size" \
+        --arg mode "$final_mode" \
+        '{
+          success: true,
+          path: $path,
+          relative_path: $rel,
+          operation: $op,
+          encoding: $enc,
+          size_bytes: $size,
+          mode: $mode
+        }'
     }
 
     main
