@@ -8,6 +8,12 @@
 
 let
   cfg = config.services.openclaw;
+  sandbox = cfg.sandboxedExecs;
+
+  # List of executables
+  binNames = builtins.attrNames (builtins.readDir "${sandbox.package}/bin/");
+  # List of string paths to each executable
+  absolutePaths = map (name: "${sandbox.package}/bin/${name}") binNames;
 
   baselineApprovals = pkgs.writeText "exec-approvals.json" (
     builtins.toJSON {
@@ -22,12 +28,12 @@ let
       agents.main = {
         security = "allowlist";
         ask = "on-miss";
-        allowlist = map (pkg: { pattern = "${lib.getExe pkg}"; }) cfg.tools.allowedPackages;
+        allowlist = map (path: { pattern = path; }) absolutePaths;
       };
     }
   );
 
-  # Base JSON structure (Secret-free)
+  # Base JSON structure
   baseConfig = {
     gateway = {
       mode = "local";
@@ -48,6 +54,9 @@ let
 
     tools.exec = {
       host = "auto";
+
+      pathPrepend = absolutePaths;
+
       strictInlineEval = true; # Forces prompts for python/node inline evals
       safeBins = [
         "cut"
@@ -65,6 +74,17 @@ let
 
   finalConfig = lib.recursiveUpdate baseConfig cfg.extraConfig;
   openclawConfigFile = pkgs.writeText "openclaw.json" (builtins.toJSON finalConfig);
+
+  openclawLauncher = pkgs.writeShellScript "openclaw-launcher" ''
+    set -euo pipefail
+
+    # Re-hydrate the PATH from nothing
+    export PATH="${lib.makeBinPath (cfg.servicePath)}"
+
+    # Pass all arguments to the real binary
+    exec ${lib.getExe cfg.package} gateway --verbose "$@"
+  '';
+
 in
 {
   config = lib.mkIf cfg.enable {
@@ -86,11 +106,6 @@ in
       }
       // cfg.environment;
 
-      path = [
-        pkgs.bash
-        pkgs.coreutils
-      ];
-
       serviceConfig = {
         Type = "simple";
         User = cfg.user;
@@ -101,7 +116,7 @@ in
         EnvironmentFile = config.sops.templates."openclaw-env".path;
         UnsetEnvironment = "PATH";
 
-        ExecStart = "${lib.getExe cfg.package} gateway";
+        ExecStart = lib.mkForce "${openclawLauncher}";
         ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
 
         # Hardening & Memory

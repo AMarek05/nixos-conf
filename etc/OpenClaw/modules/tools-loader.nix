@@ -16,15 +16,13 @@
 
 let
   cfg = config.services.openclaw;
+  sandbox = cfg.sandboxedExecs;
 
   basePath = ../../OpenClaw;
   toolsPath = basePath + "/tools";
 
-  basePackages = with pkgs; [
-    coreutils
-    bash
-    jq
-  ];
+  # List of executables
+  binNames = builtins.attrNames (builtins.readDir "${sandbox.package}/bin/");
 
   # Function to load all tool files
   loadTool =
@@ -83,6 +81,10 @@ let
 
     To interact with the system, you must use the custom tools defined below via your `exec` capability. **Do not attempt to use shell pipes (`|`), redirections (`>`), or command chaining (`&&`) unless striclty necessary for inline processing.**
 
+    Your allowed executables include: ${binNames}
+
+    All of these are overwritten to only work in your workspace
+
     ---
 
     ## Workspace Structure & Mandatory Workflow
@@ -95,15 +97,15 @@ let
 
     ---
 
-    ## 🛠️ Core Tools
+    ## Core Tools
 
     ${compiledToolsMarkdown}
 
-    ## 🛑 Critical System Constraints
+    ## Critical System Constraints
     1. **Output Format:** All tools return strict JSON.
     2. **Path Constraints:** Tools run `realpath`. Using `../` to break out will result in `Access denied`. Accessing ~/.openclaw is disallowed, it contains secrets and configs.
     3. **Execution:** You do not have a shell. You must use the tools listed above via your native `exec`.
-    4. **exec limitation:** Each exec of most of the ordinary coreutils will need approval. Prioritise the above as much as possible.
+    4. **exec limitation:** Each exec of an executable not on the above lists will need approval. Prioritise them as much as possible.
   '';
 
   generatedToolsDoc = pkgs.writeText "TOOLS.md" fullMarkdown;
@@ -114,36 +116,22 @@ let
     tool:
     let
       innerScript = pkgs.writeShellScript "${tool.name}-inner" tool.script;
+      scriptPath = tool.dependencies ++ cfg.servicePath;
     in
     pkgs.writeShellScriptBin tool.name ''
       set -euo pipefail
       export OPENCLAW_TOOL="${tool.name}"
       export WORKSPACE="${cfg.workspace}"
-      export PATH="${lib.makeBinPath (tool.dependencies or [ ])}:${lib.makeBinPath basePackages}"
+      export PATH="${lib.makeBinPath scriptPath}"
 
       # Safely execute the inner script with all arguments passed
       exec ${innerScript} "$@"
     ''
   ) loadedTools;
 
-  openclawLauncher = pkgs.writeShellScript "openclaw-launcher" ''
-    set -euo pipefail
-
-    # Re-hydrate the PATH from nothing
-    export PATH="${lib.makeBinPath (basePackages ++ toolPackages)}"
-
-    # Pass all arguments to the real binary
-    exec ${lib.getExe cfg.package} gateway --verbose "$@"
-  '';
 in
 {
   config = lib.mkIf (cfg.enable && cfg.tools.enable) {
-    systemd.services.openclaw.serviceConfig.ExecStart = lib.mkForce "${openclawLauncher}";
-
-    cfg.extraConfig.tools.exec.pathPrepend = basePackages ++ toolPackages;
-
-    services.openclaw.tools.allowedPackages = toolPackages;
-
     environment.systemPackages = toolPackages;
 
     systemd.services.openclaw.preStart = lib.mkBefore ''
