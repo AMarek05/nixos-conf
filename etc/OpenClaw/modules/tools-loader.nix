@@ -45,6 +45,63 @@ let
   # Load all tools
   loadedTools = map loadTool toolFiles;
 
+  generateToolDoc = tool: ''
+    ### `${tool.name}`
+    ${tool.description}
+
+    **Usage:**
+    `${tool.usage or "${tool.name} [arguments]"}`
+
+    ${lib.optionalString ((builtins.hasAttr "arguments" tool) && (tool.arguments != [ ])) ''
+      | Argument | Description | Default |
+      |----------|-------------|---------|
+      ${lib.concatMapStringsSep "\n" (
+        a: "| `${a.name}` | ${a.desc} | `${a.default or "-"}` |"
+      ) tool.arguments}
+    ''}
+
+    ${lib.optionalString ((builtins.hasAttr "examples" tool) && (tool.examples != [ ])) ''
+      **Examples:**
+      ${lib.concatMapStringsSep "\n" (ex: "* `${ex}`") tool.examples}
+    ''}
+    ---
+  '';
+
+  # Compile all tool docs into one string
+  compiledToolsMarkdown = lib.concatMapStringsSep "\n" generateToolDoc loadedTools;
+
+  # The final static wrapper text
+  fullMarkdown = ''
+    # OpenClaw Tool Capabilities & Workspace Guide
+
+    You are an OpenClaw AI agent running in a highly secure, NixOS-based sandboxed environment. Your native `fs.read`, `fs.write`, and `shell` capabilities have been disabled for security. 
+
+    To interact with the system, you must use the custom tools defined below via your `exec` capability. **Do not attempt to use shell pipes (`|`), redirections (`>`), or command chaining (`&&`).**
+
+    ---
+
+    ## Workspace Structure & Mandatory Workflow
+    Your isolated environment is located at `/var/lib/openclaw`. You cannot read, write, or access files outside of this boundary.
+
+    ### Mandatory Project Workflow
+    1. **Project Isolation:** Every new task must be placed in its own dedicated subdirectory.
+    2. **The TODO.md Requirement:** **Before** editing code, you MUST create a `TODO.md` file in the root of that project.
+    3. **Continuous Updates:** Update the `TODO.md` file as work progresses to maintain your state.
+
+    ---
+
+    ## 🛠️ Core Tools
+
+    ${compiledToolsMarkdown}
+
+    ## 🛑 Critical System Constraints
+    1. **Output Format:** All tools return strict JSON.
+    2. **Path Constraints:** Tools run `realpath`. Using `../` to break out will result in `Access denied`.
+    3. **Execution:** You do not have a shell. You must use the tools listed above via your native `exec`.
+  '';
+
+  generatedToolsDoc = pkgs.writeText "TOOLS.md" fullMarkdown;
+
   # Package each tool into an immutable Nix store binary
   # We wrap the script to ensure its specific dependencies are in its PATH
   toolPackages = map (
@@ -82,19 +139,13 @@ in
 
     # 3. Create symlink for TOOLS.md (agent capabilities documentation)
     systemd.services.openclaw.preStart = lib.mkBefore ''
-      TOOLS_DOC="${docsPath}"
       TOOLS_DOC_LINK="${cfg.workspace}/TOOLS.md"
 
-      if [[ -f "$TOOLS_DOC" ]]; then
-        # Remove existing link/file if present
-        rm -f "$TOOLS_DOC_LINK"
-        # Create symlink pointing to the flake's TOOLS.md
-        ln -sf "$TOOLS_DOC" "$TOOLS_DOC_LINK"
+      # Remove old symlink/file and link the freshly compiled Nix store document
+      rm -f "$TOOLS_DOC_LINK"
+      ln -sf "${generatedToolsDoc}" "$TOOLS_DOC_LINK"
 
-        echo "TOOLS.md symlinked to $TOOLS_DOC"
-      else
-        echo "Warning: TOOLS.md not found at $TOOLS_DOC"
-      fi
+      echo "Dynamically generated TOOLS.md symlinked to workspace."
     '';
 
     # Environment variables for tools and documentation
