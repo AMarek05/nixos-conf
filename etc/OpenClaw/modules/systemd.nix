@@ -59,6 +59,8 @@ let
         "jq"
       ];
     };
+
+    env.shellEnv.enabled = false;
   };
 
   finalConfig = lib.recursiveUpdate baseConfig cfg.extraConfig;
@@ -78,6 +80,17 @@ in
         "sops-nix.service"
       ];
 
+      environment = {
+        SHELL = "${pkgs.bash}/bin/bash";
+        OPENCLAW_LOAD_SHELL_ENV = 0;
+      }
+      // cfg.environment;
+
+      path = [
+        pkgs.bash
+        pkgs.coreutils
+      ];
+
       serviceConfig = {
         Type = "simple";
         User = cfg.user;
@@ -86,6 +99,7 @@ in
 
         # Load environment variables from SOPS template
         EnvironmentFile = config.sops.templates."openclaw-env".path;
+        UnsetEnvironment = "PATH";
 
         ExecStart = "${lib.getExe cfg.package} gateway";
         ExecReload = "${pkgs.coreutils}/bin/kill -HUP $MAINPID";
@@ -122,7 +136,7 @@ in
 
       preStart = ''
           # Ensure Agent directory exists
-            mkdir -p ${cfg.workspace}/.openclaw/agents/main/agent
+            ${pkgs.coreutils}/bin/mkdir -p ${cfg.workspace}/.openclaw/agents/main/agent
 
             # 1. Sync Global Config & Preserve Token
             if [ -f ${cfg.workspace}/.openclaw/openclaw.json ]; then
@@ -131,7 +145,7 @@ in
                 'if $tok != "null" then .gateway.auth.token = $tok else . end' \
                 ${openclawConfigFile} > ${cfg.workspace}/.openclaw/openclaw.json
             else
-              cp ${openclawConfigFile} ${cfg.workspace}/.openclaw/openclaw.json
+              ${pkgs.coreutils}/bin/cp ${openclawConfigFile} ${cfg.workspace}/.openclaw/openclaw.json
             fi
 
             # 2. Inject Secrets into Agent Auth Profile (NESTED PROFILES SCHEMA)
@@ -172,16 +186,16 @@ in
                 )
               ' "$APPROVALS_FILE" > "$APPROVALS_FILE.tmp"
               
-              mv "$APPROVALS_FILE.tmp" "$APPROVALS_FILE"
+              ${pkgs.coreutils}/bin/mv "$APPROVALS_FILE.tmp" "$APPROVALS_FILE"
               else
                 # If it's a completely fresh install, just copy the baseline. 
                 # OpenClaw will generate its own socket block upon startup.
-                cp --no-preserve=mode,ownership ${baselineApprovals} "$APPROVALS_FILE"
+                ${pkgs.coreutils}/bin/cp --no-preserve=mode,ownership ${baselineApprovals} "$APPROVALS_FILE"
               fi
 
-            chmod 600 ${cfg.workspace}/.openclaw/openclaw.json
-            chmod 600 ${cfg.workspace}/.openclaw/agents/main/agent/auth-profiles.json
-            chmod 600 "$APPROVALS_FILE"
+            ${pkgs.coreutils}/bin/chmod 600 ${cfg.workspace}/.openclaw/openclaw.json
+            ${pkgs.coreutils}/bin/chmod 600 ${cfg.workspace}/.openclaw/agents/main/agent/auth-profiles.json
+            ${pkgs.coreutils}/bin/chmod 600 "$APPROVALS_FILE"
       '';
 
       postStop = ''
