@@ -15,6 +15,7 @@
   };
 
   config = lib.mkIf config.modules.apps.stylix.enable {
+    gtk.gtk4.theme = lib.mkForce null;
 
     stylix = {
       enable = true;

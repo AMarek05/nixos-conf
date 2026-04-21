@@ -180,13 +180,12 @@ in
     security.apparmor.enable = true;
 
     nixpkgs.config.permittedInsecurePackages = [
-      "openclaw-2026.4.11"
+      "openclaw-2026.4.12"
     ];
 
     users.users.adam.extraGroups = [ cfg.group ];
     environment.systemPackages = with pkgs; [
       openclaw
-      ollama-cuda
     ];
   };
 }

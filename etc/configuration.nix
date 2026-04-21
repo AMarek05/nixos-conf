@@ -278,6 +278,8 @@
         rm -rf $out/bin
       '';
     })
+
+    steam-run-free
   ];
 
   programs.nix-ld.enable = true;
