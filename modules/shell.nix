@@ -57,7 +57,9 @@
 
       nhc = "nh clean all --keep 3 --no-gcroots";
       nhco = "nh clean all --keep 3 --no-gcroots --optimise";
+
       nhu = "nho -u && sleep 3 && nhh";
+      nhr = "nho && sleep 3 && nhh";
 
       nho = "nh os switch";
       nhh = "nh home switch";
