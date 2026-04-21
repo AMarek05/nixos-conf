@@ -170,6 +170,8 @@ in
         "jq" = pkgs.jq.bin;
         "rg" = pkgs.ripgrep;
         "sed" = pkgs.gnused;
+        "xxd" = pkgs.xxd;
+        "patch" = pkgs.patch;
       };
 
       servicePath = with pkgs; [ bash ];
