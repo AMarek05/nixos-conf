@@ -78,224 +78,110 @@
     MAX_DEPTH=5
     MAX_ITEMS=1000
 
-    # Parse arguments
-    DIR_PATH=""
+    DIR_PATH="."
     RECURSIVE=false
     SHOW_HIDDEN=false
     LONG_FORMAT=false
 
     while [[ $# -gt 0 ]]; do
       case "$1" in
-        --recursive|-r)
-          RECURSIVE=true
-          shift
-          ;;
-        --hidden|-a)
-          SHOW_HIDDEN=true
-          shift
-          ;;
-        --long|-l)
-          LONG_FORMAT=true
-          shift
-          ;;
+        --recursive|-r) RECURSIVE=true ;;
+        --hidden|-a) SHOW_HIDDEN=true ;;
+        --long|-l) LONG_FORMAT=true ;;
         -*)
-          echo "{\"error\": \"Unknown option: $1\"}" >&2
+          echo '{"error":"Unknown option"}' >&2
           exit 1
           ;;
         *)
-          if [[ -z "$DIR_PATH" ]]; then
-            DIR_PATH="$1"
-          else
-            echo "{\"error\": \"Unexpected argument: $1\"}" >&2
-            exit 1
-          fi
-          shift
+          DIR_PATH="$1"
           ;;
       esac
+      shift
     done
 
-    # Default to workspace root
-    DIR_PATH="''${DIR_PATH:-.}"
+    [[ "$DIR_PATH" != /* ]] && DIR_PATH="$WORKSPACE/$DIR_PATH"
+    TARGET="$(readlink -f "$DIR_PATH")"
 
-    # Resolve and validate path
-    resolve_path() {
-      local input_path="$1"
-      
-      # Handle relative paths
-      if [[ "$input_path" != /* ]]; then
-        input_path="$WORKSPACE/$input_path"
-      fi
-      
-      # Canonicalize
-      local resolved
-      resolved="$(readlink -f "$input_path")"
-      
-      # Validate it's within workspace
-      if [[ ! "$resolved" =~ ^"$WORKSPACE"(/|$) ]]; then
-        return 2
-      fi
+    if [[ ! "$TARGET" =~ ^"$WORKSPACE"(/|$) ]]; then
+      echo '{"error":"Access denied"}' >&2
+      exit 2
+    fi
 
-      if [[ "$resolved" == "$CONFIG_DIR"* ]]; then
-        echo "{\"error\": \"Access denied: AI cannot read system configuration or secrets\"}" >&2
-        return 2
-      fi
+    if [[ "$TARGET" == "$CONFIG_DIR"* ]]; then
+      echo '{"error":"Access denied"}' >&2
+      exit 2
+    fi
 
-      
-      echo "$resolved"
-    }
+    [[ ! -d "$TARGET" ]] && { echo '{"error":"Not a directory"}' >&2; exit 1; }
 
-    # Format single file entry
-    format_entry() {
+    RESULTS="[]"
+    COUNT=0
+
+    add_entry() {
       local path="$1"
       local name
       name="$(basename "$path")"
-      
-      # Skip hidden files unless requested
-      if [[ "$SHOW_HIDDEN" != true && "$name" == .* ]]; then
-        return
+
+      [[ "$SHOW_HIDDEN" != true && "$name" == .* ]] && return
+
+      if [[ -d "$path" ]]; then type="directory"
+      elif [[ -L "$path" ]]; then type="symlink"
+      else type="file"
       fi
-      
-      local type="file"
-      if [[ -d "$path" ]]; then
-        type="directory"
-      elif [[ -L "$path" ]]; then
-        type="symlink"
-      fi
-      
+
       if [[ "$LONG_FORMAT" == true ]]; then
-        local size mtime mode
-        size="$(stat -c%s "$path" 2>/dev/null || echo "0")"
-        mtime="$(stat -c%Y "$path" 2>/dev/null || echo "0")"
-        mode="$(stat -c%a "$path" 2>/dev/null || echo "000")"
-        
-        printf '    {"name": "%s", "type": "%s", "size": %s, "mtime": %s, "mode": "%s"}' \
-          "$name" "$type" "$size" "$mtime" "$mode"
+        size=$(stat -c%s "$path" 2>/dev/null || echo 0)
+        mtime=$(stat -c%Y "$path" 2>/dev/null || echo 0)
+        mode=$(stat -c%a "$path" 2>/dev/null || echo 000)
+
+        entry=$(jq -n \
+          --arg n "$name" \
+          --arg t "$type" \
+          --argjson s "$size" \
+          --argjson m "$mtime" \
+          --arg mo "$mode" \
+          '{name:$n,type:$t,size:$s,mtime:$m,mode:$mo}')
       else
-        printf '    {"name": "%s", "type": "%s"}' "$name" "$type"
+        entry=$(jq -n --arg n "$name" --arg t "$type" '{name:$n,type:$t}')
       fi
+
+      RESULTS=$(echo "$RESULTS" | jq --argjson e "$entry" '. += [$e]')
     }
 
-    # List directory recursively
-    list_recursive() {
-      local dir="$1"
-      local depth="''${2:-0}"
-      local prefix="''${3:-""}"
-      local count=0
-      
-      if [[ $depth -gt $MAX_DEPTH ]]; then
-        return
-      fi
-      
-      local entries
-      entries=($(ls -1 "$dir" 2>/dev/null | sort))
-      
-      for entry in "''${entries[@]}"; do
-        if [[ "$target_path/$entry" == "$WORKSPACE/.openclaw" ]]; then
-            continue
-        fi
+    if [[ "$RECURSIVE" == true ]]; then
+      while IFS= read -r path; do
+        count=$((count+1))
+        [[ $COUNT -gt $MAX_ITEMS ]] && break
 
-        ((count++))
-        if [[ $count -gt $MAX_ITEMS ]]; then
-          echo '    {"warning": "Max items reached, truncating"}'
-          return
-        fi
-        
-        local full_path="$dir/$entry"
-        local rel_path="''${prefix}''${entry}"
-        
-        # Skip hidden unless requested
-        if [[ "$SHOW_HIDDEN" != true && "$entry" == .* ]]; then
-          continue
-        fi
-        
-        local type="file"
-        if [[ -d "$full_path" ]]; then
-          type="directory"
-        elif [[ -L "$full_path" ]]; then
-          type="symlink"
-        fi
-        
-        if [[ "$LONG_FORMAT" == true ]]; then
-          local size mtime mode
-          size="$(stat -c%s "$full_path" 2>/dev/null || echo "0")"
-          mtime="$(stat -c%Y "$full_path" 2>/dev/null || echo "0")"
-          mode="$(stat -c%a "$full_path" 2>/dev/null || echo "000")"
-          
-          printf '    {"name": "%s", "path": "%s", "type": "%s", "size": %s, "mtime": %s, "mode": "%s"}' \
-            "$entry" "$rel_path" "$type" "$size" "$mtime" "$mode"
-        else
-          printf '    {"name": "%s", "path": "%s", "type": "%s"}' \
-            "$entry" "$rel_path" "$type"
-        fi
-        echo ","
-        
-        if [[ -d "$full_path" && ! -L "$full_path" ]]; then
-          list_recursive "$full_path" $((depth + 1)) "$rel_path/"
-        fi
-      done
-    }
+        [[ "$path" == "$CONFIG_DIR"* ]] && continue
+        add_entry "$path"
 
-    # Main logic
-    main() {
-      local target_path
-      
-      target_path="$(resolve_path "$DIR_PATH")" || {
-        local ret=$?
-        case $ret in
-          2) echo "{\"error\": \"Access denied: path outside workspace\"}" >&2 ;;
-          *) echo "{\"error\": \"Directory not found: $DIR_PATH\"}" >&2 ;;
-        esac
-        exit 1
-      }
-      
-      if [[ ! -d "$target_path" ]]; then
-        echo "{\"error\": \"Not a directory: $DIR_PATH\"}" >&2
-        exit 1
-      fi
-      
-      local rel_path="''${target_path#$WORKSPACE}"
-      [[ -z "$rel_path" ]] && rel_path="/"
-      
-      if [[ "$RECURSIVE" == true ]]; then
-        echo "{"
-        echo "  \"success\": true,"
-        echo "  \"path\": \"$target_path\","
-        echo "  \"relative_path\": \"$rel_path\","
-        echo "  \"recursive\": true,"
-        echo "  \"entries\": ["
-        list_recursive "$target_path"
-        echo "  ]"
-        echo "}"
-      else
-        echo "{"
-        echo "  \"success\": true,"
-        echo "  \"path\": \"$target_path\","
-        echo "  \"relative_path\": \"$rel_path\","
-        echo "  \"entries\": ["
-        
-        local entries
-        entries=($(ls -1 "$target_path" 2>/dev/null | sort))
-        local count=0
-        
-        for entry in "''${entries[@]}"; do
-          if [[ "$target_path/$entry" == "$WORKSPACE/.openclaw" ]]; then
-            continue
-          fi
+      done < <(find "$TARGET" -mindepth 1 -maxdepth "$MAX_DEPTH")
+    else
+      while IFS= read -r path; do
+        count=$((count+1))
+        [[ $COUNT -gt $MAX_ITEMS ]] && break
 
-          ((count++))
-          if [[ $count -gt $MAX_ITEMS ]]; then
-            echo '    {"warning": "Max items reached, truncating"},'
-            break
-          fi
-          format_entry "$target_path/$entry"
-          echo ","
-        done
-        
-        echo "  ]"
-        echo "}"
-      fi
-    }
+        [[ "$path" == "$CONFIG_DIR"* ]] && continue
+        add_entry "$path"
 
-    main
+      done < <(find "$TARGET" -mindepth 1 -maxdepth 1)
+    fi
+
+    REL="''${TARGET#$WORKSPACE}"
+    [[ -z "$REL" ]] && REL="/"
+
+    jq -n \
+      --arg path "$TARGET" \
+      --arg rel "$REL" \
+      --argjson recursive "$RECURSIVE" \
+      --argjson results "$RESULTS" \
+      '{
+        success: true,
+        path: $path,
+        relative_path: $rel,
+        recursive: $recursive,
+        entries: $results
+      }'
   '';
 }
