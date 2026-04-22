@@ -142,6 +142,12 @@ in
       environment = {
         SHELL = "${pkgs.bash}/bin/bash";
         OPENCLAW_LOAD_SHELL_ENV = "0";
+
+        GIT_AUTHOR_NAME = "Claw";
+        GIT_AUTHOR_EMAIL = "278452676+amarek-machine@users.noreply.github.com";
+        GIT_COMITTER_NAME = "Claw";
+        GIT_COMITTER_EMAIL = "278452676+amarek-machine@users.noreply.github.com";
+
       }
       // cfg.environment;
 
