@@ -5,6 +5,7 @@
 {
   pkgs,
   cfg,
+  config,
   ...
 }:
 
@@ -23,8 +24,8 @@
       default = "required";
     }
     {
-      name = "target";
-      desc = "Contextual argument depending on operation";
+      name = "--repo";
+      desc = "Target repository directory for the operation";
       default = "current directory (.)";
     }
     {
@@ -71,12 +72,11 @@
 
   examples = [
     "git-agent clone git@github.com:user/repo.git --dir=my-repo"
-    "git-agent push origin my-feature-branch"
-    "git-agent create-branch my-feature-branch"
-    "git-agent commit \"fix: resolve null pointer exception\" --all"
-    "git-agent log -n5 src/api"
-    "git-agent status --short"
-    "git-agent diff --cached"
+    "git-agent pull --repo=/var/lib/openclaw/git/nixos-conf"
+    "git-agent push origin my-feature-branch --repo=nixos-conf"
+    "git-agent create-branch my-feature-branch --repo=my-repo"
+    "git-agent commit \"fix: resolve null pointer exception\" --all --repo=my-repo"
+    "git-agent status --short --repo=."
   ];
 
   dependencies = with pkgs; [
@@ -97,7 +97,6 @@
 
     WORKSPACE="${cfg.workspace}"
     CONFIG_DIR="$WORKSPACE/.openclaw"
-    CREDS_DIR="$WORKSPACE/.openclaw/credentials"
 
     # Standardized JSON error response handler
     fail() {
@@ -108,8 +107,9 @@
 
     resolve_path() {
       local p="$1"
-      [[ "$p" != /* ]] && p="$WORKSPACE/$p"
+      
       p="$(realpath -m "$p")"
+      
       if ! [[ "$p" =~ ^"$WORKSPACE"(/|$) ]]; then
         echo "Outside workspace: $p" >&2
         return 2
@@ -123,24 +123,29 @@
 
     get_gh_token() {
       local tok=""
-      [[ -f "$CREDS_DIR/github-token" ]] && tok=$(cat "$CREDS_DIR/github-token")
+      if [[ -f "${config.sops.secrets."gh-token".path}" ]]; then
+        tok=$(cat "${config.sops.secrets."gh-token".path}")
+      fi
       echo "$tok"
     }
 
     get_ssh_key() {
-      local key=""
-      [[ -f "$CREDS_DIR/github-ssh-key" ]] && key=$(cat "$CREDS_DIR/github-ssh-key")
-      echo "$key"
+      echo "${config.sops.secrets."claw-ssh-key".path}"
     }
 
-    # Guard: prevent any push to main/master/master
     check_push_safe() {
       local branch="$1"
-      [[ "$branch" =~ ^(main|master|master)$ ]] && fail "Push to '$branch' is not allowed. Use a feature branch." 1
+      [[ "$branch" =~ ^(main|master)$ ]] && fail "Push to '$branch' is not allowed. Use a feature branch." 1
       true
     }
 
-    OP="${1:-}"
+    # Universally apply SSH key for ALL git commands (clone, fetch, pull, push)
+    SSH_KEY_PATH=$(get_ssh_key)
+    if [[ -n "$SSH_KEY_PATH" ]]; then
+      export GIT_SSH_COMMAND="ssh -i \"$SSH_KEY_PATH\" -o StrictHostKeyChecking=accept-new -o IdentitiesOnly=yes"
+    fi
+
+    OP="''${1:-}"
     [[ -z $OP ]] && fail "Usage: git-agent <clone|fetch|pull|push|commit|checkout|create-branch|status|diff|log|branch> [args]" 1
 
     case $OP in
@@ -159,22 +164,18 @@
         mkdir -p "$(dirname "$TARGET_DIR")"
 
         TOKEN=$(get_gh_token)
-        SSH_KEY=$(get_ssh_key)
         EXIT_CODE=0
         RESULT=""
 
-        if [[ "$REPO" =~ ^git@github\.com: ]]; then
-          GIT_SSH_CMD=""
-          [[ -n "$SSH_KEY" ]] && GIT_SSH_CMD="ssh -i \"$SSH_KEY\" -o StrictHostKeyChecking=accept-new"
-          [[ -n "$GIT_SSH_CMD" ]] && RESULT=$(GIT_SSH_COMMAND="$GIT_SSH_CMD" git clone --recursive "$REPO" "$TARGET_DIR" 2>&1) || { EXIT_CODE=$?; RESULT=$(GIT_SSH_COMMAND="$GIT_SSH_CMD" git clone --recursive "$REPO" "$TARGET_DIR" 2>&1); }
-        elif [[ "$REPO" =~ ^https://github\.com/ ]]; then
+        if [[ "$REPO" =~ ^https://github\.com/ ]]; then
           if [[ -n "$TOKEN" ]]; then
-            local repo_path="${REPO#https://github.com/}"
+            local repo_path="''${REPO#https://github.com/}"
             RESULT=$(git clone --recursive "https://x-access-token:$TOKEN@github.com/$repo_path" "$TARGET_DIR" 2>&1) || EXIT_CODE=$?
           else
             RESULT=$(git clone --recursive "$REPO" "$TARGET_DIR" 2>&1) || EXIT_CODE=$?
           fi
         else
+          # SSH and fallback handles naturally via exported GIT_SSH_COMMAND
           RESULT=$(git clone --recursive "$REPO" "$TARGET_DIR" 2>&1) || EXIT_CODE=$?
         fi
 
@@ -183,29 +184,35 @@
           --arg repo "$REPO" \
           --arg path "$TARGET_DIR" \
           --argjson code "$EXIT_CODE" \
-          --argjson output "$(printf "%s" "$RESULT" | jq -Rs .)" \
+          --arg output "$RESULT" \
           '{success: ($code == 0), operation: $op, repo: $repo, path: $path, exit_code: $code, output: $output}'
         ;;
 
       fetch)
-        WDIR="${2:-.}"
+        WDIR="."
+        for arg in "''${@:2}"; do
+          [[ "$arg" == --repo=* ]] && WDIR="''${arg#*=}"
+        done
+
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
         [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
         cd "$WDIR"
 
         EXIT_CODE=0
         RESULT=$(git fetch --all 2>&1) || EXIT_CODE=$?
+        
         jq -n --arg op "fetch" --arg dir "$WDIR" --argjson code "$EXIT_CODE" \
-          --argjson output "$(printf "%s" "$RESULT" | jq -Rs .)" \
+          --arg output "$RESULT" \
           '{success: ($code == 0), operation: $op, dir: $dir, exit_code: $code, output: $output}'
         ;;
 
       pull)
         WDIR="."
         REBASE=""
-        for arg in "${@:2}"; do
-          [[ "$arg" == "--rebase" ]] && REBASE="--rebase"
-          [[ ! "$arg" =~ ^- ]] && WDIR="$arg"
+        for arg in "''${@:2}"; do
+          if [[ "$arg" == "--rebase" ]]; then REBASE="--rebase"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          fi
         done
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
@@ -214,74 +221,67 @@
 
         EXIT_CODE=0
         RESULT=$(git pull $REBASE 2>&1) || EXIT_CODE=$?
-        jq -n --arg op "pull" --arg dir "$WDIR" --argjson rebase "$([[ "$REBASE" == "--rebase" ]] && echo true || echo false)" \
-          --argjson code "$EXIT_CODE" --argjson output "$(printf "%s" "$RESULT" | jq -Rs .)" \
+        
+        jq -n --arg op "pull" --arg dir "$WDIR" \
+          --argjson rebase "$([[ "$REBASE" == "--rebase" ]] && echo true || echo false)" \
+          --argjson code "$EXIT_CODE" --arg output "$RESULT" \
           '{success: ($code == 0), operation: $op, dir: $dir, rebase: $rebase, exit_code: $code, output: $output}'
         ;;
 
       push)
-        REMOTE="${2:-origin}"
-        BRANCH="${3:-}"
+        WDIR="."
         FORCE=""
-        for arg in "${@:4}"; do
-          [[ "$arg" == "--force" || "$arg" == "-f" ]] && FORCE="--force"
+        args=()
+        for arg in "''${@:2}"; do
+          if [[ "$arg" == "--force" || "$arg" == "-f" ]]; then FORCE="--force"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          else args+=("$arg")
+          fi
         done
+
+        REMOTE="''${args[0]:-origin}"
+        BRANCH="''${args[1]:-}"
+
+        WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
+        [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
+        cd "$WDIR"
 
         [[ -z "$BRANCH" ]] && BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
         check_push_safe "$BRANCH"
 
-        WDIR="$(pwd)"
-        WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
-        [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
-
         TOKEN=$(get_gh_token)
-        SSH_KEY=$(get_ssh_key)
         EXIT_CODE=0
         RESULT=""
 
-        if [[ "$REMOTE" =~ ^git@github\.com: ]] || git remote get-url "$REMOTE" 2>/dev/null | grep -q "github.com"; then
-          if [[ -n "$SSH_KEY" ]]; then
-            RESULT=$(GIT_SSH_COMMAND="ssh -i \"$SSH_KEY\" -o StrictHostKeyChecking=accept-new" \
-              git push $FORCE "$REMOTE" "$BRANCH" 2>&1) || EXIT_CODE=$?
-          elif [[ -n "$TOKEN" ]]; then
-            local remote_url=$(git remote get-url "$REMOTE")
-            if [[ "$remote_url" =~ ^https://github.com/(.*) ]]; then
-              local repo_path="${remote_url#https://github.com/}"
-              git remote set-url "$REMOTE" "https://x-access-token:$TOKEN@github.com/$repo_path"
-              RESULT=$(git push $FORCE "$REMOTE" "$BRANCH" 2>&1) || EXIT_CODE=$?
-              git remote set-url "$REMOTE" "$remote_url"
-            else
-              RESULT=$(git push $FORCE "$REMOTE" "$BRANCH" 2>&1) || EXIT_CODE=$?
-            fi
-          else
-            RESULT=$(git push $FORCE "$REMOTE" "$BRANCH" 2>&1) || EXIT_CODE=$?
-          fi
+        if [[ -n "$TOKEN" ]] && [[ "$(git remote get-url "$REMOTE" 2>/dev/null)" =~ ^https://github.com/ ]]; then
+          local remote_url=$(git remote get-url "$REMOTE")
+          local repo_path="''${remote_url#https://github.com/}"
+          git remote set-url "$REMOTE" "https://x-access-token:$TOKEN@github.com/$repo_path"
+          RESULT=$(git push $FORCE "$REMOTE" "$BRANCH" 2>&1) || EXIT_CODE=$?
+          git remote set-url "$REMOTE" "$remote_url"
         else
+          # SSH pushes natively succeed here thanks to the global GIT_SSH_COMMAND
           RESULT=$(git push $FORCE "$REMOTE" "$BRANCH" 2>&1) || EXIT_CODE=$?
         fi
 
         jq -n --arg op "push" --arg remote "$REMOTE" --arg branch "$BRANCH" \
-          --argjson forced "$FORCE" --argjson code "$EXIT_CODE" \
-          --argjson output "$(printf "%s" "$RESULT" | jq -Rs .)" \
-          '{success: ($code == 0), operation: $op, remote: $remote, branch: $branch, forced: ($forced != ""), exit_code: $code, output: $output}'
+          --argjson forced "$([[ -n "$FORCE" ]] && echo true || echo false)" \
+          --argjson code "$EXIT_CODE" --arg output "$RESULT" \
+          '{success: ($code == 0), operation: $op, remote: $remote, branch: $branch, forced: $forced, exit_code: $code, output: $output}'
         ;;
 
       commit)
+        WDIR="."
         MSG=""
         STAGED=""
-        WDIR="."
-
-        for arg in "${@:2}"; do
-          if [[ "$arg" == "--all" || "$arg" == "-a" ]]; then
-            STAGED="--all"
-          elif [[ -z "$MSG" && ! "$arg" =~ ^- ]]; then
-            MSG="$arg"
-          elif [[ ! "$arg" =~ ^- ]]; then
-            WDIR="$arg"
+        for arg in "''${@:2}"; do
+          if [[ "$arg" == "--all" || "$arg" == "-a" ]]; then STAGED="--all"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          elif [[ -z "$MSG" && ! "$arg" =~ ^- ]]; then MSG="$arg"
           fi
         done
 
-        [[ -z "$MSG" ]] && fail "commit needs a message. Usage: git-agent commit <message> [--all|-a] [dir]" 1
+        [[ -z "$MSG" ]] && fail "commit needs a message. Usage: git-agent commit <message> [--all|-a] [--repo=path]" 1
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
         [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
@@ -297,33 +297,26 @@
         if [[ $EXIT_CODE -eq 0 ]]; then
           HASH=$(git log -1 --format=%H)
           jq -n --arg op "commit" --arg hash "$HASH" --arg msg "$MSG" \
-            --argjson code "$EXIT_CODE" --argjson output "$(printf "%s" "$RESULT" | jq -Rs .)" \
+            --argjson code "$EXIT_CODE" --arg output "$RESULT" \
             '{success: true, operation: $op, hash: $hash, message: $msg, exit_code: $code, output: $output}'
         else
-          jq -n --arg op "commit" --arg msg "$MSG" --argjson code "$EXIT_CODE" \
-            --argjson error "$(printf "%s" "$RESULT" | jq -Rs .)" \
+          jq -n --arg op "commit" --arg msg "$MSG" --argjson code "$EXIT_CODE" --arg error "$RESULT" \
             '{success: false, operation: $op, message: $msg, exit_code: $code, error: $error}'
         fi
         ;;
 
       checkout)
+        WDIR="."
         BRANCH=""
         CREATE=false
-        WDIR="."
-
-        for arg in "${@:2}"; do
-          if [[ "$arg" == "-b" ]]; then
-            CREATE=true
-          elif [[ "$arg" =~ ^- ]]; then
-            : # ignore other flags
-          elif [[ -z "$BRANCH" ]]; then
-            BRANCH="$arg"
-          else
-            WDIR="$arg"
+        for arg in "''${@:2}"; do
+          if [[ "$arg" == "-b" ]]; then CREATE=true
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          elif [[ -z "$BRANCH" && ! "$arg" =~ ^- ]]; then BRANCH="$arg"
           fi
         done
 
-        [[ -z "$BRANCH" ]] && fail "checkout needs a branch name. Usage: git-agent checkout <branch> [-b] [dir]" 1
+        [[ -z "$BRANCH" ]] && fail "checkout needs a branch name. Usage: git-agent checkout <branch> [-b] [--repo=path]" 1
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
         [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
@@ -337,28 +330,21 @@
         fi
 
         jq -n --arg op "checkout" --arg branch "$BRANCH" --argjson created "$CREATE" \
-          --argjson code "$EXIT_CODE" --argjson output "$(printf "%s" "$RESULT" | jq -Rs .)" \
+          --argjson code "$EXIT_CODE" --arg output "$RESULT" \
           '{success: ($code == 0), operation: $op, branch: $branch, created: $created, exit_code: $code, output: $output}'
         ;;
 
       create-branch)
-        BRANCH=""
-        BASE="main"
         WDIR="."
-
-        for arg in "${@:2}"; do
-          if [[ "$arg" == "-b" ]]; then
-            : # handled by position
-          elif [[ "$arg" =~ ^- ]]; then
-            : # ignore
-          elif [[ -z "$BRANCH" ]]; then
-            BRANCH="$arg"
-          else
-            WDIR="$arg"
+        BRANCH=""
+        for arg in "''${@:2}"; do
+          if [[ "$arg" == "-b" ]]; then : # handled by position/flags
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          elif [[ -z "$BRANCH" && ! "$arg" =~ ^- ]]; then BRANCH="$arg"
           fi
         done
 
-        [[ -z "$BRANCH" ]] && fail "create-branch needs a name. Usage: git-agent create-branch <branch> [base-branch] [dir]" 1
+        [[ -z "$BRANCH" ]] && fail "create-branch needs a name. Usage: git-agent create-branch <branch> [--repo=path]" 1
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
         [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
@@ -368,16 +354,17 @@
         RESULT=$(git checkout -b "$BRANCH" 2>&1) || EXIT_CODE=$?
 
         jq -n --arg op "create-branch" --arg branch "$BRANCH" \
-          --argjson code "$EXIT_CODE" --argjson output "$(printf "%s" "$RESULT" | jq -Rs .)" \
+          --argjson code "$EXIT_CODE" --arg output "$RESULT" \
           '{success: ($code == 0), operation: $op, branch: $branch, exit_code: $code, output: $output}'
         ;;
 
       status)
         WDIR="."
         SHORT=""
-        for arg in "${@:2}"; do
-          [[ "$arg" == "--short" || "$arg" == "-s" ]] && SHORT="--short"
-          [[ ! "$arg" =~ ^- ]] && WDIR="$arg"
+        for arg in "''${@:2}"; do
+          if [[ "$arg" == "--short" || "$arg" == "-s" ]]; then SHORT="--short"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          fi
         done
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
@@ -386,17 +373,19 @@
 
         EXIT_CODE=0
         RESULT=$(git status $SHORT 2>&1) || EXIT_CODE=$?
+        
         jq -n --arg op "status" --arg dir "$WDIR" --argjson code "$EXIT_CODE" \
-          --argjson output "$(printf "%s" "$RESULT" | jq -Rs .)" \
+          --arg output "$RESULT" \
           '{success: ($code == 0), operation: $op, dir: $dir, exit_code: $code, output: $output}'
         ;;
 
       diff)
-        OPT=""
         WDIR="."
-        for arg in "${@:2}"; do
-          [[ "$arg" == "--cached" ]] && OPT="--cached"
-          [[ ! "$arg" =~ ^- ]] && WDIR="$arg"
+        OPT=""
+        for arg in "''${@:2}"; do
+          if [[ "$arg" == "--cached" ]]; then OPT="--cached"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          fi
         done
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
@@ -405,17 +394,19 @@
 
         EXIT_CODE=0
         RESULT=$(git diff $OPT 2>&1) || EXIT_CODE=$?
-        jq -n --arg op "diff" --arg dir "$WDIR" --argjson cached "$([[ "$OPT" == "--cached" ]] && echo true || echo false)" \
-          --argjson code "$EXIT_CODE" --argjson output "$(printf "%s" "$RESULT" | jq -Rs .)" \
+        
+        jq -n --arg op "diff" --arg dir "$WDIR" \
+          --argjson cached "$([[ "$OPT" == "--cached" ]] && echo true || echo false)" \
+          --argjson code "$EXIT_CODE" --arg output "$RESULT" \
           '{success: ($code == 0), operation: $op, dir: $dir, cached: $cached, exit_code: $code, output: $output}'
         ;;
 
       log)
-        NUM=10
         WDIR="."
-        for arg in "${@:2}"; do
-          if [[ "$arg" =~ ^-n[0-9]+$ ]]; then NUM="${arg#-n}"
-          elif [[ ! "$arg" =~ ^- ]]; then WDIR="$arg"
+        NUM=10
+        for arg in "''${@:2}"; do
+          if [[ "$arg" =~ ^-n[0-9]+$ ]]; then NUM="''${arg#-n}"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
           fi
         done
 
@@ -430,13 +421,13 @@
         git log -n "$NUM" --format="%H%x00%an%x00%ai%x00%s" > "$LOG_TMP" 2> "$ERR_TMP" || EXIT_CODE=$?
 
         if [[ $EXIT_CODE -eq 0 ]]; then
-          ENTRIES_JSON=$(cat "$LOG_TMP" | jq -Rs -c '[split("\n")[] | select(length > 0) | split("\u0000") | {hash: .[0], author: .[1], date: .[2], message: .[3]}]')
+          ENTRIES_JSON=$(jq -Rs -c '[split("\n")[] | select(length > 0) | split("\u0000") | {hash: .[0], author: .[1], date: .[2], message: .[3]}]' "$LOG_TMP")
           jq -n --arg op "log" --arg dir "$WDIR" --argjson count "$NUM" \
             --argjson entries "$ENTRIES_JSON" --argjson code "$EXIT_CODE" \
             '{success: true, operation: $op, dir: $dir, count: $count, exit_code: $code, entries: $entries}'
         else
           jq -n --arg op "log" --arg dir "$WDIR" --argjson code "$EXIT_CODE" \
-            --argjson error "$(cat "$ERR_TMP" | jq -Rs .)" \
+            --arg error "$(cat "$ERR_TMP")" \
             '{success: false, operation: $op, dir: $dir, exit_code: $code, error: $error}'
         fi
         rm -f "$LOG_TMP" "$ERR_TMP"
@@ -446,10 +437,11 @@
         WDIR="."
         ALLB=""
         VERBOSE=""
-        for arg in "${@:2}"; do
-          [[ "$arg" == "-a" || "$arg" == "--all" ]] && ALLB="-a"
-          [[ "$arg" == "-v" || "$arg" == "--verbose" ]] && VERBOSE="-v"
-          [[ ! "$arg" =~ ^- ]] && WDIR="$arg"
+        for arg in "''${@:2}"; do
+          if [[ "$arg" == "-a" || "$arg" == "--all" ]]; then ALLB="-a"
+          elif [[ "$arg" == "-v" || "$arg" == "--verbose" ]]; then VERBOSE="-v"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          fi
         done
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
@@ -458,8 +450,9 @@
 
         EXIT_CODE=0
         RESULT=$(git branch $ALLB $VERBOSE 2>&1) || EXIT_CODE=$?
+        
         jq -n --arg op "branch" --arg dir "$WDIR" --argjson code "$EXIT_CODE" \
-          --argjson branches "$(printf "%s" "$RESULT" | jq -Rs .)" \
+          --arg branches "$RESULT" \
           '{success: ($code == 0), operation: $op, dir: $dir, exit_code: $code, branches: $branches}'
         ;;
 

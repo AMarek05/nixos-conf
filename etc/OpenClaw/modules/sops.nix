@@ -34,7 +34,7 @@ in
       group = cfg.group;
 
       content = ''
-        GH_TOKEN=${config.sops.placeholder."gh-token"};
+        GH_TOKEN=${config.sops.placeholder."gh-token"}
       '';
     };
 
@@ -42,8 +42,8 @@ in
     # This creates a file at /run/secrets-render/openclaw-env
     sops.templates."openclaw-env" = {
       content = ''
-        NVIDIA_API_KEY="${config.sops.placeholder."nim-api-key"}"
-        OPENROUTER_API_KEY="${config.sops.placeholder."openrouter-api-key"}"
+        NVIDIA_API_KEY=${config.sops.placeholder."nim-api-key"}
+        OPENROUTER_API_KEY=${config.sops.placeholder."openrouter-api-key"}
       '';
       owner = cfg.user;
       group = cfg.group;
@@ -53,18 +53,6 @@ in
     systemd.services.openclaw = {
       after = [ "sops-nix.service" ];
       wants = [ "sops-nix.service" ];
-
-      serviceConfig.EnvironmentFile = [
-        templates."openclaw-env".path
-        templates."github-agent-env".path
-      ];
-
-      environment = {
-        GIT_SSH_COMMAND = "ssh -i ${
-          config.sops.secrets."claw-ssh-key".path
-        } -o StrictHostKeyChecking=accept-new";
-      };
     };
-
   };
 }
