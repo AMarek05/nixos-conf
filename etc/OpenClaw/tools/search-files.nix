@@ -63,33 +63,12 @@
 
   script = ''
     #!/usr/bin/env bash
-    # OpenClaw Tool: search-files
-    # Description: Search for files or content in the OpenClaw workspace
-    #
-    # Usage: search-files <pattern> [--path=DIR] [--type=TYPE] [--max-results=N]
-    #
-    # Arguments:
-    #   pattern          - Search pattern (regex supported)
-    #   --path=DIR       - Directory to search (default: workspace)
-    #   --type=TYPE      - File type: file, dir, symlink (default: all)
-    #   --max-results=N  - Maximum results (default: 100)
-    #   --content        - Search file contents instead of names
-    #   --case-sensitive - Case-sensitive search
-    #
-    # Output:
-    #   JSON array of matching files or content lines
-    #
-    # Examples:
-    #   search-files "\.txt$"
-    #   search-files "error" --content --path=logs
-    #   search-files "TODO" --content --max-results=50
-
     set -euo pipefail
 
     WORKSPACE="${cfg.workspace}"
+    CONFIG_DIR="$WORKSPACE/.openclaw"
     MAX_RESULTS=100
 
-    # Parse arguments
     PATTERN=""
     SEARCH_PATH=""
     FILE_TYPE=""
@@ -99,185 +78,104 @@
 
     while [[ $# -gt 0 ]]; do
       case "$1" in
-        --path=*)
-          SEARCH_PATH="''${1#*=}"
-          shift
-          ;;
-        --type=*)
-          FILE_TYPE="''${1#*=}"
-          shift
-          ;;
-        --max-results=*)
-          MAX_RESULTS_ARG="''${1#*=}"
-          shift
-          ;;
-        --content|-c)
-          CONTENT_SEARCH=true
-          shift
-          ;;
-        --case-sensitive|-s)
-          CASE_SENSITIVE=true
-          shift
-          ;;
-        -*)
-          echo "{\"error\": \"Unknown option: $1\"}" >&2
-          exit 1
-          ;;
+        --path=*) SEARCH_PATH="''${1#*=}" ;;
+        --type=*) FILE_TYPE="''${1#*=}" ;;
+        --max-results=*) MAX_RESULTS_ARG="''${1#*=}" ;;
+        --content|-c) CONTENT_SEARCH=true ;;
+        --case-sensitive|-s) CASE_SENSITIVE=true ;;
+        -*) echo '{"error":"Unknown option"}' >&2; exit 1 ;;
         *)
-          if [[ -z "$PATTERN" ]]; then
-            PATTERN="$1"
-          else
-            echo "{\"error\": \"Unexpected argument: $1\"}" >&2
-            exit 1
-          fi
-          shift
+          [[ -z "$PATTERN" ]] && PATTERN="$1" || { echo '{"error":"Unexpected argument"}' >&2; exit 1; }
           ;;
       esac
+      shift
     done
 
-    if [[ -z "$PATTERN" ]]; then
-      echo '{"error": "Missing required argument: pattern"}' >&2
-      exit 1
+    [[ -z "$PATTERN" ]] && { echo '{"error":"Missing pattern"}' >&2; exit 1; }
+
+    # Resolve path
+    SEARCH_PATH="''${SEARCH_PATH:-$WORKSPACE}"
+    [[ "$SEARCH_PATH" != /* ]] && SEARCH_PATH="$WORKSPACE/$SEARCH_PATH"
+
+    RESOLVED="$(readlink -f "$SEARCH_PATH")"
+
+    if [[ ! "$RESOLVED" =~ ^"$WORKSPACE"(/|$) ]]; then
+      echo '{"error":"Path outside workspace"}' >&2
+      exit 2
     fi
 
-    # Resolve search path
-    if [[ -n "$SEARCH_PATH" ]]; then
-      if [[ "$SEARCH_PATH" != /* ]]; then
-        SEARCH_PATH="$WORKSPACE/$SEARCH_PATH"
-      fi
-      # Validate it's within workspace
-      local resolved
-      resolved="$(readlink -f "$SEARCH_PATH")"
-      if [[ ! "$resolved" =~ ^"$WORKSPACE"(/|$) ]]; then
-        echo "{\"error\": \"Search path outside workspace\"}" >&2
-        exit 2
-      fi
+    if [[ "$RESOLVED" == "$CONFIG_DIR"* ]]; then
+      echo '{"error":"Access denied"}' >&2
+      exit 2
+    fi
 
-      if [[ "$resolved" == "$CONFIG_DIR"* ]]; then
-        echo "{\"error\": \"Access denied: AI cannot read system configuration or secrets\"}" >&2
-        return 2
-      fi
+    [[ ! -d "$RESOLVED" ]] && { echo '{"error":"Path not found"}' >&2; exit 1; }
+
+    RESULTS_JSON="[]"
+
+    if [[ "$CONTENT_SEARCH" == true ]]; then
+      RG_ARGS=(--json --max-count "$MAX_RESULTS_ARG" --glob '!.openclaw/**')
+      [[ "$CASE_SENSITIVE" != true ]] && RG_ARGS+=(--ignore-case)
+
+      while IFS= read -r line; do
+        if echo "$line" | jq -e '.type=="match"' >/dev/null; then
+          path=$(echo "$line" | jq -r '.data.path.text')
+          line_num=$(echo "$line" | jq -r '.data.line_number')
+          text=$(echo "$line" | jq -r '.data.lines.text')
+
+          RESULTS_JSON=$(echo "$RESULTS_JSON" | jq \
+            --arg p "$path" \
+            --arg t "$text" \
+            --argjson l "$line_num" \
+            '. += [{"path":$p,"line":$l,"content":$t}]')
+        fi
+      done < <(rg "''${RG_ARGS[@]}" -- "$PATTERN" "$RESOLVED")
 
     else
-      SEARCH_PATH="$WORKSPACE"
+      FIND_ARGS=("$RESOLVED" -path "$CONFIG_DIR" -prune -o)
+
+      case "$FILE_TYPE" in
+        file) FIND_ARGS+=(-type f) ;;
+        dir|directory) FIND_ARGS+=(-type d) ;;
+        symlink) FIND_ARGS+=(-type l) ;;
+      esac
+
+      FIND_ARGS+=(-print)
+
+      while IFS= read -r path; do
+        rel="''${path#$WORKSPACE/}"
+
+        if [[ -d "$path" ]]; then type="directory"
+        elif [[ -L "$path" ]]; then type="symlink"
+        else type="file"
+        fi
+
+        RESULTS_JSON=$(echo "$RESULTS_JSON" | jq \
+          --arg p "$path" \
+          --arg r "$rel" \
+          --arg t "$type" \
+          '. += [{"path":$p,"relative_path":$r,"type":$t}]')
+
+      done < <(find "''${FIND_ARGS[@]}" 2>/dev/null | grep -E ''${CASE_SENSITIVE:+} ''${CASE_SENSITIVE:--i} "$PATTERN" | head -n "$MAX_RESULTS_ARG")
     fi
 
-    # Build search command
-    build_search_cmd() {
-      local cmd=""
-      
-      if [[ "$CONTENT_SEARCH" == true ]]; then
-        # Content search with ripgrep
-        cmd="rg --json"
-        
-        if [[ "$CASE_SENSITIVE" != true ]]; then
-          cmd="$cmd --ignore-case"
-        fi
+    COUNT=$(echo "$RESULTS_JSON" | jq 'length')
 
-        # Add forced exclusion from .openclaw
-        cmd="$cmd --glob '!.openclaw/**'"
-        
-        cmd="$cmd --max-count=$MAX_RESULTS_ARG"
-        cmd="$cmd -- '$PATTERN' '$SEARCH_PATH'"
-      else
-        # File name search with find + grep
-        local type_flag=""
-        case "$FILE_TYPE" in
-          file) type_flag="-type f" ;;
-          dir|directory) type_flag="-type d" ;;
-          symlink) type_flag="-type l" ;;
-        esac
-        
-        local grep_opts="-E"
-        if [[ "$CASE_SENSITIVE" != true ]]; then
-          grep_opts="$grep_opts -i"
-        fi
-        
-        cmd="find '$SEARCH_PATH' -path '$WORKSPACE/.openclaw' -prune -o $type_flag -print 2>/dev/null | grep $grep_opts '$PATTERN' | head -n $MAX_RESULTS_ARG"
-      fi
-      
-      echo "$cmd"
-    }
-
-    # Format results as JSON
-    format_results() {
-      local results=()
-      
-      if [[ "$CONTENT_SEARCH" == true ]]; then
-        # Parse ripgrep JSON output
-        while IFS= read -r line && [[ ''${#results[@]} -lt $MAX_RESULTS_ARG ]]; do
-          if echo "$line" | jq -e '.type == "match"' >/dev/null 2>&1; then
-            local path line_num text
-            path=$(echo "$line" | jq -r '.data.path.text')
-            line_num=$(echo "$line" | jq -r '.data.line_number')
-            text=$(echo "$line" | jq -r '.data.lines.text' | tr -d '\n' | jq -Rs .)
-            
-            results+=("{\"path\": \"$path\", \"line\": $line_num, \"content\": $text}")
-          fi
-        done
-      else
-        # Parse find output
-        while IFS= read -r path && [[ ''${#results[@]} -lt $MAX_RESULTS_ARG ]]; do
-          [[ -z "$path" ]] && continue
-          
-          local rel_path type
-          rel_path="''${path#$WORKSPACE/}"
-          
-          if [[ -d "$path" ]]; then
-            type="directory"
-          elif [[ -L "$path" ]]; then
-            type="symlink"
-          else
-            type="file"
-          fi
-          
-          results+=("{\"path\": \"$path\", \"relative_path\": \"$rel_path\", \"type\": \"$type\"}")
-        done
-      fi
-      
-      echo "''${results[@]}"
-    }
-
-    # Main logic
-    main() {
-      if [[ ! -d "$SEARCH_PATH" ]]; then
-        echo "{\"error\": \"Search path does not exist: $SEARCH_PATH\"}" >&2
-        exit 1
-      fi
-      
-      local search_cmd
-      search_cmd="$(build_search_cmd)"
-      
-      local results
-      results=$(eval "$search_cmd" 2>/dev/null | head -n $((MAX_RESULTS_ARG * 2)))
-      
-      local formatted
-      formatted=$(echo "$results" | format_results)
-      
-      local count=0
-      if [[ -n "$formatted" ]]; then
-        count=$(echo "$formatted" | wc -w)
-      fi
-      
-      echo "{"
-      echo "  \"success\": true,"
-      echo "  \"pattern\": \"$PATTERN\","
-      echo "  \"search_path\": \"$SEARCH_PATH\","
-      echo "  \"search_type\": $(if [[ "$CONTENT_SEARCH" == true ]]; then echo '"content"'; else echo '"filename"'; fi),"
-      echo "  \"results_count\": $count,"
-      echo "  \"max_results\": $MAX_RESULTS_ARG,"
-      echo "  \"results\": ["
-      
-      if [[ -n "$formatted" ]]; then
-        echo "$formatted" | tr ' ' '\n' | head -n $MAX_RESULTS_ARG | while read -r item; do
-          [[ -n "$item" ]] && echo "    $item,"
-        done
-      fi
-      
-      echo "  ]"
-      echo "}"
-    }
-
-    main
+    jq -n \
+      --arg pattern "$PATTERN" \
+      --arg path "$RESOLVED" \
+      --arg type "$( [[ "$CONTENT_SEARCH" == true ]] && echo content || echo filename )" \
+      --argjson count "$COUNT" \
+      --argjson max "$MAX_RESULTS_ARG" \
+      --argjson results "$RESULTS_JSON" \
+      '{
+        success: true,
+        pattern: $pattern,
+        search_path: $path,
+        search_type: $type,
+        results_count: $count,
+        max_results: $max,
+        results: $results
+      }'
   '';
 }
