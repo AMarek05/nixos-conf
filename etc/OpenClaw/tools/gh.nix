@@ -91,9 +91,7 @@
       local token
       token=$(get_gh_token)
       if [[ -n "$token" ]]; then
-        if ! gh auth status &>/dev/null; then
-          echo "$token" | gh auth login --with-token 2>/dev/null || true
-        fi
+        export GH_TOKEN="$token"
       fi
     }
 
