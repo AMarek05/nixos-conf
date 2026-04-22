@@ -3,6 +3,8 @@ use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 
+const WORKSPACE: &str = "/var/lib/openclaw";
+
 fn main() {
     let args: Vec<String> = env::args().collect();
 
@@ -41,17 +43,28 @@ fn main() {
         }
     };
 
-    let path = Path::new(filepath);
+    // Resolve relative paths to workspace, require absolute for non-workspace
+    let resolved = if filepath.starts_with("/") {
+        filepath.clone()
+    } else {
+        format!("{}/{}", WORKSPACE, filepath)
+    };
 
-    if !filepath.starts_with("/var/lib/openclaw/") {
-        eprintln!("{{\"error\": \"Security: Path must be strictly within /var/lib/openclaw/\"}}");
+    let path = Path::new(&resolved);
+
+    // Must be within workspace
+    if !resolved.starts_with(WORKSPACE) {
+        eprintln!("{{\"error\": \"Security: Path must be within /var/lib/openclaw/\"}}");
         std::process::exit(1);
     }
-    if path.components().any(|c| c.as_os_str() == ".openclaw") {
-        eprintln!("{{\"error\": \"Security: Modifying files inside '.openclaw' is prohibited.\"}}");
+
+    // Block .openclaw
+    if resolved.contains(".openclaw") {
+        eprintln!("{{\"error\": \"Security: Modifying files inside .openclaw is prohibited.\"}}");
         std::process::exit(1);
     }
 
+    // Create parent dirs
     if let Some(parent) = path.parent() {
         if let Err(e) = fs::create_dir_all(parent) {
             eprintln!(
@@ -92,6 +105,6 @@ fn main() {
 
     println!(
         "{{\"success\": true, \"operation\": \"{}\", \"path\": \"{}\", \"written_bytes\": {}, \"total_bytes\": {}}}",
-        op_name, filepath, written_bytes, total_bytes
+        op_name, resolved, written_bytes, total_bytes
     );
 }
