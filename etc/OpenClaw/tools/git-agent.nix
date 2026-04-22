@@ -20,8 +20,8 @@
       default = "required";
     }
     {
-      name = "target";
-      desc = "Contextual argument depending on operation";
+      name = "--repo";
+      desc = "Target repository directory for the operation";
       default = "current directory (.)";
     }
     {
@@ -68,10 +68,11 @@
 
   examples = [
     "git-agent clone git@github.com:user/repo.git --dir=my-repo"
-    "git-agent pull"
-    "git-agent push origin my-feature-branch"
-    "git-agent create-branch my-feature-branch"
-    "git-agent commit \"fix: resolve null pointer exception\" --all"
+    "git-agent pull --repo=/var/lib/openclaw/git/nixos-conf"
+    "git-agent push origin my-feature-branch --repo=nixos-conf"
+    "git-agent create-branch my-feature-branch --repo=my-repo"
+    "git-agent commit \"fix: resolve null pointer exception\" --all --repo=my-repo"
+    "git-agent status --short --repo=."
   ];
 
   dependencies = with pkgs; [
@@ -184,7 +185,11 @@
         ;;
 
       fetch)
-        WDIR="''${2:-.}"
+        WDIR="."
+        for arg in "''${@:2}"; do
+          [[ "$arg" == --repo=* ]] && WDIR="''${arg#*=}"
+        done
+
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
         [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
         cd "$WDIR"
@@ -201,8 +206,9 @@
         WDIR="."
         REBASE=""
         for arg in "''${@:2}"; do
-          [[ "$arg" == "--rebase" ]] && REBASE="--rebase"
-          [[ ! "$arg" =~ ^- ]] && WDIR="$arg"
+          if [[ "$arg" == "--rebase" ]]; then REBASE="--rebase"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          fi
         done
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
@@ -219,19 +225,25 @@
         ;;
 
       push)
-        REMOTE="''${2:-origin}"
-        BRANCH="''${3:-}"
+        WDIR="."
         FORCE=""
-        for arg in "''${@:4}"; do
-          [[ "$arg" == "--force" || "$arg" == "-f" ]] && FORCE="--force"
+        args=()
+        for arg in "''${@:2}"; do
+          if [[ "$arg" == "--force" || "$arg" == "-f" ]]; then FORCE="--force"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          else args+=("$arg")
+          fi
         done
+
+        REMOTE="''${args[0]:-origin}"
+        BRANCH="''${args[1]:-}"
+
+        WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
+        [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
+        cd "$WDIR"
 
         [[ -z "$BRANCH" ]] && BRANCH=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null)
         check_push_safe "$BRANCH"
-
-        WDIR="$(pwd)"
-        WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
-        [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
 
         TOKEN=$(get_gh_token)
         EXIT_CODE=0
@@ -244,6 +256,7 @@
           RESULT=$(git push $FORCE "$REMOTE" "$BRANCH" 2>&1) || EXIT_CODE=$?
           git remote set-url "$REMOTE" "$remote_url"
         else
+          # SSH pushes natively succeed here thanks to the global GIT_SSH_COMMAND
           RESULT=$(git push $FORCE "$REMOTE" "$BRANCH" 2>&1) || EXIT_CODE=$?
         fi
 
@@ -254,21 +267,17 @@
         ;;
 
       commit)
+        WDIR="."
         MSG=""
         STAGED=""
-        WDIR="."
-
         for arg in "''${@:2}"; do
-          if [[ "$arg" == "--all" || "$arg" == "-a" ]]; then
-            STAGED="--all"
-          elif [[ -z "$MSG" && ! "$arg" =~ ^- ]]; then
-            MSG="$arg"
-          elif [[ ! "$arg" =~ ^- ]]; then
-            WDIR="$arg"
+          if [[ "$arg" == "--all" || "$arg" == "-a" ]]; then STAGED="--all"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          elif [[ -z "$MSG" && ! "$arg" =~ ^- ]]; then MSG="$arg"
           fi
         done
 
-        [[ -z "$MSG" ]] && fail "commit needs a message. Usage: git-agent commit <message> [--all|-a] [dir]" 1
+        [[ -z "$MSG" ]] && fail "commit needs a message. Usage: git-agent commit <message> [--all|-a] [--repo=path]" 1
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
         [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
@@ -293,23 +302,17 @@
         ;;
 
       checkout)
+        WDIR="."
         BRANCH=""
         CREATE=false
-        WDIR="."
-
         for arg in "''${@:2}"; do
-          if [[ "$arg" == "-b" ]]; then
-            CREATE=true
-          elif [[ "$arg" =~ ^- ]]; then
-            : # ignore other flags
-          elif [[ -z "$BRANCH" ]]; then
-            BRANCH="$arg"
-          else
-            WDIR="$arg"
+          if [[ "$arg" == "-b" ]]; then CREATE=true
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          elif [[ -z "$BRANCH" && ! "$arg" =~ ^- ]]; then BRANCH="$arg"
           fi
         done
 
-        [[ -z "$BRANCH" ]] && fail "checkout needs a branch name. Usage: git-agent checkout <branch> [-b] [dir]" 1
+        [[ -z "$BRANCH" ]] && fail "checkout needs a branch name. Usage: git-agent checkout <branch> [-b] [--repo=path]" 1
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
         [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
@@ -328,23 +331,16 @@
         ;;
 
       create-branch)
-        BRANCH=""
-        BASE="main"
         WDIR="."
-
+        BRANCH=""
         for arg in "''${@:2}"; do
-          if [[ "$arg" == "-b" ]]; then
-            : # handled by position
-          elif [[ "$arg" =~ ^- ]]; then
-            : # ignore
-          elif [[ -z "$BRANCH" ]]; then
-            BRANCH="$arg"
-          else
-            WDIR="$arg"
+          if [[ "$arg" == "-b" ]]; then : # handled by position/flags
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          elif [[ -z "$BRANCH" && ! "$arg" =~ ^- ]]; then BRANCH="$arg"
           fi
         done
 
-        [[ -z "$BRANCH" ]] && fail "create-branch needs a name. Usage: git-agent create-branch <branch> [base-branch] [dir]" 1
+        [[ -z "$BRANCH" ]] && fail "create-branch needs a name. Usage: git-agent create-branch <branch> [--repo=path]" 1
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
         [[ -d "$WDIR/.git" ]] || fail "Not a git repo: $WDIR" 1
@@ -362,8 +358,9 @@
         WDIR="."
         SHORT=""
         for arg in "''${@:2}"; do
-          [[ "$arg" == "--short" || "$arg" == "-s" ]] && SHORT="--short"
-          [[ ! "$arg" =~ ^- ]] && WDIR="$arg"
+          if [[ "$arg" == "--short" || "$arg" == "-s" ]]; then SHORT="--short"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          fi
         done
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
@@ -379,11 +376,12 @@
         ;;
 
       diff)
-        OPT=""
         WDIR="."
+        OPT=""
         for arg in "''${@:2}"; do
-          [[ "$arg" == "--cached" ]] && OPT="--cached"
-          [[ ! "$arg" =~ ^- ]] && WDIR="$arg"
+          if [[ "$arg" == "--cached" ]]; then OPT="--cached"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          fi
         done
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
@@ -400,11 +398,11 @@
         ;;
 
       log)
-        NUM=10
         WDIR="."
+        NUM=10
         for arg in "''${@:2}"; do
           if [[ "$arg" =~ ^-n[0-9]+$ ]]; then NUM="''${arg#-n}"
-          elif [[ ! "$arg" =~ ^- ]]; then WDIR="$arg"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
           fi
         done
 
@@ -436,9 +434,10 @@
         ALLB=""
         VERBOSE=""
         for arg in "''${@:2}"; do
-          [[ "$arg" == "-a" || "$arg" == "--all" ]] && ALLB="-a"
-          [[ "$arg" == "-v" || "$arg" == "--verbose" ]] && VERBOSE="-v"
-          [[ ! "$arg" =~ ^- ]] && WDIR="$arg"
+          if [[ "$arg" == "-a" || "$arg" == "--all" ]]; then ALLB="-a"
+          elif [[ "$arg" == "-v" || "$arg" == "--verbose" ]]; then VERBOSE="-v"
+          elif [[ "$arg" == --repo=* ]]; then WDIR="''${arg#*=}"
+          fi
         done
 
         WDIR="$(resolve_path "$WDIR")" || fail "Invalid directory" 2
