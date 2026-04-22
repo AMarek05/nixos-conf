@@ -59,6 +59,7 @@
     gh
     jq
     coreutils
+    git
   ];
 
   script = ''
