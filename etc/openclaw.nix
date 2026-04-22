@@ -111,7 +111,7 @@ in
 
     defaultModel = lib.mkOption {
       type = lib.types.str;
-      default = "nvidia/z-ai/glm-5.1";
+      default = "nvidia-nim/z-ai/glm-5.1";
       description = "Default model to use.";
     };
 

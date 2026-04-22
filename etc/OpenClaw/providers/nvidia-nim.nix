@@ -1,7 +1,6 @@
 {
   config,
   lib,
-  pkgs,
   ...
 }:
 
@@ -13,7 +12,6 @@ in
     # NVIDIA NIM provider configuration
     services.openclaw.extraConfig = {
 
-      # Handle the default model placement (OpenClaw's new schema location)
       agents = lib.optionalAttrs (cfg.defaultProvider == "nvidia") {
         defaults = {
           model = {
@@ -23,29 +21,39 @@ in
       };
 
       models = {
+        mode = "merge";
         providers = {
-          nvidia = {
+          nvidia-nim = {
             api = "openai-completions";
-            baseUrl = "https://integrate.api.nvidia.com/v1";
 
+            baseUrl = "https://integrate.api.nvidia.com/v1";
             models = [
               {
-                id = "moonshotai/kimi-k2-5";
-                name = "Kimi K2.5";
-              }
-              {
-                id = "z-ai/glm5";
-                name = "GLM 5";
+                id = "minimaxai/minimax-m2.7";
+                name = "Minimax M 2.7";
+                reasoning = true;
+                input = [
+                  "text"
+                  "image"
+                ];
+                contextWindow = 128000;
               }
               {
                 id = "z-ai/glm-5.1";
                 name = "GLM 5.1";
+                reasoning = true;
+                input = [
+                  "text"
+                  "image"
+                ];
+                contextWindow = 200000;
               }
-
             ];
           };
         };
       };
+
+      plugins.entries.nvidia.enabled = false;
     };
 
     # Ensure NVIDIA_API_KEY is expected
