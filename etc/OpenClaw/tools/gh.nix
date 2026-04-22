@@ -67,7 +67,7 @@
     coreutils
   ];
 
-  script = '
+  script = ''
     #!/usr/bin/env bash
     set -euo pipefail
 
@@ -310,5 +310,5 @@
       *)
         fail "Unknown operation: $OP. Use pr-create, pr-list, issue-create, or issue-list" 1 ;;
     esac
-  ';
+  '';
 }
