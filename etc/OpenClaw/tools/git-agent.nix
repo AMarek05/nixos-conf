@@ -87,7 +87,7 @@
     gh
   ];
 
-  script = '
+  script = ''
     #!/usr/bin/env bash
     # OpenClaw Tool: git-agent
     # Description: Agentic git tool with push support (non-main branches only).
@@ -100,9 +100,9 @@
 
     # Standardized JSON error response handler
     fail() {
-      jq -n --arg error "$1" --argjson code "${2:-1}" \
+      jq -n --arg error "$1" --argjson code "''${2:-1}" \
         '{success: false, exit_code: $code, error: $error}'
-      exit "${2:-1}"
+      exit "''${2:-1}"
     }
 
     resolve_path() {
@@ -150,12 +150,12 @@
 
     case $OP in
       clone)
-        REPO="${2:-}"
+        REPO="''${2:-}"
         [[ -z "$REPO" ]] && fail "clone needs a URL" 1
 
         TARGET_DIR=""
-        if [[ "${3:-}" == --dir=* ]]; then
-          TARGET_DIR="${3#*=}"
+        if [[ "''${3:-}" == --dir=* ]]; then
+          TARGET_DIR="''${3#*=}"
           TARGET_DIR="$(resolve_path "$TARGET_DIR")" || fail "Invalid target directory" 2
         else
           TARGET_DIR="$(basename "$REPO" .git)"
@@ -460,5 +460,5 @@
         fail "Unknown operation: $OP. Use clone, fetch, pull, push, commit, checkout, create-branch, status, diff, log, or branch" 1
         ;;
     esac
-  ';
+  '';
 }
