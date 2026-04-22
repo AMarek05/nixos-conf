@@ -211,9 +211,9 @@ in
               --arg or_key "$(${pkgs.coreutils}/bin/cat ${config.sops.secrets."openrouter-api-key".path})" \
               '{
                 "profiles": {
-                  "nvidia:default": {
+                  "nvidia-nim:default": {
                     "type": "api_key",
-                    "provider": "nvidia",
+                    "provider": "nvidia-nim",
                     "key": $nv_key
                   },
                   "openrouter:default": {
