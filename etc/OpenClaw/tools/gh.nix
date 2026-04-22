@@ -55,6 +55,7 @@
 
   dependencies = with pkgs; [
     gnugrep
+    gnused
     gh
     jq
     coreutils
