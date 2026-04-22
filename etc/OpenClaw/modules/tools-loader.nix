@@ -108,6 +108,7 @@ let
     2. **Path Constraints:** Tools run `realpath`. Using `../` to break out will result in `Access denied`. Accessing ~/.openclaw is disallowed, it contains secrets and configs.
     3. **Execution:** You do not have a shell. You must use the tools listed above via your native `exec`.
     4. **exec limitation:** Each exec of an executable not on the above lists will need approval. Prioritise them as much as possible.
+    5. **Permissions:** When creating files, ensure the same file permissions for yourself and for your group. It will allow me easy access to the files.
   '';
 
   generatedToolsDoc = pkgs.writeText "TOOLS.md" fullMarkdown;
