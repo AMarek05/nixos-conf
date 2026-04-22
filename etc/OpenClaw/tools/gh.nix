@@ -60,8 +60,6 @@
   ];
 
   dependencies = with pkgs; [
-    gnugrep
-    gnused
     gh
     jq
     coreutils
@@ -76,8 +74,8 @@
     CONFIG_DIR="$WORKSPACE/.openclaw"
 
     fail() {
-      local msg="${1:-}"
-      local code="${2:-1}"
+      local msg="''${1:-}"
+      local code="''${2:-1}"
       jq -n --arg error "$msg" --argjson code "$code" '{success: false, exit_code: $code, error: $error}'
       exit "$code"
     }
@@ -99,25 +97,28 @@
     }
 
     extract_repo_from_git_remote() {
-      local remote_url="${1:-}"
+      local remote_url="''${1:-}"
       # Use bash pattern matching instead of sed
       if [[ "$remote_url" =~ github\.com[:/](.*)\.git$ ]]; then
-        echo "${BASH_REMATCH[1]}"
+        echo "''${BASH_REMATCH[1]}"
       elif [[ "$remote_url" =~ github\.com[:/](.*)$ ]]; then
-        echo "${BASH_REMATCH[1]}"
+        echo "''${BASH_REMATCH[1]}"
       fi
     }
 
     extract_url() {
-      local result="${1:-}"
+      local result="''${1:-}"
       # bash pattern: everything starting with https://github.com/
       if [[ "$result" =~ https://github\.com/[^[:space:]]* ]]; then
-        echo "${BASH_REMATCH[0]}"
+        echo "''${BASH_REMATCH[0]}"
       fi
     }
 
-    OP="${1:-}"
+    OP="''${1:-}"
     [[ -z $OP ]] && fail "Usage: gh <pr-create|pr-list|issue-create|issue-list> [args]" 1
+
+    # FIX: Drop the operation argument so the while loops below parse correctly
+    shift 
 
     configure_gh
 
@@ -131,11 +132,11 @@
 
         while [[ $# -gt 0 ]]; do
           case "$1" in
-            --repo=*) REPO="${1#*=}" ;;
-            --base=*) BASE="${1#*=}" ;;
-            --head=*) HEAD_BRANCH="${1#*=}" ;;
-            --title=*) TITLE="${1#*=}" ;;
-            --body=*) BODY="${1#*=}" ;;
+            --repo=*) REPO="''${1#*=}" ;;
+            --base=*) BASE="''${1#*=}" ;;
+            --head=*) HEAD_BRANCH="''${1#*=}" ;;
+            --title=*) TITLE="''${1#*=}" ;;
+            --body=*) BODY="''${1#*=}" ;;
             *)
               if [[ -z "$TITLE" ]]; then
                 TITLE="$1"
@@ -163,7 +164,7 @@
         gh_cmd_args+=(--title "$TITLE" --body "$BODY" --base "$BASE")
         [[ -n "$HEAD_BRANCH" ]] && gh_cmd_args+=(--head "$HEAD_BRANCH")
 
-        RESULT=$(gh pr create "${gh_cmd_args[@]}" 2>&1) || EXIT_CODE=$?
+        RESULT=$(gh pr create "''${gh_cmd_args[@]}" 2>&1) || EXIT_CODE=$?
 
         if [[ $EXIT_CODE -eq 0 ]]; then
           local pr_url
@@ -185,9 +186,9 @@
 
         while [[ $# -gt 0 ]]; do
           case "$1" in
-            --repo=*) REPO="${1#*=}" ;;
-            --limit=*) LIMIT="${1#*=}" ;;
-            --state=*) STATE="${1#*=}" ;;
+            --repo=*) REPO="''${1#*=}" ;;
+            --limit=*) LIMIT="''${1#*=}" ;;
+            --state=*) STATE="''${1#*=}" ;;
           esac
           shift
         done
@@ -222,9 +223,9 @@
 
         while [[ $# -gt 0 ]]; do
           case "$1" in
-            --repo=*) REPO="${1#*=}" ;;
-            --title=*) TITLE="${1#*=}" ;;
-            --body=*) BODY="${1#*=}" ;;
+            --repo=*) REPO="''${1#*=}" ;;
+            --title=*) TITLE="''${1#*=}" ;;
+            --body=*) BODY="''${1#*=}" ;;
             *)
               if [[ -z "$TITLE" ]]; then
                 TITLE="$1"
@@ -257,10 +258,10 @@
           issue_url=$(extract_url "$RESULT")
           local issue_num=""
           if [[ "$RESULT" =~ [0-9]+$ ]]; then
-            issue_num="${BASH_REMATCH[0]}"
+            issue_num="''${BASH_REMATCH[0]}"
           fi
           jq -n --arg op "issue-create" --arg title "$TITLE" --arg repo "$REPO" \
-            --arg url "$issue_url" --arg number "${issue_num:-0}" --argjson code "$EXIT_CODE" \
+            --arg url "$issue_url" --arg number "''${issue_num:-0}" --argjson code "$EXIT_CODE" \
             '{success: true, operation: $op, title: $title, repo: $repo, number: $number, url: $url, exit_code: $code}'
         else
           jq -n --arg op "issue-create" --arg title "$TITLE" --arg repo "$REPO" \
@@ -276,9 +277,9 @@
 
         while [[ $# -gt 0 ]]; do
           case "$1" in
-            --repo=*) REPO="${1#*=}" ;;
-            --limit=*) LIMIT="${1#*=}" ;;
-            --state=*) STATE="${1#*=}" ;;
+            --repo=*) REPO="''${1#*=}" ;;
+            --limit=*) LIMIT="''${1#*=}" ;;
+            --state=*) STATE="''${1#*=}" ;;
           esac
           shift
         done
