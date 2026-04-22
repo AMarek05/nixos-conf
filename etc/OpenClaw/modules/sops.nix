@@ -44,9 +44,6 @@ in
       content = ''
         NVIDIA_API_KEY=${config.sops.placeholder."nim-api-key"}
         OPENROUTER_API_KEY=${config.sops.placeholder."openrouter-api-key"}
-        GIT_SSH_COMMAND=ssh -F /dev/null -i ${
-          config.sops.secrets."claw-ssh-key".path
-        } -o StrictHostKeyChecking=accept-new
       '';
       owner = cfg.user;
       group = cfg.group;
@@ -56,11 +53,6 @@ in
     systemd.services.openclaw = {
       after = [ "sops-nix.service" ];
       wants = [ "sops-nix.service" ];
-
-      serviceConfig.EnvironmentFile = [
-        templates."openclaw-env".path
-        templates."github-agent-env".path
-      ];
     };
   };
 }
