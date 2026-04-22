@@ -172,6 +172,7 @@ in
         "sed" = pkgs.gnused;
         "xxd" = pkgs.xxd;
         "patch" = pkgs.patch;
+        "git" = pkgs.git;
       };
 
       servicePath = with pkgs; [ bash ];
