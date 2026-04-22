@@ -40,6 +40,11 @@
       default = "main";
     }
     {
+      name = "--head";
+      desc = "Head branch for PR (when not on the branch)";
+      default = "\"\"";
+    }
+    {
       name = "--limit";
       desc = "Number of items to list";
       default = "10";
@@ -48,6 +53,7 @@
 
   examples = [
     "gh pr-create \"Add new feature\" \"Implements feature X\" --repo owner/repo --base main"
+    "gh pr-create \"Fix bug\" \"Fixes issue\" --head feature-branch"
     "gh issue-create \"Bug: something broken\" \"Description of the bug\" --repo owner/repo"
     "gh issue-list --repo owner/repo --limit 20"
     "gh pr-list --repo owner/repo --limit 10"
@@ -61,21 +67,18 @@
     coreutils
   ];
 
-  script = ''
+  script = '
     #!/usr/bin/env bash
-    # OpenClaw Tool: gh
-    # Description: GitHub CLI wrapper for PR and issue operations
-    # Status: REVIEWED
-
     set -euo pipefail
 
     WORKSPACE="${cfg.workspace}"
     CONFIG_DIR="$WORKSPACE/.openclaw"
 
     fail() {
-      jq -n --arg error "$1" --argjson code "''${2:-1}" \
-        '{success: false, exit_code: $code, error: $error}'
-      exit "''${2:-1}"
+      local msg="${1:-}"
+      local code="${2:-1}"
+      jq -n --arg error "$msg" --argjson code "$code" '{success: false, exit_code: $code, error: $error}'
+      exit "$code"
     }
 
     get_gh_token() {
@@ -96,8 +99,26 @@
       fi
     }
 
-    OP="''${1:-}"
-    [[ -z $OP ]] && fail "Usage: gh <pr-create|pr-list|issue-create|issue-list> [args...]" 1
+    extract_repo_from_git_remote() {
+      local remote_url="${1:-}"
+      # Use bash pattern matching instead of sed
+      if [[ "$remote_url" =~ github\.com[:/](.*)\.git$ ]]; then
+        echo "${BASH_REMATCH[1]}"
+      elif [[ "$remote_url" =~ github\.com[:/](.*)$ ]]; then
+        echo "${BASH_REMATCH[1]}"
+      fi
+    }
+
+    extract_url() {
+      local result="${1:-}"
+      # bash pattern: everything starting with https://github.com/
+      if [[ "$result" =~ https://github\.com/[^[:space:]]* ]]; then
+        echo "${BASH_REMATCH[0]}"
+      fi
+    }
+
+    OP="${1:-}"
+    [[ -z $OP ]] && fail "Usage: gh <pr-create|pr-list|issue-create|issue-list> [args]" 1
 
     configure_gh
 
@@ -107,18 +128,19 @@
         BODY=""
         REPO=""
         BASE="main"
+        HEAD_BRANCH=""
 
         while [[ $# -gt 0 ]]; do
           case "$1" in
-            --repo=*) REPO="''${1#*=}" ;;
-            --base=*) BASE="''${1#*=}" ;;
-            --title=*) TITLE="''${1#*=}" ;;
-            --body=*) BODY="''${1#*=}" ;;
+            --repo=*) REPO="${1#*=}" ;;
+            --base=*) BASE="${1#*=}" ;;
+            --head=*) HEAD_BRANCH="${1#*=}" ;;
+            --title=*) TITLE="${1#*=}" ;;
+            --body=*) BODY="${1#*=}" ;;
             *)
               if [[ -z "$TITLE" ]]; then
                 TITLE="$1"
               else
-                # Properly append actual bash newlines
                 [[ -n "$BODY" ]] && BODY="$BODY"$'\n'"$1" || BODY="$1"
               fi
               ;;
@@ -126,26 +148,30 @@
           shift
         done
 
-        [[ -z "$REPO" ]] && REPO=$(git remote get-url origin 2>/dev/null | sed 's/.*github.com[:/]\(.*\)\.git/\1/' || echo "")
-
-        if [[ -z "$TITLE" ]]; then
-          fail "pr-create requires a title. Usage: gh pr-create <title> [--repo owner/repo] [--base branch]" 1
+        if [[ -z "$REPO" ]]; then
+          local remote_url
+          remote_url=$(git remote get-url origin 2>/dev/null || echo "")
+          REPO=$(extract_repo_from_git_remote "$remote_url")
         fi
+
+        [[ -z "$TITLE" ]] && fail "pr-create requires a title" 1
 
         EXIT_CODE=0
         RESULT=""
 
-        if [[ -n "$REPO" ]]; then
-          RESULT=$(gh pr create --repo "$REPO" --title "$TITLE" --body "$BODY" --base "$BASE" 2>&1) || EXIT_CODE=$?
-        else
-          RESULT=$(gh pr create --title "$TITLE" --body "$BODY" --base "$BASE" 2>&1) || EXIT_CODE=$?
-        fi
+        local gh_cmd_args=()
+        [[ -n "$REPO" ]] && gh_cmd_args+=(--repo "$REPO")
+        gh_cmd_args+=(--title "$TITLE" --body "$BODY" --base "$BASE")
+        [[ -n "$HEAD_BRANCH" ]] && gh_cmd_args+=(--head "$HEAD_BRANCH")
+
+        RESULT=$(gh pr create "${gh_cmd_args[@]}" 2>&1) || EXIT_CODE=$?
 
         if [[ $EXIT_CODE -eq 0 ]]; then
-          PR_URL=$(echo "$RESULT" | grep -o "https://github.com/[^ ]*" | head -1)
+          local pr_url
+          pr_url=$(extract_url "$RESULT")
           jq -n --arg op "pr-create" --arg title "$TITLE" --arg repo "$REPO" --arg base "$BASE" \
-            --arg url "$PR_URL" --argjson code "$EXIT_CODE" --arg output "$RESULT" \
-            '{success: true, operation: $op, title: $title, repo: $repo, base: $base, url: $url, exit_code: $code, output: $output}'
+            --arg url "$pr_url" --argjson code "$EXIT_CODE" \
+            '{success: true, operation: $op, title: $title, repo: $repo, base: $base, url: $url, exit_code: $code}'
         else
           jq -n --arg op "pr-create" --arg title "$TITLE" --arg repo "$REPO" \
             --argjson code "$EXIT_CODE" --arg error "$RESULT" \
@@ -160,15 +186,18 @@
 
         while [[ $# -gt 0 ]]; do
           case "$1" in
-            --repo=*) REPO="''${1#*=}" ;;
-            --limit=*) LIMIT="''${1#*=}" ;;
-            --state=*) STATE="''${1#*=}" ;;
-            *) ;;
+            --repo=*) REPO="${1#*=}" ;;
+            --limit=*) LIMIT="${1#*=}" ;;
+            --state=*) STATE="${1#*=}" ;;
           esac
           shift
         done
 
-        [[ -z "$REPO" ]] && REPO=$(git remote get-url origin 2>/dev/null | sed 's/.*github.com[:/]\(.*\)\.git/\1/' || echo "")
+        if [[ -z "$REPO" ]]; then
+          local remote_url
+          remote_url=$(git remote get-url origin 2>/dev/null || echo "")
+          REPO=$(extract_repo_from_git_remote "$remote_url")
+        fi
 
         EXIT_CODE=0
         RESULT=""
@@ -194,9 +223,9 @@
 
         while [[ $# -gt 0 ]]; do
           case "$1" in
-            --repo=*) REPO="''${1#*=}" ;;
-            --title=*) TITLE="''${1#*=}" ;;
-            --body=*) BODY="''${1#*=}" ;;
+            --repo=*) REPO="${1#*=}" ;;
+            --title=*) TITLE="${1#*=}" ;;
+            --body=*) BODY="${1#*=}" ;;
             *)
               if [[ -z "$TITLE" ]]; then
                 TITLE="$1"
@@ -208,11 +237,13 @@
           shift
         done
 
-        [[ -z "$REPO" ]] && REPO=$(git remote get-url origin 2>/dev/null | sed 's/.*github.com[:/]\(.*\)\.git/\1/' || echo "")
-
-        if [[ -z "$TITLE" ]]; then
-          fail "issue-create requires a title. Usage: gh issue-create <title> [--repo owner/repo] [--body body-text]" 1
+        if [[ -z "$REPO" ]]; then
+          local remote_url
+          remote_url=$(git remote get-url origin 2>/dev/null || echo "")
+          REPO=$(extract_repo_from_git_remote "$remote_url")
         fi
+
+        [[ -z "$TITLE" ]] && fail "issue-create requires a title" 1
 
         EXIT_CODE=0
         RESULT=""
@@ -223,11 +254,15 @@
         fi
 
         if [[ $EXIT_CODE -eq 0 ]]; then
-          ISSUE_URL=$(echo "$RESULT" | grep -o "https://github.com/[^ ]*" | head -1)
-          ISSUE_NUM=$(echo "$RESULT" | grep -o "[0-9]*$")
+          local issue_url
+          issue_url=$(extract_url "$RESULT")
+          local issue_num=""
+          if [[ "$RESULT" =~ [0-9]+$ ]]; then
+            issue_num="${BASH_REMATCH[0]}"
+          fi
           jq -n --arg op "issue-create" --arg title "$TITLE" --arg repo "$REPO" \
-            --arg url "$ISSUE_URL" --arg number "''${ISSUE_NUM:-0}" --argjson code "$EXIT_CODE" --arg output "$RESULT" \
-            '{success: true, operation: $op, title: $title, repo: $repo, number: $number, url: $url, exit_code: $code, output: $output}'
+            --arg url "$issue_url" --arg number "${issue_num:-0}" --argjson code "$EXIT_CODE" \
+            '{success: true, operation: $op, title: $title, repo: $repo, number: $number, url: $url, exit_code: $code}'
         else
           jq -n --arg op "issue-create" --arg title "$TITLE" --arg repo "$REPO" \
             --argjson code "$EXIT_CODE" --arg error "$RESULT" \
@@ -242,14 +277,18 @@
 
         while [[ $# -gt 0 ]]; do
           case "$1" in
-            --repo=*) REPO="''${1#*=}" ;;
-            --limit=*) LIMIT="''${1#*=}" ;;
-            --state=*) STATE="''${1#*=}" ;;
+            --repo=*) REPO="${1#*=}" ;;
+            --limit=*) LIMIT="${1#*=}" ;;
+            --state=*) STATE="${1#*=}" ;;
           esac
           shift
         done
 
-        [[ -z "$REPO" ]] && REPO=$(git remote get-url origin 2>/dev/null | sed 's/.*github.com[:/]\(.*\)\.git/\1/' || echo "")
+        if [[ -z "$REPO" ]]; then
+          local remote_url
+          remote_url=$(git remote get-url origin 2>/dev/null || echo "")
+          REPO=$(extract_repo_from_git_remote "$remote_url")
+        fi
 
         EXIT_CODE=0
         RESULT=""
@@ -269,8 +308,7 @@
         ;;
 
       *)
-        fail "Unknown operation: $OP. Use pr-create, pr-list, issue-create, or issue-list" 1
-        ;;
+        fail "Unknown operation: $OP. Use pr-create, pr-list, issue-create, or issue-list" 1 ;;
     esac
-  '';
+  ';
 }
