@@ -2,6 +2,7 @@
 
 let
   cfg = config.services.openclaw;
+  templates = config.sops.templates;
 in
 {
   config = lib.mkIf cfg.enable {
@@ -14,6 +15,27 @@ in
     sops.secrets."openrouter-api-key" = {
       sopsFile = ../../../secrets/openclaw.yaml;
       owner = cfg.user;
+    };
+
+    sops.secrets."gh-token" = {
+      sopsFile = ../../../secrets/openclaw.yaml;
+      owner = cfg.user;
+    };
+
+    sops.secrets."claw-ssh-key" = {
+      sopsFile = ../../../secrets/openclaw.yaml;
+
+      owner = cfg.user;
+      mode = "0400";
+    };
+
+    sops.templates."github-agent-env" = {
+      owner = cfg.user;
+      group = cfg.group;
+
+      content = ''
+        GH_TOKEN=${config.sops.placeholder."gh-token"};
+      '';
     };
 
     # 2. Create an EnvironmentFile template
@@ -31,6 +53,18 @@ in
     systemd.services.openclaw = {
       after = [ "sops-nix.service" ];
       wants = [ "sops-nix.service" ];
+
+      serviceConfig.EnvironmentFile = [
+        templates."openclaw-env".path
+        templates."github-agent-env".path
+      ];
+
+      environment = {
+        GIT_SSH_COMMAND = "ssh -i ${
+          config.sops.secrets."claw-ssh-key".path
+        } -o StrictHostKeyChecking=accept-new";
+      };
     };
+
   };
 }
