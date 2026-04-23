@@ -24,6 +24,15 @@
             highlight = {
               backdrop = false;
             };
+
+            charActions = ''
+              function(motion)
+                return {
+                  [";"] = "next", -- keep standard vim behavior for next
+                  [","] = "prev", -- keep standard vim behavior for previous
+                }
+              end,
+            '';
             search = {
               highlight = {
                 backdrop = false;
