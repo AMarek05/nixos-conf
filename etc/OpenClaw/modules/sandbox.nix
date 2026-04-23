@@ -14,7 +14,8 @@ let
   cfg = config.services.openclaw;
   execCfg = cfg.sandboxedExecs;
 
-  workspace = cfg.workspace or "/var/lib/openclaw";
+  home = cfg.homedir or "/var/lib/openclaw";
+  workspace = cfg.workspace or "/var/lib/openclaw/workspace";
 
   coreutilsBins = [
     # File Ops
@@ -67,6 +68,7 @@ let
         "/etc"
         "/run/current-system"
         "/run/wrappers"
+        "${home}"
       ]
       ++ execCfg.extraReadOnlyDirs;
       rwDirs = [
@@ -84,7 +86,7 @@ let
           "--dev /dev"
 
           "--tmpfs /tmp"
-          "--tmpfs ${workspace}/.openclaw"
+          "--tmpfs ${home}/.openclaw"
 
           "--unshare-user"
           "--unshare-ipc"
@@ -176,11 +178,11 @@ in
             /nix/store/** rmix,
             
             # Allow the service to manage its own configuration
-            ${cfg.workspace}/.openclaw/** rwl,
-            ${cfg.workspace}/.openclaw/ rwl,
+            ${home}/.openclaw/** rwl,
+            ${home}/.openclaw/ rwl,
 
             # Full access to the rest of the workspace
-            ${cfg.workspace}/** rwl,
+            ${workspace}/** rwl,
             
             # Allow essential Node.js/V8 devices
             /dev/urandom r,

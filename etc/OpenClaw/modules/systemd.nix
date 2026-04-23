@@ -10,11 +10,6 @@ let
   cfg = config.services.openclaw;
   sandbox = cfg.sandboxedExecs;
 
-  # List of executables
-  binNames = builtins.attrNames (builtins.readDir "${sandbox.package}/bin/");
-  # List of string paths to each executable
-  absolutePaths = map (name: "${sandbox.package}/bin/${name}") binNames;
-
   baselineApprovals = pkgs.writeText "exec-approvals.json" (
     builtins.toJSON {
       version = 1;
@@ -193,16 +188,16 @@ in
 
       preStart = ''
           # Ensure Agent directory exists
-            ${pkgs.coreutils}/bin/mkdir -p ${cfg.workspace}/.openclaw/agents/main/agent
+            ${pkgs.coreutils}/bin/mkdir -p ${cfg.homedir}/.openclaw/agents/main/agent
 
             # 1. Sync Global Config & Preserve Token
             if [ -f ${cfg.workspace}/.openclaw/openclaw.json ]; then
-              TOKEN=$(${pkgs.jq}/bin/jq -r '.gateway.auth.token // "null"' ${cfg.workspace}/.openclaw/openclaw.json)
+              TOKEN=$(${pkgs.jq}/bin/jq -r '.gateway.auth.token // "null"' ${cfg.homedir}/.openclaw/openclaw.json)
               ${pkgs.jq}/bin/jq --arg tok "$TOKEN" \
                 'if $tok != "null" then .gateway.auth.token = $tok else . end' \
-                ${openclawConfigFile} > ${cfg.workspace}/.openclaw/openclaw.json
+                ${openclawConfigFile} > ${cfg.homedir}/.openclaw/openclaw.json
             else
-              ${pkgs.coreutils}/bin/cp ${openclawConfigFile} ${cfg.workspace}/.openclaw/openclaw.json
+              ${pkgs.coreutils}/bin/cp ${openclawConfigFile} ${cfg.homedir}/.openclaw/openclaw.json
             fi
 
             # 2. Inject Secrets into Agent Auth Profile (NESTED PROFILES SCHEMA)
@@ -223,9 +218,9 @@ in
                   }
                 }
               }' \
-              > ${cfg.workspace}/.openclaw/agents/main/agent/auth-profiles.json
+              > ${cfg.homedir}/.openclaw/agents/main/agent/auth-profiles.json
 
-            APPROVALS_FILE="${cfg.workspace}/.openclaw/exec-approvals.json"
+            APPROVALS_FILE="${cfg.homedir}/.openclaw/exec-approvals.json"
 
         if [ -f "$APPROVALS_FILE" ]; then
           # We merge the Nix baseline with the existing file.
@@ -238,15 +233,15 @@ in
               | unique_by(.pattern)
             )
           ' "$APPROVALS_FILE" > "$APPROVALS_FILE.tmp"
-          
+
           ${pkgs.coreutils}/bin/mv "$APPROVALS_FILE.tmp" "$APPROVALS_FILE"
         else
           # Fresh install: just copy the baseline
           ${pkgs.coreutils}/bin/cp --no-preserve=mode,ownership ${baselineApprovals} "$APPROVALS_FILE"
         fi
 
-            ${pkgs.coreutils}/bin/chmod 600 ${cfg.workspace}/.openclaw/openclaw.json
-            ${pkgs.coreutils}/bin/chmod 600 ${cfg.workspace}/.openclaw/agents/main/agent/auth-profiles.json
+            ${pkgs.coreutils}/bin/chmod 600 ${cfg.homedir}/.openclaw/openclaw.json
+            ${pkgs.coreutils}/bin/chmod 600 ${cfg.homedir}/.openclaw/agents/main/agent/auth-profiles.json
             ${pkgs.coreutils}/bin/chmod 600 "$APPROVALS_FILE"
       '';
 
