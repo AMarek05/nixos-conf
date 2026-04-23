@@ -72,9 +72,15 @@ in
       description = "The OpenClaw package to use.";
     };
 
-    workspace = lib.mkOption {
+    homedir = lib.mkOption {
       type = lib.types.path;
       default = "/var/lib/openclaw";
+      description = "The OpenClaw user home directory";
+    };
+
+    workspace = lib.mkOption {
+      type = lib.types.path;
+      default = "${cfg.homedir}/workspace";
       description = "The sandboxed workspace directory for OpenClaw.";
     };
 
