@@ -3,7 +3,7 @@ use std::fs::{self, OpenOptions};
 use std::io::Write;
 use std::path::Path;
 
-const WORKSPACE: &str = "/var/lib/openclaw";
+const WORKSPACE: &str = "/var/lib/openclaw/workspace";
 
 fn main() {
     let args: Vec<String> = env::args().collect();
