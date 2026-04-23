@@ -83,6 +83,25 @@
       desc = "Increase width";
     }
 
+    # Buffers
+    {
+      key = "<leader>bc";
+      mode = [ "n" ];
+      action = "function() {
+          local current_buf = vim.api.nvim_get_current_buf()
+          local buffers = vim.api.nvim_list_bufs()
+
+          for _, bufnr in ipairs(buffers) do
+            if bufnr ~= current_buf and vim.api.nvim_buf_is_loaded(bufnr) and vim.bo[bufnr].buflisted then
+              -- Use pcall to avoid errors if a buffer is modified and 'hidden' isn't set
+              pcall(vim.api.nvim_buf_delete, bufnr, { force = false })
+            end
+          end
+        end
+      }";
+      desc = "[B]uffers [c]lose";
+    }
+
     # Tabs
     {
       key = "<C-n>";
@@ -156,24 +175,6 @@
       mode = [ "n" ];
       action = "<cmd>OverseerToggle<CR>";
       desc = "Toggle task list";
-    }
-    {
-      key = "<leader>oc";
-      mode = [ "n" ];
-      action = "<cmd>OverseerRunCmd<CR>";
-      desc = "Run command";
-    }
-    {
-      key = "<leader>oq";
-      mode = [ "n" ];
-      action = "<cmd>OverseerQuickAction<CR>";
-      desc = "Quick Action";
-    }
-    {
-      key = "<leader>oi";
-      mode = [ "n" ];
-      action = "<cmd>OverseerInfo<CR>";
-      desc = "Overseer Info";
     }
 
     ## Undotree
