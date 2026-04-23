@@ -113,16 +113,62 @@ let
 
   generatedToolsDoc = pkgs.writeText "TOOLS.md" fullMarkdown;
 
-  # Package each tool into an immutable Nix store binary
-  # We wrap the script to ensure its specific dependencies are in its PATH
   toolPackages = map (
-    tool:
+    rawTool:
     let
-      innerScript = pkgs.writeShellScript "${tool.name}-inner" tool.script;
+      # Automatically inject the --help flag into the tool's arguments
+      helpFlag = {
+        name = "--help|-h";
+        desc = "Show this help message";
+        default = "false";
+      };
+
+      # Combine existing arguments (if any) with the universal help flag
+      enhancedArgs = (rawTool.arguments or [ ]) ++ [ helpFlag ];
+
+      # Override the tool object with the newly enhanced arguments list
+      tool = rawTool // {
+        arguments = enhancedArgs;
+      };
+
+      innerScript =
+        if builtins.isPath tool.script then
+          tool.script
+        else
+          pkgs.writeShellScript "${tool.name}-inner" tool.script;
+
       scriptPath = tool.dependencies ++ cfg.servicePath;
+
+      # 2. Pre-compute the help text using the updated tool object
+      helpText = ''
+        ${tool.name} - ${tool.description or "No description provided."}
+
+        USAGE:
+          ${tool.usage or "${tool.name} [args...]"}
+        ${lib.optionalString (builtins.length tool.arguments > 0) ''
+
+          ARGUMENTS:
+          ${lib.concatMapStringsSep "\n" (
+            a: "  ${a.name}\n      Description: ${a.desc}\n      Default: ${a.default}"
+          ) tool.arguments}''}
+        ${lib.optionalString (tool ? examples && builtins.length tool.examples > 0) ''
+
+          EXAMPLES:
+          ${lib.concatMapStringsSep "\n" (e: "  ${e}") tool.examples}''}
+      '';
+
     in
     pkgs.writeShellScriptBin tool.name ''
       set -euo pipefail
+
+      # Universal Help Provider: Intercept --help or -h
+      if [[ "''${1:-}" == "--help" || "''${1:-}" == "-h" ]]; then
+        cat << 'EOF'
+      ${helpText}
+      EOF
+        exit 0
+      fi
+
       export OPENCLAW_TOOL="${tool.name}"
       export WORKSPACE="${cfg.workspace}"
       export PATH="${lib.makeBinPath scriptPath}"
