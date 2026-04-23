@@ -62,9 +62,6 @@
       sharedModules = [
         ./etc/configuration.nix
 
-        ./etc/openclaw.nix
-
-        nix-openclaw.nixosModules.openclaw-gateway
         sops-nix.nixosModules.sops
       ];
     in
@@ -77,6 +74,8 @@
 
           modules = sharedModules ++ [
             ./etc/hosts/nixos-hardware.nix
+            ./etc/openclaw.nix
+            nix-openclaw.nixosModules.openclaw-gateway
 
             ./etc/nvidia.nix
             {
