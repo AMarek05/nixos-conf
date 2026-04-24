@@ -115,6 +115,8 @@ let
     # Re-hydrate the PATH from nothing
     export PATH="${lib.makeBinPath (cfg.servicePath)}"
 
+    export DISCORD_BOT_TOKEN=$(${pkgs.coreutils}/bin/cat ${config.sops.secrets."claw-bot-key".path}) 
+
     # Pass all arguments to the real binary
     exec ${lib.getExe cfg.package} gateway --verbose "$@"
   '';
@@ -195,11 +197,12 @@ in
             ${pkgs.coreutils}/bin/mkdir -p ${cfg.homedir}/.openclaw/agents/main/agent
 
             # 1. Sync Global Config & Preserve Token
-            if [ -f ${cfg.workspace}/.openclaw/openclaw.json ]; then
-              TOKEN=$(${pkgs.jq}/bin/jq -r '.gateway.auth.token // "null"' ${cfg.homedir}/.openclaw/openclaw.json)
-              ${pkgs.jq}/bin/jq --arg tok "$TOKEN" \
-                'if $tok != "null" then .gateway.auth.token = $tok else . end' \
-                ${openclawConfigFile} > ${cfg.homedir}/.openclaw/openclaw.json
+            if [ -f ${cfg.homedir}/.openclaw/openclaw.json ]; then
+              ${pkgs.jq}/bin/jq -s '.[0] * .[1]' \
+                ${cfg.homedir}/.openclaw/openclaw.json \
+                ${openclawConfigFile} > ${cfg.homedir}/.openclaw/openclaw_tmp.json
+
+              mv ${cfg.homedir}/.openclaw/openclaw_tmp.json ${cfg.homedir}/.openclaw/openclaw.json
             else
               ${pkgs.coreutils}/bin/cp ${openclawConfigFile} ${cfg.homedir}/.openclaw/openclaw.json
             fi
@@ -224,7 +227,7 @@ in
                   "minimax:global": {
                     "type": "api_key",
                     "provider": "minimax",
-                    "key": "$mn_key"
+                    "key": $mn_key
                   }
                 }
               }' \
