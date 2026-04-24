@@ -37,16 +37,18 @@ ENCODING="auto"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --lines=*) LINES="${1#*=}" shift ;;
-    --offset=*) OFFSET="${1#*=}" shift ;;
-    --encoding=*) ENCODING="${1#*=}" shift ;;
-    -*) echo "{\"error\": \"Unknown option: $1\"}" >&2 exit 1 ;;
-    *)
-      if [[ -z "$PATH_ARG" ]]; then PATH_ARG="$1"
-      else echo "{\"error\": \"Unexpected argument: $1\"}" >&2 exit 1
-      fi
-      shift
-      ;;
+  --lines=*) LINES="${1#*=}" shift ;;
+  --offset=*) OFFSET="${1#*=}" shift ;;
+  --encoding=*) ENCODING="${1#*=}" shift ;;
+  -*) echo "{\"error\": \"Unknown option: $1\"}" exit 1 >&2 ;;
+  *)
+    if [[ -z "$PATH_ARG" ]]; then
+      PATH_ARG="$1"
+    else
+      echo "{\"error\": \"Unexpected argument: $1\"}" exit 1 >&2
+    fi
+    shift
+    ;;
   esac
 done
 
@@ -99,21 +101,21 @@ main() {
   local mime_type detected_encoding
   mime_type="$(detect_type "$target_path")"
   case "$ENCODING" in
-    auto)
-      if [[ "$mime_type" == text/* || "$mime_type" == application/json* ]]; then
-        detected_encoding="text"
-      else
-        detected_encoding="base64"
-      fi
-      ;;
-    utf-8|text) detected_encoding="text" ;;
-    base64|hex) detected_encoding="$ENCODING" ;;
-    *) echo "{\"error\": \"Unknown encoding: $ENCODING\"}" >&2 exit 1 ;;
+  auto)
+    if [[ "$mime_type" == text/* || "$mime_type" == application/json* ]]; then
+      detected_encoding="text"
+    else
+      detected_encoding="base64"
+    fi
+    ;;
+  utf-8 | text) detected_encoding="text" ;;
+  base64 | hex) detected_encoding="$ENCODING" ;;
+  *) echo "{\"error\": \"Unknown encoding: $ENCODING\"}" exit 1 >&2 ;;
   esac
 
   local content lines_read total_lines
   if [[ "$detected_encoding" == "text" ]]; then
-    total_lines="$(wc -l < "$target_path")"
+    total_lines="$(wc -l <"$target_path")"
     local read_lines="${LINES:-$DEFAULT_LINES}"
     [[ $read_lines -gt $MAX_LINES ]] && read_lines=$MAX_LINES
     if [[ -n "$OFFSET" ]]; then
@@ -157,3 +159,4 @@ EOF
 }
 
 main
+
