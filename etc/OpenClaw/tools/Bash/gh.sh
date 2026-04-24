@@ -138,7 +138,7 @@ case "$OP" in
     fi
     ;;
   pr-list)
-    gh_cmd_args+=(--limit "$LIMIT" --state "$STATE" --json number title state url author createdAt)
+    gh_cmd_args+=(--limit "$LIMIT" --state "$STATE" --json number,title,state,url,author,createdAt)
     RESULT=$(gh pr list "${gh_cmd_args[@]}" 2>&1) || EXIT_CODE=$?
     if [[ $EXIT_CODE -eq 0 ]]; then
       printf "%s\n" "$RESULT" | jq -c --arg op "$OP" --arg repo "$REPO" '{success: true, operation: $op, repo: $repo, count: (. | length), prs: .}'
@@ -166,7 +166,7 @@ case "$OP" in
     fi
     ;;
   issue-list)
-    gh_cmd_args+=(--limit "$LIMIT" --state "$STATE" --json number title state url author createdAt)
+    gh_cmd_args+=(--limit "$LIMIT" --state "$STATE" --json number,title,state,url,author,createdAt)
     RESULT=$(gh issue list "${gh_cmd_args[@]}" 2>&1) || EXIT_CODE=$?
     if [[ $EXIT_CODE -eq 0 ]]; then
       printf "%s\n" "$RESULT" | jq -c --arg op "$OP" --arg repo "$REPO" '{success: true, operation: $op, repo: $repo, count: (. | length), issues: .}'
