@@ -9,7 +9,7 @@
 }:
 
 {
-  name = "git";
+  name = "git-agent";
   permissions = "0750";
 
   description = "Transparent git wrapper for SSH key provision";
@@ -48,12 +48,6 @@
 
     get_ssh_key() {
       echo "${config.sops.secrets."claw-ssh-key".path}"
-    }
-
-    check_push_safe() {
-      local branch="$1"
-      [[ "$branch" =~ ^(main|master)$ ]] && fail "Push to '$branch' is not allowed. Use a feature branch." 1
-      true
     }
 
     # Universally apply SSH key for ALL git commands (clone, fetch, pull, push)

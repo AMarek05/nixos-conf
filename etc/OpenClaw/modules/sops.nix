@@ -29,6 +29,11 @@ in
       mode = "0400";
     };
 
+    sops.secrets."minimax-api-key" = {
+      sopsFile = ../../../secrets/openclaw.yaml;
+      owner = cfg.user;
+    };
+
     sops.templates."github-agent-env" = {
       owner = cfg.user;
       group = cfg.group;
