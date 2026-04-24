@@ -40,7 +40,6 @@ let
     agents.defaults.workspace = cfg.workspace;
 
     tools.deny = [
-      "group:fs"
       "group:ui"
       "group:media"
       "shell"

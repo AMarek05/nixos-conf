@@ -25,8 +25,8 @@ let
 
 in
 {
-  name = "write";
-  description = "Safe, binary-level file writer for OpenClaw";
+  name = "old-write";
+  description = "Safe, but unnecessary, binary-level file writer for OpenClaw - example for Rust tool.";
   permissions = "0750";
   usage = "write <filepath> <content> [--append]";
 

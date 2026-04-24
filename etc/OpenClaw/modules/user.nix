@@ -37,7 +37,7 @@ in
       "d ${cfg.workspace} 2770 ${cfg.user} ${cfg.group} -"
 
       # Set sticky permissions
-      "a+ ${cfg.workspace} - - - - default:user::rw-,default:group::rw-,default:other::---"
+      "a+ ${cfg.workspace} - - - - default:user::rwx,default:group::rwx,default:other::---"
 
       # Configuration directory
       "d ${cfg.homedir}/.openclaw 0700 ${cfg.user} ${cfg.group} -"
