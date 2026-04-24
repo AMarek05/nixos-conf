@@ -58,12 +58,6 @@ fn main() {
         std::process::exit(1);
     }
 
-    // Block .openclaw
-    if resolved.contains(".openclaw") {
-        eprintln!("{{\"error\": \"Security: Modifying files inside .openclaw is prohibited.\"}}");
-        std::process::exit(1);
-    }
-
     // Create parent dirs
     if let Some(parent) = path.parent() {
         if let Err(e) = fs::create_dir_all(parent) {
