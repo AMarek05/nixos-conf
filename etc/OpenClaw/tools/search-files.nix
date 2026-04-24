@@ -55,6 +55,7 @@
   ];
 
   dependencies = with pkgs; [
+    fd
     coreutils
     ripgrep
     jq
