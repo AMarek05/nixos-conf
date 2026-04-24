@@ -1,3 +1,7 @@
+# OpenClaw Tool: git-agent
+# Description: Agentic git tool with push support (non-main branches only), clone, fetch, pull, commit, checkout, branch operations.
+# Supports both HTTPS and SSH GitHub integration.
+
 {
   pkgs,
   config,
