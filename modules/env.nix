@@ -11,7 +11,7 @@
 
   config = lib.mkIf config.modules.env.enable {
     home.sessionVariables = {
-      SHELL = pkgs.zsh;
+      SHELL = "${pkgs.zsh}/bin/zsh";
       NH_FLAKE = "/home/adam/sys";
       EDITOR = "nvim";
       VISUAL = "nvim";
