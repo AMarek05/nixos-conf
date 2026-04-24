@@ -17,6 +17,11 @@ in
       owner = cfg.user;
     };
 
+    sops.secrets."minimax-api-key" = {
+      sopsFile = ../../../secrets/openclaw.yaml;
+      owner = cfg.user;
+    };
+
     sops.secrets."gh-token" = {
       sopsFile = ../../../secrets/openclaw.yaml;
       owner = cfg.user;
@@ -29,8 +34,9 @@ in
       mode = "0400";
     };
 
-    sops.secrets."minimax-api-key" = {
+    sops.secrets."claw-bot-key" = {
       sopsFile = ../../../secrets/openclaw.yaml;
+
       owner = cfg.user;
     };
 
