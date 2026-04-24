@@ -32,6 +32,9 @@ in
       nvd
       cachix
 
+      emacs
+      pandoc
+
       wl-clipboard
       bat
       imv
