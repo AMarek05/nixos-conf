@@ -37,7 +37,12 @@ let
       bind = "loopback";
     };
 
-    agents.defaults.workspace = cfg.workspace;
+    agents.defaults = {
+      workspace = cfg.workspace;
+
+      model.primary = cfg.defaultModel;
+      models."${cfg.defaultModel}".alias = cfg.modelAlias;
+    };
 
     tools.deny = [
       "group:ui"
@@ -202,6 +207,7 @@ in
             # 2. Inject Secrets into Agent Auth Profile (NESTED PROFILES SCHEMA)
             ${pkgs.jq}/bin/jq -n \
               --arg nv_key "$(${pkgs.coreutils}/bin/cat ${config.sops.secrets."nim-api-key".path})" \
+              --arg mn_key "$(${pkgs.coreutils}/bin/cat ${config.sops.secrets."minimax-api-key".path})" \
               --arg or_key "$(${pkgs.coreutils}/bin/cat ${config.sops.secrets."openrouter-api-key".path})" \
               '{
                 "profiles": {
@@ -214,6 +220,11 @@ in
                     "type": "api_key",
                     "provider": "openrouter",
                     "key": $or_key
+                  },
+                  "minimax:global": {
+                    "type": "api_key",
+                    "provider": "minimax",
+                    "key": "$mn_key"
                   }
                 }
               }' \

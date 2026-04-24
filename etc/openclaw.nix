@@ -117,8 +117,14 @@ in
 
     defaultModel = lib.mkOption {
       type = lib.types.str;
-      default = "nvidia-nim/z-ai/glm-5.1";
+      default = "";
       description = "Default model to use.";
+    };
+
+    modelAlias = lib.mkOption {
+      type = lib.types.str;
+      default = "";
+      description = "The alias to use for the default model.";
     };
 
     # Additional configuration
@@ -171,6 +177,10 @@ in
   config = {
     services.openclaw = {
       enable = true;
+
+      defaultModel = "minimax/MiniMax-M2.7";
+      defaultProvider = "minimax";
+      modelAlias = "Minimax";
 
       sandboxedExecs.extraBins = {
         "jq" = pkgs.jq.bin;
