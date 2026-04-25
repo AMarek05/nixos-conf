@@ -3,9 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
-
     hyprland.url = "github:hyprwm/Hyprland";
 
     home-manager = {
@@ -61,10 +59,28 @@
     }@inputs:
 
     let
+      openldapOverlay = final: prev: {
+        openldap =
+          if prev.stdenv.hostPlatform.isi686 then
+            prev.openldap.overrideAttrs (old: {
+              doCheck = false;
+            })
+          else
+            prev.openldap;
+      };
+
+      hmPkgs = import nixpkgs {
+        system = "x86_64-linux";
+
+        config.allowUnfree = true;
+        overlays = [ openldapOverlay ];
+      };
+
       sharedModules = [
         ./etc/configuration.nix
-
         sops-nix.nixosModules.sops
+
+        { nixpkgs.overlays = [ openldapOverlay ]; }
       ];
     in
 
@@ -78,7 +94,6 @@
             ./etc/hosts/nixos-hardware.nix
             ./etc/openclaw.nix
             nix-openclaw.nixosModules.openclaw-gateway
-
             ./etc/nvidia.nix
             {
               networking.hostName = nixpkgs.lib.mkForce "nixos";
@@ -125,20 +140,23 @@
           ];
         };
       };
+
       homeConfigurations = {
         "adam@nixos" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages."x86_64-linux";
+          pkgs = hmPkgs;
 
           modules = [
             ./hosts/nixos.nix
+            ./modules/forge.nix
           ];
 
           extraSpecialArgs = {
             inherit inputs;
           };
         };
+
         "adam@nixos-laptop" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages."x86_64-linux";
+          pkgs = hmPkgs;
 
           modules = [
             ./hosts/nixos-laptop.nix
@@ -157,8 +175,9 @@
             inherit inputs;
           };
         };
+
         "adam@nixos-wsl" = home-manager.lib.homeManagerConfiguration {
-          pkgs = nixpkgs.legacyPackages."x86_64-linux";
+          pkgs = hmPkgs;
 
           modules = [
             ./hosts/nixos-wsl.nix
