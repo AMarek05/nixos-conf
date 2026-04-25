@@ -51,7 +51,7 @@
       ld = "eza -lhD --icons=auto";
       lt = "eza      --icons=auto --tree";
 
-      st = "/mnt/Shared/SillyTavern/SillyTavern/start.sh";
+      st = "/home/adam/sync/SillyTavern/SillyTavern/start.sh";
 
       polluks = "ssh -A inf164182@polluks.cs.put.poznan.pl";
 
@@ -63,6 +63,8 @@
 
       nho = "nh os switch";
       nhh = "nh home switch";
+
+      rsync = "rsync --info=progress2";
 
       hellfire = "sudo snx-rs -s hellfire.put.poznan.pl -u adam.marek@student.put.poznan.pl -o vpn_Username_Password";
 
