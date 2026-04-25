@@ -83,6 +83,8 @@ let
 
     To interact with the system, you must use the custom tools defined below via your `exec` capability. **Do not attempt to use shell pipes (`|`), redirections (`>`), or command chaining (`&&`). They will require approval.
 
+    ! Do NOT redirect stderr to stdout ! Doing so triggers an unnecessary approval prompt, both stdout and stderr are displayed side by side by default anyways.
+
     Your allowed executables include: [ ${formattedBinNames} ]
 
     All of these are overwritten to only work in your workspace. If at any point you are confused about the usage, refer to this file, to the docs below.

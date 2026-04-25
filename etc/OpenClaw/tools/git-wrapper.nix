@@ -9,7 +9,7 @@
 }:
 
 {
-  name = "git-agent";
+  name = "git-wrapper";
   permissions = "0750";
 
   description = "Transparent git wrapper for SSH key provision";
