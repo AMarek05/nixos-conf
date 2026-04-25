@@ -43,9 +43,6 @@ in
       "d ${cfg.homedir}/.openclaw 0700 ${cfg.user} ${cfg.group} -"
       "a+ ${cfg.homedir}/.openclaw - - - - default:user::rwx,default:group::---,default:other::---"
 
-      # Logs directory
-      "d ${cfg.workspace}/logs 0700 ${cfg.user} ${cfg.group} -"
-
       # Sessions directory
       "d ${cfg.homedir}/.openclaw/sessions 0700 ${cfg.user} ${cfg.group} -"
 
