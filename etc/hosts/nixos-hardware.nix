@@ -41,6 +41,15 @@
     ];
   };
 
+  fileSystems."/nix" = {
+    device = "/dev/disk/by-uuid/d8f63bb3-77bc-4f3f-96d0-1f8b0a94ac85";
+    fsType = "btrfs";
+    options = [
+      "compress=zstd"
+      "noatime"
+    ];
+  };
+
   fileSystems."/mnt/Shared" = {
     device = "/dev/disk/by-partuuid/052588a6-a32b-11ee-b2b0-74e5f9857e91";
     fsType = "ntfs";
