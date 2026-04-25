@@ -261,6 +261,8 @@
     man-pages
 
     rclone
+    gparted-full
+
     alsa-ucm-conf
     alsa-utils
 
@@ -339,6 +341,8 @@
   programs.dconf.enable = true;
 
   services.flatpak.enable = true;
+
+  programs.steam.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.

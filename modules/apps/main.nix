@@ -33,7 +33,6 @@
       snx-rs
 
       umu-launcher
-      steam
       flatpak
       prismlauncher
       ftb-app
@@ -50,7 +49,12 @@
       libreoffice-fresh
     ];
 
-    programs.firefox.enable = true;
+    programs.firefox = {
+      enable = true;
+
+      configPath = "${config.xdg.configHome}/mozilla/firefox";
+    };
+
     programs.zen-browser.enable = true;
   };
 }
