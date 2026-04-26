@@ -354,11 +354,11 @@
         "nixpkgs-mozilla": "nixpkgs-mozilla"
       },
       "locked": {
-        "lastModified": 1777233976,
-        "narHash": "sha256-whhfEalw8hRHmXKJIViB+iYVznT5QGZUkWQJnYIbvJc=",
+        "lastModified": 1777246346,
+        "narHash": "sha256-jTtLeX5/OHz5/NOqec7xF54mjqLNs0sP+u0hxxoORv8=",
         "owner": "AMarek05",
         "repo": "forge",
-        "rev": "91bb162fef7e0b5df93f9e894e5b3fa7f1629656",
+        "rev": "68be1d71aeabc054a05e43d1c0974eb406e38edd",
         "type": "github"
       },
       "original": {
@@ -794,8 +794,8 @@
         "url": "https://git.lix.systems/lix-project/lix"
       },
       "original": {
-        "type": "git",
-        "url": "https://git.lix.systems/lix-project/lix"
+        "type": "tarball",
+        "url": "https://git.lix.systems/lix-project/lix/archive/main.tar.gz"
       }
     },
     "lix-module": {
