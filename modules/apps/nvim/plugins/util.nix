@@ -11,15 +11,13 @@
       };
     };
 
+    autopairs.nvim-autopairs.enable = true;
+    comments.comment-nvim.enable = true;
 
     utility = {
       sleuth.enable = true;
       surround.enable = true;
       undotree.enable = true;
-
-
-      autopairs.nvim-autopairs.enable = true;
-      comments.comment-nvim.enable = true;
 
       oil-nvim = {
         enable = true;

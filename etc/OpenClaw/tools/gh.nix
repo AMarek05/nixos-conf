@@ -5,7 +5,7 @@
 }:
 
 {
-  name = "gh-wrapper";
+  name = "gh";
   permissions = "0750";
   description = "GitHub CLI transparent wrapper";
   usage = "Typical gh";
