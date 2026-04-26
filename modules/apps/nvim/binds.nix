@@ -188,6 +188,20 @@
         desc = "Open [U]ndotree";
       }
 
+      ## Git / Gitsigns
+      {
+        key = "<leader>gtb";
+        mode = [ "n" ];
+        action = "<cmd>Git blame<CR>";
+        desc = "[Git] [T]oggle [B]lame";
+      }
+      {
+        key = "<leader>gtd";
+        mode = [ "n" ];
+        action = "<cmd>Gitsigns toggle_deleted<CR>";
+        desc = "[Git] [T]oggle [D]eleted";
+      }
+
       ## Diffview [g]it
       {
         key = "<leader>gd";
@@ -238,6 +252,8 @@
       local wk = require("which-key")
       wk.add({
         { "<leader>gt", group = "Git" },
+        { "<leader>gtb", group = "Git", desc = "Toggle blame" },
+        { "<leader>gtd", group = "Git", desc = "Toggle deleted" },
       })
     '';
 
