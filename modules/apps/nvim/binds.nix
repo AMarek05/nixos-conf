@@ -224,7 +224,7 @@
 
     luaConfigRC.whichkey = ''
       local wk = require("which-key")
-      wk.register({
+      wk.add({
         { "<leader>s", group = "Search" },
         { "<leader>o", group = "Tasks" },
         { "<leader>u", group = "Undo" },
