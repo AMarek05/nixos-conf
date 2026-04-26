@@ -397,7 +397,10 @@
         { "<leader>gt", group = "Git Toggle" },
         { "<leader>gC", group = "Git Conflict" },
         { "<leader>l", group = "LSP" },
+        { "<leader>lg", group = "Goto" },
+        { "<leader>lt", group = "LSP Toggle" },
         { "<leader>lw", group = "Workspace" },
+        { "<leader>x", group = "Trouble" },
       })
     '';
 

@@ -6,7 +6,7 @@
 
       lspSignature.enable = false;  # Incompatible with blink-cmp, use blink's builtin signature
       trouble = {
-        enable = false;  # Not installed
+        enable = true;
       };
 
       formatOnSave = true;
