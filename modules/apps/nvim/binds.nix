@@ -1,7 +1,23 @@
-{ ... }:
+{
+  lib,
+  config,
+  options,
+  ...
+}:
+let
+  inherit (lib.nvim.binds) pushDownDefault mkKeymap;
+in
 {
   programs.nvf.settings.vim = {
     binds.whichKey.enable = true;
+    binds.whichKey.register = pushDownDefault {
+      "<leader>s" = "+Search";
+      "<leader>o" = "+Tasks";
+      "<leader>u" = "+Undo";
+      "<leader>g" = "+Git";
+      "<leader>b" = "+Buffer";
+      "<leader>t" = "+Tabs";
+    };
 
     keymaps = [
       {
@@ -174,6 +190,20 @@
         mode = [ "n" ];
         action = "<cmd>UndotreeToggle<CR>";
         desc = "Open [U]ndotree";
+      }
+
+      ## Diffview [g]it
+      {
+        key = "<leader>gd";
+        mode = [ "n" ];
+        action = "<cmd>DiffviewOpen<CR>";
+        desc = "[Git] Diffview open";
+      }
+      {
+        key = "<leader>gD";
+        mode = [ "n" ];
+        action = "<cmd>DiffviewClose<CR>";
+        desc = "[Git] Diffview close";
       }
 
       ## FLash
