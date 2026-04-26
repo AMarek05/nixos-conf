@@ -58,9 +58,9 @@ let
   generateSkillMd = tool:
     let
       argsStr = lib.concatMapStringsSep "\n" (a: ''
-        - `${a.name}` - ${a.desc} (default: `${a.default or "-"}`)'') tool.arguments;
-      examplesStr = lib.concatMapStringsSep "\n" (e: ''- `${e}`'') tool.examples;
-      depsStr = lib.concatMapStringsSep ", " (d: "`${d}`") tool.dependencies;
+        - `${a.name}` - ${a.desc} (default: `${a.default or "-"}`)'') (tool.arguments or []);
+      examplesStr = lib.concatMapStringsSep "\n" (e: ''- `${e}`'') (tool.examples or []);
+      depsStr = lib.concatMapStringsSep ", " (d: "`${d}`") (tool.dependencies or []);
     in
     ''
     ---
@@ -72,7 +72,7 @@ let
           - name: ${tool.name}
             description: ${tool.description}
             arguments:
-              ${lib.optionalString (tool.arguments != [ ]) argsStr}
+              ${lib.optionalString ((tool.arguments or []) != [ ]) argsStr}
     ---
 
     # ${tool.name}
@@ -85,7 +85,7 @@ let
     ${tool.usage or tool.name}
     ```
 
-    ${lib.optionalString (tool.arguments != [ ]) ''
+    ${lib.optionalString ((tool.arguments or []) != [ ]) ''
     ## Arguments
 
     ${argsStr}
