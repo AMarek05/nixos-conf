@@ -133,6 +133,60 @@
 
       # Telescope
       {
+        key = "<leader>sf";
+        mode = [ "n" ];
+        action = "<cmd>Telescope find_files<CR>";
+        desc = "[Search] Find files";
+      }
+      {
+        key = "<leader>sp";
+        mode = [ "n" ];
+        action = "<cmd>Telescope find_projects<CR>";
+        desc = "[Search] Find project";
+      }
+      {
+        key = "<leader>sg";
+        mode = [ "n" ];
+        action = "<cmd>Telescope live_grep<CR>";
+        desc = "[Search] Grep";
+      }
+      {
+        key = "<leader>sb";
+        mode = [ "n" ];
+        action = "<cmd>Telescope buffers<CR>";
+        desc = "[Search] Buffers";
+      }
+      {
+        key = "<leader>sh";
+        mode = [ "n" ];
+        action = "<cmd>Telescope help_tags<CR>";
+        desc = "[Search] Help tags";
+      }
+      {
+        key = "<leader>st";
+        mode = [ "n" ];
+        action = "<cmd>Telescope<CR>";
+        desc = "[Search] Telescope open";
+      }
+      {
+        key = "<leader>sr";
+        mode = [ "n" ];
+        action = "<cmd>Telescope resume<CR>";
+        desc = "[Search] Resume last search";
+      }
+      {
+        key = "<leader>ss";
+        mode = [ "n" ];
+        action = "<cmd>Telescope treesitter<CR>";
+        desc = "[Search] Treesitter symbols";
+      }
+      {
+        key = "<leader>sd";
+        mode = [ "n" ];
+        action = "<cmd>Telescope diagnostics<CR>";
+        desc = "[Search] Diagnostics";
+      }
+      {
         key = "<leader>s.";
         mode = [ "n" ];
         action = "<cmd>Telescope oldfiles<CR>";
@@ -188,7 +242,31 @@
         desc = "Open [U]ndotree";
       }
 
-      ## Git / Gitsigns / Diffview
+      ## Git / Gitsigns / Diffview / Conflict
+      {
+        key = "<leader>gCo";
+        mode = [ "n" ];
+        action = "<cmd>GitConflictConflicthunk ours<CR>";
+        desc = "[Git] Conflict choose [O]urs";
+      }
+      {
+        key = "<leader>gCt";
+        mode = [ "n" ];
+        action = "<cmd>GitConflictConflicthunk theirs<CR>";
+        desc = "[Git] Conflict choose [T]heirs";
+      }
+      {
+        key = "<leader>gCb";
+        mode = [ "n" ];
+        action = "<cmd>GitConflictConflicthunk both<CR>";
+        desc = "[Git] Conflict choose [B]oth";
+      }
+      {
+        key = "<leader>gC0";
+        mode = [ "n" ];
+        action = "<cmd>GitConflictConflicthunk none<CR>";
+        desc = "[Git] Conflict choose [N]one";
+      }
       {
         key = "<leader>ghs";
         mode = [ "n" ];
@@ -304,13 +382,14 @@
       local wk = require("which-key")
       wk.add({
         { "<leader>s", group = "Search" },
-        { "<leader>o", group = "Tasks" },
+        { "<leader>o", group = "Open" },
         { "<leader>u", group = "Undo" },
         { "<leader>b", group = "Buffer" },
         { "<leader>t", group = "Tabs" },
         { "<leader>g", group = "Git" },
         { "<leader>gh", group = "Git Hunk" },
-        { "<leader>gt", group = "Git" },
+        { "<leader>gt", group = "Git Toggle" },
+        { "<leader>gC", group = "Git Conflict" },
       })
     '';
 
