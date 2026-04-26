@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 {
   programs.nvf.settings.vim = {
     git = {
@@ -6,8 +6,17 @@
       neogit.enable = true;
       gitsigns = {
         mappings = {
-          toggleBlame = "";
-          toggleDeleted = "";
+          stageHunk = lib.mkForce null;
+          undoStageHunk = lib.mkForce null;
+          resetHunk = lib.mkForce null;
+          stageBuffer = lib.mkForce null;
+          resetBuffer = lib.mkForce null;
+          previewHunk = lib.mkForce null;
+          blameLine = lib.mkForce null;
+          toggleBlame = lib.mkForce null;
+          diffThis = lib.mkForce null;
+          diffProject = lib.mkForce null;
+          toggleDeleted = lib.mkForce null;
         };
       };
       gitsigns.setupOpts = {

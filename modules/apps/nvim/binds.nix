@@ -190,6 +190,60 @@
 
       ## Git / Gitsigns / Diffview
       {
+        key = "<leader>ghs";
+        mode = [ "n" ];
+        action = "<cmd>Git stage<CR>";
+        desc = "[Git] Stage hunk";
+      }
+      {
+        key = "<leader>ghu";
+        mode = [ "n" ];
+        action = "<cmd>Git reset<CR>";
+        desc = "[Git] Undo stage hunk";
+      }
+      {
+        key = "<leader>ghr";
+        mode = [ "n" ];
+        action = "<cmd>Gitsigns reset_hunk<CR>";
+        desc = "[Git] Reset hunk";
+      }
+      {
+        key = "<leader>ghS";
+        mode = [ "n" ];
+        action = "<cmd>Git stageBuffer<CR>";
+        desc = "[Git] Stage buffer";
+      }
+      {
+        key = "<leader>ghR";
+        mode = [ "n" ];
+        action = "<cmd>Gitsigns reset_buffer<CR>";
+        desc = "[Git] Reset buffer";
+      }
+      {
+        key = "<leader>ghP";
+        mode = [ "n" ];
+        action = "<cmd>Gitsigns preview_hunk<CR>";
+        desc = "[Git] Preview hunk";
+      }
+      {
+        key = "<leader>ghb";
+        mode = [ "n" ];
+        action = "<cmd>Git blame<CR>";
+        desc = "[Git] Blame line";
+      }
+      {
+        key = "<leader>ghd";
+        mode = [ "n" ];
+        action = "<cmd>Gitsigns diffthis<CR>";
+        desc = "[Git] Diff this";
+      }
+      {
+        key = "<leader>ghD";
+        mode = [ "n" ];
+        action = "<cmd>Gitsigns diffthis ~<CR>";
+        desc = "[Git] Diff project";
+      }
+      {
         key = "<leader>gtb";
         mode = [ "n" ];
         action = "<cmd>Git blame<CR>";
@@ -254,7 +308,9 @@
         { "<leader>u", group = "Undo" },
         { "<leader>b", group = "Buffer" },
         { "<leader>t", group = "Tabs" },
-        { "<leader>gt", group = "Git", desc = "Toggle actions" },
+        { "<leader>g", group = "Git" },
+        { "<leader>gh", group = "Git Hunk" },
+        { "<leader>gt", group = "Git" },
       })
     '';
 
