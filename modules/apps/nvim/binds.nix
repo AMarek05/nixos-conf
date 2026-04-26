@@ -107,16 +107,28 @@
         desc = "Go to the previous tab";
       }
       {
-        key = "<leader>nt";
+        key = "<leader>tn";
         mode = [ "n" ];
         action = "<cmd>tabnew<CR>";
-        desc = "[N]ew [T]ab";
+        desc = "[T]ew [N]ew tab";
       }
       {
-        key = "<leader>ct";
+        key = "<leader>tc";
         mode = [ "n" ];
         action = "<cmd>tabc<CR>";
-        desc = "[C]lose [T]ab";
+        desc = "[T]ab [C]lose";
+      }
+      {
+        key = "<leader>tu";
+        mode = [ "n" ];
+        action = "<cmd>tabmove -<CR>";
+        desc = "[T]ab [U]ove left";
+      }
+      {
+        key = "<leader>to";
+        mode = [ "n" ];
+        action = "<cmd>tabmove +<CR>";
+        desc = "[T]ab m[O]ve right";
       }
 
       # Telescope
@@ -176,6 +188,20 @@
         desc = "Open [U]ndotree";
       }
 
+      ## Git / Gitsigns
+      {
+        key = "<leader>gtb";
+        mode = [ "n" ];
+        action = "<cmd>Git blame<CR>";
+        desc = "[Git] [T]oggle [B]lame";
+      }
+      {
+        key = "<leader>gtd";
+        mode = [ "n" ];
+        action = "<cmd>Gitsigns toggle_deleted<CR>";
+        desc = "[Git] [T]oggle [D]eleted";
+      }
+
       ## Diffview [g]it
       {
         key = "<leader>gd";
@@ -230,6 +256,9 @@
         { "<leader>u", group = "Undo" },
         { "<leader>b", group = "Buffer" },
         { "<leader>t", group = "Tabs" },
+        { "<leader>gt", group = "Git", subgroup = true },
+        { "<leader>gtb", group = "Git", desc = "Toggle blame" },
+        { "<leader>gtd", group = "Git", desc = "Toggle deleted" },
       })
     '';
 
