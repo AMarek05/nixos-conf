@@ -122,7 +122,7 @@
         key = "<leader>tu";
         mode = [ "n" ];
         action = "<cmd>tabmove -<CR>";
-        desc = "[T]ab [U]ove left";
+        desc = "[T]ab move [U]p / left";
       }
       {
         key = "<leader>to";
@@ -251,12 +251,6 @@
     luaConfigRC.whichkey = ''
       local wk = require("which-key")
       wk.add({
-        { "<leader>s", group = "Search" },
-        { "<leader>o", group = "Tasks" },
-        { "<leader>u", group = "Undo" },
-        { "<leader>b", group = "Buffer" },
-        { "<leader>t", group = "Tabs" },
-        { "<leader>gt", group = "Git", subgroup = true },
         { "<leader>gtb", group = "Git", desc = "Toggle blame" },
         { "<leader>gtd", group = "Git", desc = "Toggle deleted" },
       })
