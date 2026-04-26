@@ -11,6 +11,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    lix-module = {
+      url = "git+https://git.lix.systems/lix-project/nixos-module";
+      inputs.nixpkgs.follows = "nixpkgs";
+
+      inputs.lix.url = "git+https://git.lix.systems/lix-project/lix";
+    };
+
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -45,7 +52,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    forge.url = "path:/home/adam/builds/forge";
+    forge = {
+      url = "github:AMarek05/forge";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -55,6 +65,7 @@
       home-manager,
       nix-openclaw,
       sops-nix,
+      lix-module,
       ...
     }@inputs:
 
@@ -69,18 +80,37 @@
             prev.openldap;
       };
 
+      lixToolsOverlay = final: prev: {
+        inherit (prev.lixPackageSets.stable)
+          nixpkgs-review
+          nix-eval-jobs
+          nix-fast-build
+          colmena
+          ;
+      };
+
       hmPkgs = import nixpkgs {
         system = "x86_64-linux";
-
         config.allowUnfree = true;
-        overlays = [ openldapOverlay ];
+
+        overlays = [
+          openldapOverlay
+          lixToolsOverlay
+        ];
       };
 
       sharedModules = [
         ./etc/configuration.nix
         sops-nix.nixosModules.sops
 
-        { nixpkgs.overlays = [ openldapOverlay ]; }
+        lix-module.nixosModules.default
+
+        {
+          nixpkgs.overlays = [
+            openldapOverlay
+            lixToolsOverlay
+          ];
+        }
       ];
     in
 
