@@ -319,8 +319,8 @@
         "nixpkgs-mozilla": "nixpkgs-mozilla"
       },
       "locked": {
-        "lastModified": 1777159497,
-        "narHash": "sha256-ltdXzkL0n+UerSL70L+uilsQgt55EhWp1Mrt2zyVj3g=",
+        "lastModified": 1777163246,
+        "narHash": "sha256-wu5B6q4Oa5iuA6rQQ5CcLl9UVVk3NQA1yI0OFbsXl9A=",
         "path": "/home/adam/builds/forge",
         "type": "path"
       },

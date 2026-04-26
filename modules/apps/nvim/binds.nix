@@ -176,6 +176,20 @@
         desc = "Open [U]ndotree";
       }
 
+      ## Diffview [g]it
+      {
+        key = "<leader>gd";
+        mode = [ "n" ];
+        action = "<cmd>DiffviewOpen<CR>";
+        desc = "[Git] Diffview open";
+      }
+      {
+        key = "<leader>gD";
+        mode = [ "n" ];
+        action = "<cmd>DiffviewClose<CR>";
+        desc = "[Git] Diffview close";
+      }
+
       ## FLash
       {
         key = "s";
