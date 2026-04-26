@@ -394,6 +394,7 @@
         { "<leader>lg", group = "Goto" },
         { "<leader>lt", group = "LSP Toggle" },
         { "<leader>lw", group = "Workspace" },
+        { "<leader>r", group = "Rename" },
         { "<leader>x", group = "Trouble" },
       })
     '';
