@@ -29,8 +29,8 @@
 
   # Completions are installed by the module via home.file
   # ("share/zsh/site-functions/_forge")
-  programs.zsh.initContent = ''
-    # Forge completions — must be in fpath before compinit
+  # Use prependZshrc so fpath is updated BEFORE compinit runs
+  programs.zsh.prependZshrc = ''
     fpath=("${config.forge.package}/share/zsh/site-functions" $fpath)
   '';
 }
