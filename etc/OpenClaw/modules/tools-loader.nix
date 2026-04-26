@@ -6,6 +6,9 @@
 #
 # Also creates a symlink for TOOLS.md so the AI agent can understand
 # its available capabilities.
+#
+# Additionally generates skills in ~/.openclaw/skills/ for the skill-based
+# tool execution system.
 
 {
   config,
@@ -20,6 +23,7 @@ let
 
   basePath = ../../OpenClaw;
   toolsPath = basePath + "/tools";
+  skillsDir = "${cfg.homedir}/.openclaw/skills";
 
   # List of executables
   binNames = builtins.attrNames (builtins.readDir "${sandbox.package}/bin/");
@@ -43,45 +47,98 @@ let
     let
       dir = toolsPath;
       files = builtins.attrNames (builtins.readDir dir);
-      nixFiles = builtins.filter (f: lib.hasSuffix ".nix" f) files;
+      nixFiles = builtins.filter (f: lib.hasSuffix ".nix" f && f != "_template.nix" && f != "TODO.md") files;
     in
     map (f: dir + "/${f}") nixFiles;
 
   # Load all tools
   loadedTools = map loadTool toolFiles;
 
-  generateToolDoc = tool: ''
+  # Generate SKILL.md content for a tool
+  generateSkillMd = tool:
+    let
+      argsStr = lib.concatMapStringsSep "\n" (a: ''
+        - `${a.name}` - ${a.desc} (default: `${a.default or "-"}`)'') tool.arguments;
+      examplesStr = lib.concatMapStringsSep "\n" (e: ''- `${e}`'') tool.examples;
+      depsStr = lib.concatMapStringsSep ", " (d: "`${d}`") tool.dependencies;
+    in
+    ''
+    ---
+    name: ${tool.name}
+    description: ${tool.description}
+    metadata:
+      openclaw:
+        tools:
+          - name: ${tool.name}
+            description: ${tool.description}
+            arguments:
+              ${lib.optionalString (tool.arguments != [ ]) argsStr}
+    ---
+
+    # ${tool.name}
+
+    ${tool.description}
+
+    ## Usage
+
+    ```
+    ${tool.usage or tool.name}
+    ```
+
+    ${lib.optionalString (tool.arguments != [ ]) ''
+    ## Arguments
+
+    ${argsStr}
+    ''}
+
+    ${lib.optionalString (tool ? examples && tool.examples != [ ]) ''
+    ## Examples
+
+    ${examplesStr}
+    ''}
+
+    ## Dependencies
+
+    ${depsStr}
+    '';
+
+  # Generate tool documentation for TOOLS.md
+  generateToolDoc = tool:
+    let
+      argsTable = lib.optionalString ((builtins.hasAttr "arguments" tool) && (tool.arguments != [ ])) ''
+        | Argument | Description | Default |
+        |----------|-------------|---------|
+        ${lib.concatMapStringsSep "\n" (
+          a: "| `${a.name}` | ${a.desc} | `${a.default or "-"}` |"
+        ) tool.arguments}
+      '';
+      examplesBlock = lib.optionalString ((builtins.hasAttr "examples" tool) && (tool.examples != [ ])) ''
+        **Examples:**
+        ${lib.concatMapStringsSep "\n" (ex: "* `${ex}`") tool.examples}
+      '';
+    in
+    ''
     ### `${tool.name}`
     ${tool.description}
 
     **Usage:**
-    `${tool.usage or "${tool.name} [arguments]"}`
+    ``${tool.usage or "${tool.name} [arguments]"}``
 
-    ${lib.optionalString ((builtins.hasAttr "arguments" tool) && (tool.arguments != [ ])) ''
-      | Argument | Description | Default |
-      |----------|-------------|---------|
-      ${lib.concatMapStringsSep "\n" (
-        a: "| `${a.name}` | ${a.desc} | `${a.default or "-"}` |"
-      ) tool.arguments}
-    ''}
-
-    ${lib.optionalString ((builtins.hasAttr "examples" tool) && (tool.examples != [ ])) ''
-      **Examples:**
-      ${lib.concatMapStringsSep "\n" (ex: "* `${ex}`") tool.examples}
-    ''}
+    ${argsTable}
+    ${examplesBlock}
     ---
   '';
 
-  # Compile all tool docs into one string
+  # Generate the tools markdown for all tools (used in TOOLS.md)
   compiledToolsMarkdown = lib.concatMapStringsSep "\n" generateToolDoc loadedTools;
 
-  # The final static wrapper text
+  # The final static wrapper text (original TOOLS.md format)
   fullMarkdown = ''
     # OpenClaw Tool Capabilities & Workspace Guide
 
     You are an OpenClaw AI agent running in a highly secure, NixOS-based sandboxed environment. Your native `fs.read`, `fs.write`, and `shell` capabilities have been disabled for security. 
 
-    To interact with the system, you must use the custom tools defined below via your `exec` capability. **Do not attempt to use shell pipes (`|`), redirections (`>`), or command chaining (`&&`). They will require approval.
+    To interact with the system, you must use the custom tools defined below via your `exec` capability. **Do not attempt to use shell pipes (`|`), redirections (`>`), or command chaining (`&&`). They will require approval.**
 
     ! Do NOT redirect stderr to stdout ! Doing so triggers an unnecessary approval prompt, both stdout and stderr are displayed side by side by default anyways.
 
@@ -113,35 +170,80 @@ let
     5. **Permissions:** When creating files, ensure the same file permissions for yourself and for your group. It will allow me easy access to the files.
   '';
 
+  # Generate SKILL.md for each tool
+  skillDocs = lib.listToAttrs (
+      map (tool: lib.nameValuePair tool.name (pkgs.writeText "${tool.name}-SKILL.md" (generateSkillMd tool)))
+      loadedTools
+  );
+
+  # Generate the TOOLS.md file
   generatedToolsDoc = pkgs.writeText "TOOLS.md" fullMarkdown;
+
+  # Helper to get script content from a tool
+  getScriptContent = tool:
+    if builtins.isPath tool.script then
+      builtins.readFile tool.script
+    else
+      tool.script;
+
+  # Filter tools that can't be converted to skills
+  # old-write requires Nix compilation step, so skip it
+  toolsNeedingNix = [ "old-write" ];
+  canBeSkill = tool: !(builtins.elem tool.name toolsNeedingNix);
+
+  # Create skill packages (directory with SKILL.md + scripts/)
+  skillPackages = map (
+    tool:
+    let
+      scriptContent = getScriptContent tool;
+      scriptName = if builtins.isPath tool.script then
+        (builtins.baseNameOf tool.script)
+      else
+        "${tool.name}.sh";
+      skillDoc = skillDocs.${tool.name};
+    in
+    pkgs.runCommand "skill-${tool.name}" {
+      preferLocalBuild = true;
+      allowSubstitutes = false;
+    } ''
+      mkdir -p $out/${tool.name}/scripts
+      cp ${skillDoc} $out/${tool.name}/SKILL.md
+      ${lib.optionalString (builtins.isPath tool.script) ''
+        cp ${tool.script} $out/${tool.name}/scripts/${scriptName}
+        chmod +x $out/${tool.name}/scripts/${scriptName}
+      ''}
+      ${lib.optionalString (!builtins.isPath tool.script) ''
+        echo '#!/usr/bin/env bash' > $out/${tool.name}/scripts/${scriptName}
+        echo '${lib.replaceStrings ["'" "\\"] ["'\\''" "''"] scriptContent}' >> $out/${tool.name}/scripts/${scriptName}
+        chmod +x $out/${tool.name}/scripts/${scriptName}
+      ''}
+    ''
+  ) (builtins.filter canBeSkill loadedTools);
+
+  # Combined skill package
+  allSkills = pkgs.symlinkJoin {
+    name = "openclaw-skills";
+    paths = skillPackages;
+  };
 
   toolPackages = map (
     rawTool:
     let
-      # Automatically inject the --help flag into the tool's arguments
       helpFlag = {
         name = "--help|-h";
         desc = "Show this help message";
         default = "false";
       };
-
-      # Combine existing arguments (if any) with the universal help flag
       enhancedArgs = (rawTool.arguments or [ ]) ++ [ helpFlag ];
-
-      # Override the tool object with the newly enhanced arguments list
       tool = rawTool // {
         arguments = enhancedArgs;
       };
-
       innerScript =
         if builtins.isPath tool.script then
           tool.script
         else
           pkgs.writeShellScript "${tool.name}-inner" tool.script;
-
       scriptPath = tool.dependencies ++ cfg.servicePath;
-
-      # 2. Pre-compute the help text using the updated tool object
       helpText = ''
         ${tool.name} - ${tool.description or "No description provided."}
 
@@ -158,12 +260,10 @@ let
           EXAMPLES:
           ${lib.concatMapStringsSep "\n" (e: "  ${e}") tool.examples}''}
       '';
-
     in
     pkgs.writeShellScriptBin tool.name ''
       set -euo pipefail
 
-      # Universal Help Provider: Intercept --help or -h
       if [[ "''${1:-}" == "--help" || "''${1:-}" == "-h" ]]; then
         cat << 'EOF'
       ${helpText}
@@ -175,7 +275,6 @@ let
       export WORKSPACE="${cfg.workspace}"
       export PATH="${lib.makeBinPath scriptPath}"
 
-      # Safely execute the inner script with all arguments passed
       exec ${innerScript} "$@"
     ''
   ) loadedTools;
@@ -189,20 +288,26 @@ in
 
     systemd.services.openclaw.preStart = lib.mkBefore ''
       TOOLS_DOC="${cfg.workspace}/TOOLS.md"
+      SKILLS_DIR="${cfg.homedir}/.openclaw/skills"
 
       # Remove old symlink/file and link the freshly compiled Nix store document
       ${pkgs.coreutils}/bin/rm -f "$TOOLS_DOC"
       ${pkgs.coreutils}/bin/cp "${generatedToolsDoc}" "$TOOLS_DOC" || exit 1
 
+      # Install skills to ~/.openclaw/skills/
+      ${pkgs.coreutils}/bin/rm -rf "$SKILLS_DIR"
+      ${pkgs.coreutils}/bin/mkdir -p "$SKILLS_DIR"
+      ${pkgs.coreutils}/bin/cp -r ${allSkills}/. "$SKILLS_DIR/"
+
       echo "Dynamically generated TOOLS.md copied to workspace."
+      echo "Skills installed to $SKILLS_DIR"
     '';
 
     # Environment variables for tools and documentation
     systemd.services.openclaw.environment = {
-      # Keep this pointing to the workspace tools dir so `forge-tool`
-      # knows where to write new/pending tools for your review.
       OPENCLAW_TOOLS_PATH = cfg.tools.toolsStore;
       OPENCLAW_TOOLS_DOC = "${cfg.workspace}/TOOLS.md";
+      OPENCLAW_SKILLS_DIR = "$SKILLS_DIR";
     };
   };
 }
