@@ -188,7 +188,31 @@
         desc = "Open [U]ndotree";
       }
 
-      ## Git / Gitsigns / Diffview
+      ## Git / Gitsigns / Diffview / Conflict
+      {
+        key = "<leader>hco";
+        mode = [ "n" ];
+        action = "<cmd>GitConflictConflicthunk ours<CR>";
+        desc = "[Git] Conflict choose [O]urs";
+      }
+      {
+        key = "<leader>hct";
+        mode = [ "n" ];
+        action = "<cmd>GitConflictConflicthunk theirs<CR>";
+        desc = "[Git] Conflict choose [T]heirs";
+      }
+      {
+        key = "<leader>hcb";
+        mode = [ "n" ];
+        action = "<cmd>GitConflictConflicthunk both<CR>";
+        desc = "[Git] Conflict choose [B]oth";
+      }
+      {
+        key = "<leader>hc0";
+        mode = [ "n" ];
+        action = "<cmd>GitConflictConflicthunk none<CR>";
+        desc = "[Git] Conflict choose [N]one";
+      }
       {
         key = "<leader>ghs";
         mode = [ "n" ];
@@ -311,6 +335,7 @@
         { "<leader>g", group = "Git" },
         { "<leader>gh", group = "Git Hunk" },
         { "<leader>gt", group = "Git Toggle" },
+        { "<leader>hc", group = "Git Conflict" },
       })
     '';
 
