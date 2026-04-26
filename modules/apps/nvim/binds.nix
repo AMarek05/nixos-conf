@@ -1,6 +1,8 @@
 { ... }:
 {
   programs.nvf.settings.vim = {
+    binds.whichKey.enable = true;
+
     keymaps = [
       {
         key = "<Esc>";
