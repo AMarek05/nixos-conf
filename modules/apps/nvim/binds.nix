@@ -310,7 +310,7 @@
         { "<leader>t", group = "Tabs" },
         { "<leader>g", group = "Git" },
         { "<leader>gh", group = "Git Hunk" },
-        { "<leader>gt", group = "Git" },
+        { "<leader>gt", group = "Git Toggle" },
       })
     '';
 
