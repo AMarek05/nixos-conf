@@ -378,26 +378,24 @@
       }
     ];
 
-    luaConfigRC.whichkey = ''
-      local wk = require("which-key")
-      wk.add({
-        { "<leader>s", group = "Search" },
-        { "<leader>o", group = "Open" },
-        { "<leader>u", group = "Undo" },
-        { "<leader>b", group = "Buffer" },
-        { "<leader>t", group = "Tabs" },
-        { "<leader>g", group = "Git" },
-        { "<leader>gh", group = "Git Hunk" },
-        { "<leader>gt", group = "Git Toggle" },
-        { "<leader>gC", group = "Git Conflict" },
-        { "<leader>l", group = "LSP" },
-        { "<leader>lg", group = "Goto" },
-        { "<leader>lt", group = "LSP Toggle" },
-        { "<leader>lw", group = "Workspace" },
-        { "<leader>r", group = "Rename" },
-        { "<leader>x", group = "Trouble" },
-      })
-    '';
+    binds.whichKey.register = {
+      "<leader>s" = "Search";
+      "<leader>o" = "Open";
+      "<leader>u" = "Undo";
+      "<leader>b" = "Buffer";
+      "<leader>t" = "Tabs";
+      "<leader>g" = "Git";
+      "<leader>gh" = "Git Hunk";
+      "<leader>gt" = "Git Toggle";
+      "<leader>gC" = "Git Conflict";
+      "<leader>l" = "LSP";
+      "<leader>lg" = "Goto";
+      "<leader>lt" = "LSP Toggle";
+      "<leader>lw" = "Workspace";
+      "<leader>r" = "Rename";
+      "<leader>x" = "Trouble";
+      "<leader>h" = null;  # Unregister gitsigns hunk group
+    };
 
     luaConfigRC.closeOtherBuffers = ''
       _G.CloseOtherBuffers = function()
