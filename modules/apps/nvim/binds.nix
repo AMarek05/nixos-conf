@@ -251,8 +251,11 @@
     luaConfigRC.whichkey = ''
       local wk = require("which-key")
       wk.add({
-        { "<leader>gtb", group = "Git", desc = "Toggle blame" },
-        { "<leader>gtd", group = "Git", desc = "Toggle deleted" },
+        { "<leader>s", group = "Search" },
+        { "<leader>o", group = "Tasks" },
+        { "<leader>u", group = "Undo" },
+        { "<leader>b", group = "Buffer" },
+        { "<leader>t", group = "Tabs" },
       })
     '';
 
