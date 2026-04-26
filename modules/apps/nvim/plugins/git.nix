@@ -1,4 +1,4 @@
-{ pkgs, lib, ... }:
+{ pkgs, ... }:
 {
   programs.nvf.settings.vim = {
     git = {
@@ -6,8 +6,8 @@
       neogit.enable = true;
       gitsigns = {
         mappings = {
-          toggleBlame = lib.nvim.binds.mkKeymap "<leader>gtb";
-          toggleDeleted = lib.nvim.binds.mkKeymap "<leader>gtd";
+          toggleBlame = "";
+          toggleDeleted = "";
         };
       };
       gitsigns.setupOpts = {
