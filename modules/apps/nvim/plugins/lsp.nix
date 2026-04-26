@@ -4,6 +4,11 @@
     lsp = {
       enable = true;
 
+      lspSignature.enable = false;  # Incompatible with blink-cmp, use blink's builtin signature
+      trouble = {
+        enable = true;
+      };
+
       formatOnSave = true;
       inlayHints.enable = true;
 
