@@ -188,7 +188,19 @@
         desc = "Open [U]ndotree";
       }
 
-      ## Diffview [g]it
+      ## Git / Gitsigns / Diffview
+      {
+        key = "<leader>gtb";
+        mode = [ "n" ];
+        action = "<cmd>Git blame<CR>";
+        desc = "[Git] Toggle [B]lame";
+      }
+      {
+        key = "<leader>gtd";
+        mode = [ "n" ];
+        action = "<cmd>Gitsigns toggle_deleted<CR>";
+        desc = "[Git] Toggle [D]eleted";
+      }
       {
         key = "<leader>gd";
         mode = [ "n" ];
@@ -237,6 +249,11 @@
     luaConfigRC.whichkey = ''
       local wk = require("which-key")
       wk.add({
+        { "<leader>s", group = "Search" },
+        { "<leader>o", group = "Tasks" },
+        { "<leader>u", group = "Undo" },
+        { "<leader>b", group = "Buffer" },
+        { "<leader>t", group = "Tabs" },
         { "<leader>gt", group = "Git", desc = "Toggle actions" },
       })
     '';
