@@ -225,12 +225,11 @@
     luaConfigRC.whichkey = ''
       local wk = require("which-key")
       wk.register({
-        ["<leader>s"] = { name = "+Search" },
-        ["<leader>o"] = { name = "+Tasks" },
-        ["<leader>u"] = { name = "+Undo" },
-        ["<leader>g"] = { name = "+Git" },
-        ["<leader>b"] = { name = "+Buffer" },
-        ["<leader>t"] = { name = "+Tabs" },
+        { "<leader>s", group = "Search" },
+        { "<leader>o", group = "Tasks" },
+        { "<leader>u", group = "Undo" },
+        { "<leader>b", group = "Buffer" },
+        { "<leader>t", group = "Tabs" },
       })
     '';
 
