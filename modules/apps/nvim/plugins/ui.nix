@@ -4,6 +4,19 @@
       borders.enable = true;
       illuminate.enable = true;
 
+      visuals.nvim-web-devicons.enable = true;
+
+      treesitter.context = {
+        enable = true;
+        setupOpts = {
+          maxLines = 5;
+          multiline_threshold = 1;
+          trim_scope = "outer";
+          mode = "cursor";
+        };
+      };
+
+
       breadcrumbs = {
         enable = true;
         navbuddy.enable = true;
