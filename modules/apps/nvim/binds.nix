@@ -133,6 +133,12 @@
 
       # Telescope
       {
+        key = "<leader><leader>";
+        mode = [ "n" ];
+        action = "<cmd>Telescope buffers<CR>";
+        desc = "[Search] Buffers";
+      }
+      {
         key = "<leader>sf";
         mode = [ "n" ];
         action = "<cmd>Telescope find_files<CR>";
@@ -390,6 +396,11 @@
         { "<leader>gh", group = "Git Hunk" },
         { "<leader>gt", group = "Git Toggle" },
         { "<leader>gC", group = "Git Conflict" },
+        { "<leader>l", group = "LSP" },
+        { "<leader>lg", group = "Goto" },
+        { "<leader>lt", group = "LSP Toggle" },
+        { "<leader>lw", group = "Workspace" },
+        { "<leader>x", group = "Trouble" },
       })
     '';
 
