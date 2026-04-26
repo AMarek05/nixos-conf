@@ -244,25 +244,25 @@
 
       ## Git / Gitsigns / Diffview / Conflict
       {
-        key = "<leader>gChco";
+        key = "<leader>gCco";
         mode = [ "n" ];
         action = "<cmd>GitConflictConflicthunk ours<CR>";
         desc = "[Git] Conflict choose [O]urs";
       }
       {
-        key = "<leader>gCht";
+        key = "<leader>gCct";
         mode = [ "n" ];
         action = "<cmd>GitConflictConflicthunk theirs<CR>";
         desc = "[Git] Conflict choose [T]heirs";
       }
       {
-        key = "<leader>gChb";
+        key = "<leader>gCcb";
         mode = [ "n" ];
         action = "<cmd>GitConflictConflicthunk both<CR>";
         desc = "[Git] Conflict choose [B]oth";
       }
       {
-        key = "<leader>gCh0";
+        key = "<leader>gCc0";
         mode = [ "n" ];
         action = "<cmd>GitConflictConflicthunk none<CR>";
         desc = "[Git] Conflict choose [N]one";
@@ -390,7 +390,6 @@
         { "<leader>gh", group = "Git Hunk" },
         { "<leader>gt", group = "Git Toggle" },
         { "<leader>gC", group = "Git Conflict" },
-        { "<leader>gCh", group = "Git Conflict" },
       })
     '';
 
