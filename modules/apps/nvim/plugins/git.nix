@@ -4,6 +4,16 @@
     git = {
       enable = true;
       neogit.enable = true;
+      git-conflict = {
+        mappings = {
+          ours = lib.mkForce null;
+          theirs = lib.mkForce null;
+          both = lib.mkForce null;
+          none = lib.mkForce null;
+          prevConflict = lib.mkForce null;
+          nextConflict = lib.mkForce null;
+        };
+      };
       gitsigns = {
         mappings = {
           stageHunk = lib.mkForce null;

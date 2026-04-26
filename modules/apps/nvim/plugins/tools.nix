@@ -17,15 +17,27 @@
       ];
 
       mappings = {
-        buffers = "<leader><leader>";
-        diagnostics = "<leader>sd";
-        findFiles = "<leader>sf";
-        findProjects = "<leader>sp";
-        helpTags = "<leader>sh";
-        liveGrep = "<leader>sg";
-        open = "<leader>st";
-        resume = "<leader>sr";
-        treesitter = "<leader>ss";
+        findProjects = lib.mkForce null;
+        findFiles = lib.mkForce null;
+        liveGrep = lib.mkForce null;
+        buffers = lib.mkForce null;
+        helpTags = lib.mkForce null;
+        open = lib.mkForce null;
+        resume = lib.mkForce null;
+        treesitter = lib.mkForce null;
+        gitFiles = lib.mkForce null;
+        gitCommits = lib.mkForce null;
+        gitBufferCommits = lib.mkForce null;
+        gitBranches = lib.mkForce null;
+        gitStatus = lib.mkForce null;
+        gitStash = lib.mkForce null;
+        lspDocumentSymbols = lib.mkForce null;
+        lspWorkspaceSymbols = lib.mkForce null;
+        lspReferences = lib.mkForce null;
+        lspImplementations = lib.mkForce null;
+        lspDefinitions = lib.mkForce null;
+        lspTypeDefinitions = lib.mkForce null;
+        diagnostics = lib.mkForce null;
       };
 
       setupOpts = {
