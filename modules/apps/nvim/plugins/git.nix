@@ -15,8 +15,6 @@
         };
       };
       gitsigns = {
-        # Disable <leader>h whichkey group from nvf's gitsigns config
-        binds.whichKey.register = lib.mkForce {};
         mappings = {
           stageHunk = lib.mkForce null;
           undoStageHunk = lib.mkForce null;
