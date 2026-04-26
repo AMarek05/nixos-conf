@@ -309,7 +309,7 @@
         { "<leader>b", group = "Buffer" },
         { "<leader>t", group = "Tabs" },
         { "<leader>g", group = "Git" },
-        { "<leader>gh", group = "Git" },
+        { "<leader>gh", group = "Git Hunk" },
         { "<leader>gt", group = "Git" },
       })
     '';
