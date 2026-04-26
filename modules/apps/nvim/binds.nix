@@ -122,7 +122,7 @@
         key = "<leader>tu";
         mode = [ "n" ];
         action = "<cmd>tabmove -<CR>";
-        desc = "[T]ab [U]ove left";
+        desc = "[T]ab move [U]p / left";
       }
       {
         key = "<leader>to";
@@ -188,21 +188,19 @@
         desc = "Open [U]ndotree";
       }
 
-      ## Git / Gitsigns
+      ## Git / Gitsigns / Diffview
       {
         key = "<leader>gtb";
         mode = [ "n" ];
         action = "<cmd>Git blame<CR>";
-        desc = "[Git] [T]oggle [B]lame";
+        desc = "[Git] Toggle [B]lame";
       }
       {
         key = "<leader>gtd";
         mode = [ "n" ];
         action = "<cmd>Gitsigns toggle_deleted<CR>";
-        desc = "[Git] [T]oggle [D]eleted";
+        desc = "[Git] Toggle [D]eleted";
       }
-
-      ## Diffview [g]it
       {
         key = "<leader>gd";
         mode = [ "n" ];
@@ -256,9 +254,7 @@
         { "<leader>u", group = "Undo" },
         { "<leader>b", group = "Buffer" },
         { "<leader>t", group = "Tabs" },
-        { "<leader>gt", group = "Git", subgroup = true },
-        { "<leader>gtb", group = "Git", desc = "Toggle blame" },
-        { "<leader>gtd", group = "Git", desc = "Toggle deleted" },
+        { "<leader>gt", group = "Git", desc = "Toggle actions" },
       })
     '';
 
