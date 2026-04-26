@@ -49,8 +49,8 @@ in
   ];
 
   examples = [
-    "write /var/lib/openclaw/notes.txt \'Hello World\'"
-    "write /var/lib/openclaw/notes.txt \'from Claw!\' --append"
+    "write /var/lib/openclaw/notes.txt 'Hello World'"
+    "write /var/lib/openclaw/notes.txt 'from Claw!' --append"
   ];
 
   dependencies = [

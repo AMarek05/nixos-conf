@@ -9,11 +9,11 @@
     enable = true;
     settings = {
       default_session = {
-        command = "${pkgs.tuigreet}/bin/tuigreet \
-          --time \
-          --asterisks \
-          --user-menu \
-          --theme \"border=magenta;text=cyan;prompt=green;time=yellow;action=blue;button=magenta;container=black;input=yellow\" \
+        command = "${pkgs.tuigreet}/bin/tuigreet
+          --time
+          --astrisks
+          --user-menu
+          --theme \"border=magenta;text=cyan;prompt=green;time=yellow;action=blue;button=magenta;container=black;input=yellow\"
           --cmd 'start-hyprland'";
         user = "greeter";
       };
