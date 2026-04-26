@@ -328,7 +328,7 @@
       local wk = require("which-key")
       wk.add({
         { "<leader>s", group = "Search" },
-        { "<leader>o", group = "Tasks" },
+        { "<leader>o", group = "Open" },
         { "<leader>u", group = "Undo" },
         { "<leader>b", group = "Buffer" },
         { "<leader>t", group = "Tabs" },
