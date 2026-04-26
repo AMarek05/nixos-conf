@@ -136,61 +136,55 @@
         key = "<leader><leader>";
         mode = [ "n" ];
         action = "<cmd>Telescope buffers<CR>";
-        desc = "[Search] Buffers";
+        desc = "[S]earch Buffers";
       }
       {
         key = "<leader>sf";
         mode = [ "n" ];
         action = "<cmd>Telescope find_files<CR>";
-        desc = "[Search] Find files";
-      }
-      {
-        key = "<leader>sp";
-        mode = [ "n" ];
-        action = "<cmd>Telescope find_projects<CR>";
-        desc = "[Search] Find project";
+        desc = "[S]earch through [F]iles";
       }
       {
         key = "<leader>sg";
         mode = [ "n" ];
         action = "<cmd>Telescope live_grep<CR>";
-        desc = "[Search] Grep";
+        desc = "[S]earch [G]rep";
       }
       {
         key = "<leader>sb";
         mode = [ "n" ];
         action = "<cmd>Telescope buffers<CR>";
-        desc = "[Search] Buffers";
+        desc = "[S]earch [B]uffers";
       }
       {
         key = "<leader>sh";
         mode = [ "n" ];
         action = "<cmd>Telescope help_tags<CR>";
-        desc = "[Search] Help tags";
+        desc = "[S]earch [H]elp tags";
       }
       {
         key = "<leader>st";
         mode = [ "n" ];
         action = "<cmd>Telescope<CR>";
-        desc = "[Search] Telescope open";
+        desc = "[S]earch [T]elescope Builtins";
       }
       {
         key = "<leader>sr";
         mode = [ "n" ];
         action = "<cmd>Telescope resume<CR>";
-        desc = "[Search] Resume last search";
+        desc = "[S]earch [R]esume";
       }
       {
         key = "<leader>ss";
         mode = [ "n" ];
         action = "<cmd>Telescope treesitter<CR>";
-        desc = "[Search] Treesitter symbols";
+        desc = "[S]earch Treesitter [S]ymbols";
       }
       {
         key = "<leader>sd";
         mode = [ "n" ];
         action = "<cmd>Telescope diagnostics<CR>";
-        desc = "[Search] Diagnostics";
+        desc = "[S]earch [D]iagnostics";
       }
       {
         key = "<leader>s.";
@@ -202,7 +196,7 @@
         key = "<leader>s/";
         mode = [ "n" ];
         action = "<cmd>Telescope current_buffer_fuzzy_find<CR>";
-        desc = "Telescope Oldfiles";
+        desc = "Telescope Buffer Fuzzy Finder";
       }
       {
         key = "<leader>sa";
@@ -231,21 +225,21 @@
         key = "<leader>or";
         mode = [ "n" ];
         action = "<cmd>OverseerRun<CR>";
-        desc = "Run task";
+        desc = "[O]verseer [R]un";
       }
       {
         key = "<leader>ot";
         mode = [ "n" ];
         action = "<cmd>OverseerToggle<CR>";
-        desc = "Toggle task list";
+        desc = "[O]versee [T]oggle";
       }
 
       ## Undotree
       {
-        key = "<leader>u";
+        key = "<leader>ou";
         mode = [ "n" ];
         action = "<cmd>UndotreeToggle<CR>";
-        desc = "Open [U]ndotree";
+        desc = "[O]pen [U]ndotree";
       }
 
       ## Git / Gitsigns / Diffview / Conflict
@@ -253,103 +247,103 @@
         key = "<leader>gCo";
         mode = [ "n" ];
         action = "<cmd>GitConflictConflicthunk ours<CR>";
-        desc = "[Git] Conflict choose [O]urs";
+        desc = "[G]it Conflict choose [O]urs";
       }
       {
         key = "<leader>gCt";
         mode = [ "n" ];
         action = "<cmd>GitConflictConflicthunk theirs<CR>";
-        desc = "[Git] Conflict choose [T]heirs";
+        desc = "[G]it Conflict choose [T]heirs";
       }
       {
         key = "<leader>gCb";
         mode = [ "n" ];
         action = "<cmd>GitConflictConflicthunk both<CR>";
-        desc = "[Git] Conflict choose [B]oth";
+        desc = "[G]it Conflict choose [B]oth";
       }
       {
         key = "<leader>gC0";
         mode = [ "n" ];
         action = "<cmd>GitConflictConflicthunk none<CR>";
-        desc = "[Git] Conflict choose [N]one";
+        desc = "[G]it Conflict choose [N]one";
       }
       {
         key = "<leader>ghs";
         mode = [ "n" ];
         action = "<cmd>Git stage<CR>";
-        desc = "[Git] Stage hunk";
+        desc = "[G]it Stage hunk";
       }
       {
         key = "<leader>ghu";
         mode = [ "n" ];
         action = "<cmd>Git reset<CR>";
-        desc = "[Git] Undo stage hunk";
+        desc = "[G]it Undo stage hunk";
       }
       {
         key = "<leader>ghr";
         mode = [ "n" ];
         action = "<cmd>Gitsigns reset_hunk<CR>";
-        desc = "[Git] Reset hunk";
+        desc = "[G]it Reset hunk";
       }
       {
         key = "<leader>ghS";
         mode = [ "n" ];
         action = "<cmd>Git stageBuffer<CR>";
-        desc = "[Git] Stage buffer";
+        desc = "[G]it Stage buffer";
       }
       {
         key = "<leader>ghR";
         mode = [ "n" ];
         action = "<cmd>Gitsigns reset_buffer<CR>";
-        desc = "[Git] Reset buffer";
+        desc = "[G]it Reset buffer";
       }
       {
         key = "<leader>ghP";
         mode = [ "n" ];
         action = "<cmd>Gitsigns preview_hunk<CR>";
-        desc = "[Git] Preview hunk";
+        desc = "[G]it Preview hunk";
       }
       {
         key = "<leader>ghb";
         mode = [ "n" ];
         action = "<cmd>Git blame<CR>";
-        desc = "[Git] Blame line";
+        desc = "[G]it Blame line";
       }
       {
         key = "<leader>ghd";
         mode = [ "n" ];
         action = "<cmd>Gitsigns diffthis<CR>";
-        desc = "[Git] Diff this";
+        desc = "[G]it Diff this";
       }
       {
         key = "<leader>ghD";
         mode = [ "n" ];
         action = "<cmd>Gitsigns diffthis ~<CR>";
-        desc = "[Git] Diff project";
+        desc = "[G]it Diff project";
       }
       {
         key = "<leader>gtb";
         mode = [ "n" ];
         action = "<cmd>Git blame<CR>";
-        desc = "[Git] Toggle [B]lame";
+        desc = "[G]it Toggle [B]lame";
       }
       {
         key = "<leader>gtd";
         mode = [ "n" ];
         action = "<cmd>Gitsigns toggle_deleted<CR>";
-        desc = "[Git] Toggle [D]eleted";
+        desc = "[G]it Toggle [D]eleted";
       }
       {
         key = "<leader>gd";
         mode = [ "n" ];
         action = "<cmd>DiffviewOpen<CR>";
-        desc = "[Git] Diffview open";
+        desc = "[G]it Diffview open";
       }
       {
         key = "<leader>gD";
         mode = [ "n" ];
         action = "<cmd>DiffviewClose<CR>";
-        desc = "[Git] Diffview close";
+        desc = "[G]it Diffview close";
       }
 
       ## FLash
@@ -419,3 +413,4 @@
     '';
   };
 }
+
