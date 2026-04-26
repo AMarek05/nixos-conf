@@ -208,6 +208,17 @@
       }
     ];
 
+    luaConfigRC.whichkey = ''
+      local wk = require("which-key")
+      wk.register({
+        { "<leader>s", group = "Search" },
+        { "<leader>o", group = "Tasks" },
+        { "<leader>u", group = "Undo" },
+        { "<leader>b", group = "Buffer" },
+        { "<leader>t", group = "Tabs" },
+      })
+    '';
+
     luaConfigRC.closeOtherBuffers = ''
       _G.CloseOtherBuffers = function()
         local current_buf = vim.api.nvim_get_current_buf()
