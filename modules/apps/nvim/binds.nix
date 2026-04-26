@@ -1,23 +1,7 @@
-{
-  lib,
-  config,
-  options,
-  ...
-}:
-let
-  inherit (lib.nvim.binds) pushDownDefault mkKeymap;
-in
+{ ... }:
 {
   programs.nvf.settings.vim = {
     binds.whichKey.enable = true;
-    binds.whichKey.register = pushDownDefault {
-      "<leader>s" = "+Search";
-      "<leader>o" = "+Tasks";
-      "<leader>u" = "+Undo";
-      "<leader>g" = "+Git";
-      "<leader>b" = "+Buffer";
-      "<leader>t" = "+Tabs";
-    };
 
     keymaps = [
       {
@@ -237,6 +221,18 @@ in
         desc = "Remote Flash";
       }
     ];
+
+    luaConfigRC.whichkey = ''
+      local wk = require("which-key")
+      wk.register({
+        ["<leader>s"] = { name = "+Search" },
+        ["<leader>o"] = { name = "+Tasks" },
+        ["<leader>u"] = { name = "+Undo" },
+        ["<leader>g"] = { name = "+Git" },
+        ["<leader>b"] = { name = "+Buffer" },
+        ["<leader>t"] = { name = "+Tabs" },
+      })
+    '';
 
     luaConfigRC.closeOtherBuffers = ''
       _G.CloseOtherBuffers = function()
