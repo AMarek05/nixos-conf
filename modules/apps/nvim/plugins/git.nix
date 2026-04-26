@@ -1,4 +1,7 @@
-{ ... }:
+{
+  pkgs,
+  ...
+}:
 {
   programs.nvf.settings.vim = {
     git = {
@@ -23,6 +26,12 @@
           };
         };
       };
+    };
+
+    lazy.plugins."diffview.nvim" = {
+      package = pkgs.vimPlugins.diffview-nvim;
+      setupModule = "diffview";
+      setupOpts = {};
     };
   };
 }
