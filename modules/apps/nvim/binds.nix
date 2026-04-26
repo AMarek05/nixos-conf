@@ -133,6 +133,60 @@
 
       # Telescope
       {
+        key = "<leader>sf";
+        mode = [ "n" ];
+        action = "<cmd>Telescope find_files<CR>";
+        desc = "[Search] Find files";
+      }
+      {
+        key = "<leader>sp";
+        mode = [ "n" ];
+        action = "<cmd>Telescope find_projects<CR>";
+        desc = "[Search] Find project";
+      }
+      {
+        key = "<leader>sg";
+        mode = [ "n" ];
+        action = "<cmd>Telescope live_grep<CR>";
+        desc = "[Search] Grep";
+      }
+      {
+        key = "<leader>sb";
+        mode = [ "n" ];
+        action = "<cmd>Telescope buffers<CR>";
+        desc = "[Search] Buffers";
+      }
+      {
+        key = "<leader>sh";
+        mode = [ "n" ];
+        action = "<cmd>Telescope help_tags<CR>";
+        desc = "[Search] Help tags";
+      }
+      {
+        key = "<leader>st";
+        mode = [ "n" ];
+        action = "<cmd>Telescope<CR>";
+        desc = "[Search] Telescope open";
+      }
+      {
+        key = "<leader>sr";
+        mode = [ "n" ];
+        action = "<cmd>Telescope resume<CR>";
+        desc = "[Search] Resume last search";
+      }
+      {
+        key = "<leader>ss";
+        mode = [ "n" ];
+        action = "<cmd>Telescope treesitter<CR>";
+        desc = "[Search] Treesitter symbols";
+      }
+      {
+        key = "<leader>sd";
+        mode = [ "n" ];
+        action = "<cmd>Telescope diagnostics<CR>";
+        desc = "[Search] Diagnostics";
+      }
+      {
         key = "<leader>s.";
         mode = [ "n" ];
         action = "<cmd>Telescope oldfiles<CR>";
