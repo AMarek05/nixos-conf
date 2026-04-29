@@ -95,7 +95,7 @@
 
         overlays = [
           openldapOverlay
-          lixToolsOverlay
+          # lixToolsOverlay
         ];
       };
 
@@ -103,14 +103,18 @@
         ./etc/configuration.nix
         sops-nix.nixosModules.sops
 
-        lix-module.nixosModules.default
+        # lix-module.nixosModules.default
 
-        {
-          nixpkgs.overlays = [
-            openldapOverlay
-            lixToolsOverlay
-          ];
-        }
+        (
+          { pkgs, ... }:
+          {
+            nix.package = pkgs.lix;
+            nixpkgs.overlays = [
+              openldapOverlay
+              # lixToolsOverlay
+            ];
+          }
+        )
       ];
     in
 
@@ -136,6 +140,7 @@
 
           modules = sharedModules ++ [
             ./etc/hosts/laptop-hardware.nix
+            ./etc/mesa.nix
 
             {
               networking.hostName = nixpkgs.lib.mkForce "nixos-laptop";
@@ -178,6 +183,12 @@
           modules = [
             ./hosts/nixos.nix
             ./modules/forge.nix
+            (
+              { pkgs, ... }:
+              {
+                nix.package = pkgs.lix;
+              }
+            )
           ];
 
           extraSpecialArgs = {
@@ -190,6 +201,13 @@
 
           modules = [
             ./hosts/nixos-laptop.nix
+            ./modules/forge.nix
+            (
+              { pkgs, ... }:
+              {
+                nix.package = pkgs.lix;
+              }
+            )
             {
               wayland.windowManager.hyprland.settings = {
                 monitor = nixpkgs.lib.mkForce [ ", 1920x1080@59.997000, auto, 1" ];

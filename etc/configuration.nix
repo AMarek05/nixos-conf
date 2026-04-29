@@ -256,7 +256,6 @@
   environment.systemPackages = with pkgs; [
     vim
     git
-    neovim
 
     man-pages
 
