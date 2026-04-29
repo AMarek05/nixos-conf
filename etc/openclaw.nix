@@ -195,9 +195,11 @@ in
 
     security.apparmor.enable = true;
 
-    nixpkgs.config.permittedInsecurePackages = [
-      "openclaw-2026.4.21"
-    ];
+    nixpkgs.config.allowInsecurePredicate =
+      pkg:
+      builtins.elem (lib.getName pkg) [
+        "openclaw"
+      ];
 
     users.users.adam.extraGroups = [ cfg.group ];
     environment.systemPackages = with pkgs; [
