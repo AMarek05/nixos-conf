@@ -115,6 +115,17 @@
             ];
           }
         )
+        {
+          networking.extraHosts = ''
+            192.168.18.8 nixos-laptop
+            192.168.18.13 nixos
+          '';
+
+          nixpkgs.overlays = [
+            openldapOverlay
+            lixToolsOverlay
+          ];
+        }
       ];
     in
 

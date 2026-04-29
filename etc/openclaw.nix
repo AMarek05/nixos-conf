@@ -196,7 +196,7 @@ in
     security.apparmor.enable = true;
 
     nixpkgs.config.permittedInsecurePackages = [
-      "openclaw-2026.4.12"
+      "openclaw-2026.4.21"
     ];
 
     users.users.adam.extraGroups = [ cfg.group ];
