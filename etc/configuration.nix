@@ -238,6 +238,7 @@
       "wheel"
       "video"
       "adbusers"
+      "networkmanager"
     ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
@@ -268,6 +269,10 @@
     android-tools
 
     openssl
+
+    proton-authenticator
+    proton-vpn-cli
+    proton-vpn
 
     mullvad-vpn
     (symlinkJoin {
@@ -372,6 +377,8 @@
     8000
     8384
   ];
+
+  networking.firewall.checkReversePath = "loose";
 
   # networking.firewall.trustedInterfaces = [ "tailscale0" ];
   # networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
