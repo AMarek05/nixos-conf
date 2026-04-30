@@ -170,7 +170,7 @@ let
     ## Critical System Constraints
     1. **Output Format:** All tools return strict JSON.
     2. **Path Constraints:** Tools run `realpath`. Using `../` to break out will result in `Access denied`. Accessing ~/.openclaw is disallowed, it contains secrets and configs.
-    3. **Execution:** You do not have a shell. You must use the tools listed above via your native `exec`.
+    3. **Execution:** You do not have a shell. You must use the binaries listed above via your native `exec`.
     4. **exec limitation:** Each exec of an executable not on the above lists will need approval. Prioritise them as much as possible.
     5. **Permissions:** When creating files, ensure the same file permissions for yourself and for your group. It will allow me easy access to the files.
   '';
@@ -199,8 +199,7 @@ let
     tool:
     let
       scriptContent = getScriptContent tool;
-      scriptName =
-        if builtins.isPath tool.script then (builtins.baseNameOf tool.script) else "${tool.name}.sh";
+      scriptName = if builtins.isPath tool.script then (baseNameOf tool.script) else "${tool.name}.sh";
       skillDoc = skillDocs.${tool.name};
     in
     pkgs.runCommand "skill-${tool.name}"
@@ -318,4 +317,3 @@ in
     };
   };
 }
-
