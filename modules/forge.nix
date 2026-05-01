@@ -1,5 +1,4 @@
 {
-  config,
   inputs,
   ...
 }:
@@ -10,20 +9,8 @@
 
   forge = {
     enable = true;
-    syncBase = "${config.home.homeDirectory}/sync";
+
     githubUser = "AMarek05";
-    languages = [
-      "rust"
-      "python"
-      "c"
-      "cpp"
-      "java"
-      "nix"
-      "r"
-    ];
-    includes = [
-      "git"
-      "overseer"
-    ];
+    editor = "nvim";
   };
 }
