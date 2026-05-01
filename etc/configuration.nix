@@ -270,9 +270,20 @@
 
     openssl
 
-    proton-authenticator
     proton-vpn-cli
     proton-vpn
+
+    (symlinkJoin {
+      name = "proton-authenticator-wrapped";
+      paths = [ proton-authenticator ];
+      buildInputs = [ makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/proton-authenticator \
+          --set GDK_BACKEND x11 \
+          --set WEBKIT_DISABLE_COMPOSITOR_ANIMATIONS 1 \
+          --set WEB_KIT_DISABLE_DMABUF 1
+      '';
+    })
 
     mullvad-vpn
     (symlinkJoin {
@@ -286,6 +297,9 @@
 
     steam-run-free
   ];
+
+  services.gnome.gnome-keyring.enable = true;
+  security.pam.services.login.enableGnomeKeyring = true;
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
