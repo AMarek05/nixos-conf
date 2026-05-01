@@ -358,11 +358,11 @@
         "nixpkgs-mozilla": "nixpkgs-mozilla"
       },
       "locked": {
-        "lastModified": 1777417041,
-        "narHash": "sha256-irkvsr//L5wC5+sYFrpJqBmkJbvo+N0n9LIB4kZv3PU=",
+        "lastModified": 1777640822,
+        "narHash": "sha256-lEMZRP1MJusmfn0QiGfrlSHQGx5KvQCwTRFgcwY3qp8=",
         "owner": "AMarek05",
         "repo": "forge",
-        "rev": "c01d3a090d660eebe6e301092e9479f5dd5810cd",
+        "rev": "d597dbe36b83f36810d896b72b51d9fffc704926",
         "type": "github"
       },
       "original": {
@@ -789,17 +789,17 @@
     "lix": {
       "flake": false,
       "locked": {
-        "lastModified": 1777373577,
-        "narHash": "sha256-K0sXr8tRA9L1FGE8Khl42NR+DmZOY9gNYCP8ljX7TAo=",
+        "lastModified": 1777570135,
+        "narHash": "sha256-lTx7/jbuCjGVeE03Je1OQNCjkVza8bZ5Wq6gW9iSs/I=",
         "ref": "refs/heads/main",
-        "rev": "faaa14a303dabc6309a52cc8e5eba86f9e29ccaf",
-        "revCount": 19152,
+        "rev": "d94bb49cf4d547e78ebd1e0b743601968c5bfdb0",
+        "revCount": 19158,
         "type": "git",
         "url": "https://git.lix.systems/lix-project/lix"
       },
       "original": {
-        "type": "tarball",
-        "url": "https://git.lix.systems/lix-project/lix/archive/main.tar.gz"
+        "type": "git",
+        "url": "https://git.lix.systems/lix-project/lix"
       }
     },
     "lix-module": {
