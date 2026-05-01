@@ -238,6 +238,7 @@
       "wheel"
       "video"
       "adbusers"
+      "networkmanager"
     ];
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
@@ -256,7 +257,6 @@
   environment.systemPackages = with pkgs; [
     vim
     git
-    neovim
 
     man-pages
 
@@ -270,6 +270,21 @@
 
     openssl
 
+    proton-vpn-cli
+    proton-vpn
+
+    (symlinkJoin {
+      name = "proton-authenticator-wrapped";
+      paths = [ proton-authenticator ];
+      buildInputs = [ makeWrapper ];
+      postBuild = ''
+        wrapProgram $out/bin/proton-authenticator \
+          --set GDK_BACKEND x11 \
+          --set WEBKIT_DISABLE_COMPOSITOR_ANIMATIONS 1 \
+          --set WEB_KIT_DISABLE_DMABUF 1
+      '';
+    })
+
     mullvad-vpn
     (symlinkJoin {
       name = "mullvad-completions";
@@ -282,6 +297,9 @@
 
     steam-run-free
   ];
+
+  services.gnome.gnome-keyring.enable = true;
+  security.pam.services.login.enableGnomeKeyring = true;
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
@@ -373,6 +391,8 @@
     8000
     8384
   ];
+
+  networking.firewall.checkReversePath = "loose";
 
   # networking.firewall.trustedInterfaces = [ "tailscale0" ];
   # networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];

@@ -39,6 +39,7 @@
       lutris-free
       heroic
       ckan
+      qbittorrent
 
       nautilus
       alacarte
