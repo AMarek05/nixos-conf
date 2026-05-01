@@ -8,5 +8,6 @@
     ./plugins/languages.nix
     ./plugins/ui.nix
     ./plugins/git.nix
+    ./plugins/terminal.nix
   ];
 }
