@@ -24,7 +24,7 @@ in
 
         user = {
           name = "Adam Marek";
-          email = "118975111+AMarek05@users.noreply.github.com";
+          email = "amarek.git@gmail.com";
           useConfigOnly = true;
         };
       };

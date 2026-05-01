@@ -14,6 +14,7 @@
           nextConflict = lib.mkForce null;
         };
       };
+
       gitsigns = {
         mappings = {
           stageHunk = lib.mkForce null;
@@ -29,6 +30,7 @@
           toggleDeleted = lib.mkForce null;
         };
       };
+
       gitsigns.setupOpts = {
         signs = {
           add = {
@@ -53,7 +55,7 @@
     lazy.plugins."diffview.nvim" = {
       package = pkgs.vimPlugins.diffview-nvim;
       setupModule = "diffview";
-      setupOpts = {};
+      setupOpts = { };
     };
   };
 }

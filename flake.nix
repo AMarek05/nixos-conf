@@ -11,6 +11,13 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    lix-module = {
+      url = "git+https://git.lix.systems/lix-project/nixos-module";
+      inputs.nixpkgs.follows = "nixpkgs";
+
+      inputs.lix.url = "git+https://git.lix.systems/lix-project/lix";
+    };
+
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -31,8 +38,16 @@
       url = "github:notashelf/nvf";
     };
 
+    quickshell = {
+      url = "git+https://git.outfoxxed.me/quickshell/quickshell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     caelestia-shell = {
       url = "github:caelestia-dots/shell";
+
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.quickshell.follows = "quickshell";
     };
 
     nix-openclaw = {
@@ -45,7 +60,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    forge.url = "path:/home/adam/builds/forge";
+    forge = {
+      url = "github:AMarek05/forge";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -55,6 +73,7 @@
       home-manager,
       nix-openclaw,
       sops-nix,
+      lix-module,
       ...
     }@inputs:
 
@@ -69,18 +88,52 @@
             prev.openldap;
       };
 
+      lixToolsOverlay = final: prev: {
+        inherit (prev.lixPackageSets.stable)
+          nixpkgs-review
+          nix-eval-jobs
+          nix-fast-build
+          colmena
+          ;
+      };
+
       hmPkgs = import nixpkgs {
         system = "x86_64-linux";
-
         config.allowUnfree = true;
-        overlays = [ openldapOverlay ];
+
+        overlays = [
+          openldapOverlay
+          # lixToolsOverlay
+        ];
       };
 
       sharedModules = [
         ./etc/configuration.nix
         sops-nix.nixosModules.sops
 
-        { nixpkgs.overlays = [ openldapOverlay ]; }
+        # lix-module.nixosModules.default
+
+        (
+          { pkgs, ... }:
+          {
+            nix.package = pkgs.lix;
+            nixpkgs.overlays = [
+              openldapOverlay
+              # lixToolsOverlay
+            ];
+          }
+        )
+        {
+          networking.extraHosts = ''
+            192.168.18.8 nixos-laptop
+            192.168.18.13 nixos
+          '';
+
+          nixpkgs.overlays = [
+            openldapOverlay
+            lixToolsOverlay
+          ];
+        }
       ];
     in
 
@@ -106,6 +159,7 @@
 
           modules = sharedModules ++ [
             ./etc/hosts/laptop-hardware.nix
+            ./etc/mesa.nix
 
             {
               networking.hostName = nixpkgs.lib.mkForce "nixos-laptop";
@@ -148,6 +202,12 @@
           modules = [
             ./hosts/nixos.nix
             ./modules/forge.nix
+            (
+              { pkgs, ... }:
+              {
+                nix.package = pkgs.lix;
+              }
+            )
           ];
 
           extraSpecialArgs = {
@@ -160,6 +220,13 @@
 
           modules = [
             ./hosts/nixos-laptop.nix
+            ./modules/forge.nix
+            (
+              { pkgs, ... }:
+              {
+                nix.package = pkgs.lix;
+              }
+            )
             {
               wayland.windowManager.hyprland.settings = {
                 monitor = nixpkgs.lib.mkForce [ ", 1920x1080@59.997000, auto, 1" ];

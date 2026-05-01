@@ -28,6 +28,8 @@ in
       wine
       winetricks
 
+      tldr
+
       nh
       nvd
       cachix
