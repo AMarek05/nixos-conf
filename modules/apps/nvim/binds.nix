@@ -346,6 +346,14 @@
         desc = "[G]it Diffview close";
       }
 
+      ## ToggleTerm
+      {
+        key = "<C-n><C-n>";
+        mode = [ "t" ];
+        action = "<C-\\><C-n>";
+        desc = "Exit terminal mode";
+      }
+
       ## FLash
       {
         key = "s";
@@ -394,7 +402,7 @@
       "<leader>lw" = "Workspace";
       "<leader>r" = "Rename";
       "<leader>x" = "Trouble";
-      "<leader>h" = null;  # Unregister gitsigns hunk group
+      "<leader>h" = null; # Unregister gitsigns hunk group
     };
 
     luaConfigRC.closeOtherBuffers = ''
@@ -412,4 +420,3 @@
     '';
   };
 }
-
