@@ -40,7 +40,6 @@ in
       wl-clipboard
       bat
       imv
-      qimgv
       fzf
       fd
       ripgrep

@@ -174,6 +174,8 @@
               systemd.tmpfiles.rules = [
                 "w /sys/class/power_supply/BAT1/charge_control_end_threshold - - - - 85"
               ];
+
+              zramSwap.enable = true;
             }
           ];
         };
@@ -228,6 +230,9 @@
               }
             )
             {
+              programs.zsh.shellAliases = {
+                nhh = nixpkgs.lib.mkForce "nh home switch --cores 4 --max-jobs 1";
+              };
               wayland.windowManager.hyprland.settings = {
                 monitor = nixpkgs.lib.mkForce [ ", 1920x1080@59.997000, auto, 1" ];
                 input.touchpad = {

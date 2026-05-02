@@ -3,19 +3,13 @@
     terminal.toggleterm = {
       enable = true;
 
-      mappings.open = "<c-t>";
+      mappings.open = "<C-\\>";
 
       setupOpts = {
-        direction = "horizontal";
-        size = 15;
-        enable_winbar = true;
-      };
-
-      lazygit = {
-        enable = true;
         direction = "float";
-        mappings.open = "<leader>gg";
+        size = 10;
       };
     };
   };
 }
+
