@@ -19,37 +19,6 @@
     MOZ_ENABLE_WAYLAND = "1";
   };
 
-  environment.systemPackages = with pkgs; [
-    (
-      (koboldcpp.override {
-        config.cudaSupport = true;
-        cublasSupport = true;
-        cudaPackages = cudaPackages_13;
-      }).overrideAttrs
-      (oldAttrs: {
-        postPatch = ''
-          # 1. Keep the original author's patch to survive the Nix build sandbox
-          nixLog "patching $PWD/Makefile to remove explicit linking against CUDA driver"
-          substituteInPlace "$PWD/Makefile" \
-            --replace-fail \
-              'CUBLASLD_FLAGS = -lcuda ' \
-              'CUBLASLD_FLAGS = '
-
-          # 2. Our patch to compile for the RTX 5080 (Blackwell)
-          nixLog "patching Makefile to force Blackwell architecture instead of native"
-          substituteInPlace "$PWD/Makefile" \
-            --replace-warn "-arch=native" "-arch=sm_120"
-        '';
-
-        # 3. Force load the NVIDIA driver at runtime so Python can find cuMemCreate
-        postFixup = (oldAttrs.postFixup or "") + ''
-          wrapProgram "$out/bin/koboldcpp" \
-            --prefix LD_PRELOAD : "/run/opengl-driver/lib/libcuda.so.1"
-        '';
-      })
-    )
-  ];
-
   hardware.nvidia = {
     modesetting.enable = true;
 
