@@ -51,7 +51,7 @@
       ld = "eza -lhD --icons=auto";
       lt = "eza      --icons=auto --tree";
 
-      st = "/home/adam/sync/SillyTavern/SillyTavern/start.sh";
+      st = "/home/adam/sync/SillyTavern/start.sh";
 
       polluks = "ssh -A inf164182@polluks.cs.put.poznan.pl";
 
