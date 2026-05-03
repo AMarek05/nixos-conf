@@ -2,17 +2,18 @@
 {
   imports = [
     ./git.nix
-    ./shell.nix
     ./util.nix
     ./env.nix
     ./links.nix
+
+    ./terminal
+    ./shell
 
     ./hyprland.nix
 
     ./apps/main.nix
     ./apps/nvf.nix
     ./apps/stylix.nix
-    ./apps/terminal.nix
   ];
 
   modules = {
@@ -28,7 +29,18 @@
       enable = lib.mkDefault true;
       stylix.enable = lib.mkDefault true;
       nvf.enable = lib.mkDefault true;
-      terminal.enable = lib.mkDefault true;
+    };
+
+    terminal = {
+      enable = lib.mkDefault true;
+      less.enable = lib.mkDefault true;
+      tmux.enable = lib.mkDefault true;
+      ghostty.enable = lib.mkDefault true;
+      starship.enable = lib.mkDefault true;
+    };
+
+    shell = {
+      enable = lib.mkDefault true;
     };
   };
 }
