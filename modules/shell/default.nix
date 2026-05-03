@@ -5,10 +5,8 @@
     enable = lib.mkEnableOption "shell";
   };
 
-  config = lib.mkIf config.modules.shell.enable {
-    imports = [
-      ./zsh.nix
-      ./scripts.nix
-    ];
-  };
+  imports = [
+    ./zsh.nix
+    ./scripts.nix
+  ];
 }
