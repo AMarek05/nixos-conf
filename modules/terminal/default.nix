@@ -5,12 +5,10 @@
     enable = lib.mkEnableOption "terminal";
   };
 
-  config = lib.mkIf config.modules.terminal.enable {
-    imports = [
-      ./less.nix
-      ./tmux.nix
-      ./ghostty.nix
-      ./starship.nix
-    ];
-  };
+  imports = [
+    ./less.nix
+    ./tmux.nix
+    ./ghostty.nix
+    ./starship.nix
+  ];
 }
