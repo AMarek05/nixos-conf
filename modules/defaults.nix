@@ -8,8 +8,7 @@
 
     ./terminal
     ./shell
-
-    ./hyprland.nix
+    ./hyprland
 
     ./apps/main.nix
     ./apps/nvf.nix
