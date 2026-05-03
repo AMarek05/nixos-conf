@@ -1,12 +1,8 @@
+# shell module — interactive zsh setup, aliases, and shell utilities
 { pkgs, ... }:
 {
-  home.packages = with pkgs; [
-    eza
-  ];
-
   imports = [ ./scripts.nix ];
 
-  # zsh setup
   programs.zsh = {
     enable = true;
 
@@ -34,7 +30,7 @@
       # Change Autosuggest Key
       bindkey '^ ' autosuggest-accept
 
-      #Set up transient prompt
+      # Set up transient prompt
       source ~/.config/.transient_prompt
     '';
 
@@ -70,11 +66,6 @@
 
       doom = "/home/adam/.config/emacs/bin/doom";
     };
-  };
-
-  programs.starship = {
-    enable = true;
-    enableZshIntegration = true;
   };
 
   programs.zoxide = {
