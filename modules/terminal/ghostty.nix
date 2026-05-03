@@ -1,5 +1,5 @@
 # ghostty module — GPU-terminal emulator configuration
-{ pkgs, config, lib, ... }:
+{ config, lib, ... }:
 {
   options.modules.terminal.ghostty = {
     enable = lib.mkEnableOption "ghostty";
@@ -28,3 +28,4 @@
     };
   };
 }
+
