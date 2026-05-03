@@ -1,6 +1,7 @@
 # shell/zsh module — interactive zsh setup, aliases, and shell utilities
 { pkgs, ... }:
 {
+  home.packages = with pkgs; [ eza ];
   programs.zsh = {
     enable = true;
 
@@ -63,6 +64,8 @@
       hellfire = "sudo snx-rs -s hellfire.put.poznan.pl -u adam.marek@student.put.poznan.pl -o vpn_Username_Password";
 
       doom = "/home/adam/.config/emacs/bin/doom";
+
+      read-sops = "SOPS_AGE_KEY=$(${pkgs.ssh-to-age}/bin/ssh-to-age -- -private-key -i ~/.ssh/id_ed25519) ${pkgs.sops}/bin/sops -- ~/sys/secrets/openclaw.yaml";
     };
   };
 
@@ -78,3 +81,4 @@
     keys = [ "git" ];
   };
 }
+
