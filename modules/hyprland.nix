@@ -71,6 +71,35 @@ in
               disable_splash_rendering = true;
               background_color = lib.mkForce "rgb(1a1a1a)";
             };
+
+            animations = {
+              enabled = true;
+              bezier = [ "easeInOut" "0.4 0 0.2 1" ];
+              workspaces = {
+                enabled = true;
+                bezier = "easeInOut";
+                duration = 0.15;
+              };
+              windows = {
+                enabled = true;
+                bezier = "easeInOut";
+                duration = 0.2;
+                # disable blur/fade on open/close for speed
+                open = {
+                  duration = 0.15;
+                  bezier = "easeInOut";
+                };
+                close = {
+                  duration = 0.15;
+                  bezier = "easeInOut";
+                };
+              };
+              layers = {
+                enabled = true;
+                bezier = "easeInOut";
+                duration = 0.2;
+              };
+            };
           };
         };
       }
