@@ -1,8 +1,8 @@
 # starship module — prompt configuration
 # ships starship.toml from store and sets up zsh integration
-{ lib, ... }:
+{ lib, config, ... }:
 let
-  dotsPath = ../store;
+  dotsPath = ../../store;
 in
 {
   options.modules.terminal.starship = {
@@ -22,3 +22,4 @@ in
     };
   };
 }
+
