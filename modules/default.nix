@@ -32,10 +32,6 @@
 
     terminal = {
       enable = lib.mkDefault true;
-      less.enable = lib.mkDefault true;
-      tmux.enable = lib.mkDefault true;
-      ghostty.enable = lib.mkDefault true;
-      starship.enable = lib.mkDefault true;
     };
 
     shell = {

@@ -1,7 +1,7 @@
 { lib, ... }:
 {
   imports = [
-    ../modules/defaults.nix
+    ../modules/default.nix
   ];
 
   programs.home-manager.enable = lib.mkForce true;
