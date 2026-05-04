@@ -31,11 +31,14 @@
     };
 
     terminal = {
-      enable = lib.mkDefault true;
+      ghostty.enable = lib.mkDefault true;
+      man.enable = lib.mkDefault true;
+      tmux.enable = lib.mkDefault true;
     };
 
     shell = {
-      enable = lib.mkDefault true;
+      zsh.enable = lib.mkDefault true;
+      starship.enable = lib.mkDefault true;
     };
   };
 }
