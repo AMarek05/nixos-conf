@@ -1,15 +1,14 @@
-# starship module — prompt configuration
-# ships starship.toml from store and sets up zsh integration
 { lib, config, ... }:
+
 let
   dotsPath = ../../store;
 in
 {
-  options.modules.terminal.starship = {
+  options.modules.shell.starship = {
     enable = lib.mkEnableOption "starship";
   };
 
-  config = lib.mkIf config.modules.terminal.starship.enable {
+  config = lib.mkIf config.modules.shell.starship.enable {
     programs.starship = {
       enable = true;
       enableZshIntegration = true;
@@ -22,4 +21,3 @@ in
     };
   };
 }
-

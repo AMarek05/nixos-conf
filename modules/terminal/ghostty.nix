@@ -1,11 +1,13 @@
-# ghostty module — GPU-terminal emulator configuration
 { config, lib, ... }:
+let
+  cfg = config.modules.terminal.ghostty;
+in
 {
   options.modules.terminal.ghostty = {
-    enable = lib.mkEnableOption "ghostty";
+    enable = lib.mkEnableOption "Add ghostty installation and configuration";
   };
 
-  config = lib.mkIf config.modules.terminal.ghostty.enable {
+  config = lib.mkIf cfg.enable {
     programs.ghostty = {
       enable = true;
       settings = {
@@ -14,6 +16,8 @@
         window-padding-x = 5;
         window-padding-y = 5;
         window-padding-balance = true;
+
+        clipboard-read = "allow";
 
         font-family = "JetBrainsMono Nerd Font";
         font-style = "JetBrainsMono NF Regular";
@@ -28,4 +32,3 @@
     };
   };
 }
-
