@@ -114,17 +114,29 @@
         nixos = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
-          modules = [ ./etc/hosts/nixos.nix inputs.sops-nix.nixosModules.sops ];
+          modules = [
+            ./etc/hosts/nixos.nix
+            inputs.sops-nix.nixosModules.sops
+            inputs.lix-module.nixosModules.lix-installer
+          ];
         };
         nixos-laptop = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
-          modules = [ ./etc/hosts/nixos-laptop.nix inputs.sops-nix.nixosModules.sops ];
+          modules = [
+            ./etc/hosts/nixos-laptop.nix
+            inputs.sops-nix.nixosModules.sops
+            inputs.lix-module.nixosModules.lix-installer
+          ];
         };
         nixos-wsl = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
-          modules = [ ./etc/hosts/nixos-wsl.nix inputs.sops-nix.nixosModules.sops ];
+          modules = [
+            ./etc/hosts/nixos-wsl.nix
+            inputs.sops-nix.nixosModules.sops
+            inputs.lix-module.nixosModules.lix-installer
+          ];
         };
       };
 
