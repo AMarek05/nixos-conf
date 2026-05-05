@@ -1,10 +1,10 @@
 { config, lib, ... }:
 let
-  cfg = config.modules.shell;
+  cfg = config.modules.sysShell;
 in
 {
-  options.modules.shell = {
-    enable = lib.mkEnableOption "shell configuration (zsh, direnv, dconf)";
+  options.modules.sysShell = {
+    enable = lib.mkEnableOption "system shell configuration (zsh, direnv, dconf)";
   };
 
   config = lib.mkIf cfg.enable {

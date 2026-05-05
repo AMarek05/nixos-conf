@@ -22,7 +22,7 @@
 
   modules = {
     user.enable = lib.mkDefault true;
-    shell.enable = lib.mkDefault true;
+    sysShell.enable = lib.mkDefault true;
     audio.enable = lib.mkDefault true;
     console.enable = lib.mkDefault true;
     fonts.enable = lib.mkDefault true;
