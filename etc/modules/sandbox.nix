@@ -1,10 +1,10 @@
 { lib, config, ... }:
 {
-  options.modules.flatpak = {
+  options.modules.sandbox = {
     enable = lib.mkEnableOption "Sandboxing";
   };
 
-  config = lib.mkIf config.modules.flatpak.enable {
+  config = lib.mkIf config.modules.sandbox.enable {
     services.flatpak.enable = true;
   };
 }
