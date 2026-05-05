@@ -15,8 +15,8 @@
     };
 
     decoration = {
-      rounding = 10;
-      rounding_power = 2;
+      rounding = 6;
+      rounding_power = 3;
     };
   };
 }
