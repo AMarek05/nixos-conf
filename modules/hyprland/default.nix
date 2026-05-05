@@ -15,12 +15,11 @@ in
   };
 
   imports = [
-    ./hyprland/binds.nix
+    ./binds.nix
 
-    ./hyprland/decoration.nix
-    ./hyprland/windowrules.nix
-
-    ./apps/main.nix
+    ./display.nix
+    ./windowrules.nix
+    ./animations.nix
 
     inputs.walker.homeManagerModules.default
     inputs.caelestia-shell.homeManagerModules.default
@@ -31,7 +30,7 @@ in
       # Common hyprland config
       {
         home.file."Pictures/Wallpapers" = {
-          source = ../store/wallpapers;
+          source = ../../store/wallpapers;
           recursive = true;
         };
 
@@ -48,21 +47,8 @@ in
               "XCURSOR_SIZE,24"
             ];
 
-            general = {
-              gaps_in = 5;
-              gaps_out = 15;
-
-              border_size = 2;
-            };
-
             input = {
               kb_layout = "pl,us";
-            };
-
-            dwindle = {
-              preserve_split = true;
-              smart_split = false;
-              smart_resizing = false;
             };
 
             misc = {
@@ -70,35 +56,6 @@ in
               disable_hyprland_logo = true;
               disable_splash_rendering = true;
               background_color = lib.mkForce "rgb(1a1a1a)";
-            };
-
-            animations = {
-              enabled = true;
-              bezier = [ "easeInOut" "0.4 0 0.2 1" ];
-              workspaces = {
-                enabled = true;
-                bezier = "easeInOut";
-                duration = 0.15;
-              };
-              windows = {
-                enabled = true;
-                bezier = "easeInOut";
-                duration = 0.2;
-                # disable blur/fade on open/close for speed
-                open = {
-                  duration = 0.15;
-                  bezier = "easeInOut";
-                };
-                close = {
-                  duration = 0.15;
-                  bezier = "easeInOut";
-                };
-              };
-              layers = {
-                enabled = true;
-                bezier = "easeInOut";
-                duration = 0.2;
-              };
             };
           };
         };

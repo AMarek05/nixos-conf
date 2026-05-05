@@ -64,16 +64,19 @@
       url = "github:AMarek05/forge";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    aagl = {
+      url = "github:ezKEa/aagl-gtk-on-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
-      self,
       nixpkgs,
       home-manager,
       nix-openclaw,
       sops-nix,
-      lix-module,
       ...
     }@inputs:
 
