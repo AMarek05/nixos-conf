@@ -22,6 +22,16 @@
   # No battery on desktop
   services.upower.enable = lib.mkForce false;
 
+  virtualisation.podman = {
+    enable = true;
+    dockerCompat = true;
+    defaultNetwork.settings.dns_enabled = true;
+  };
+
+  environment.systemPackages = with pkgs; [
+    distrobox
+  ];
+
   boot.loader.grub = {
     enable = true;
     device = "nodev";

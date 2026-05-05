@@ -11,6 +11,8 @@
     inputs.sops-nix.nixosModules.sops
   ];
 
+  nix.package = pkgs.lix;
+
   nixpkgs.config.allowUnfree = true;
 
   nix.settings = {
@@ -40,6 +42,13 @@
   };
 
   boot.kernelPackages = pkgs.linuxPackages_zen;
+
+  systemd.services.NetworkManager-wait-online.enable = false;
+
+  systemd.services."systemd-userdb".enable = false;
+  systemd.services."systemd-homed".enable = false;
+
+  systemd.sockets."systemd-userdb".enable = false;
 
   time.timeZone = lib.mkDefault "Europe/Warsaw";
 
