@@ -74,8 +74,6 @@
     {
       nixpkgs,
       home-manager,
-      nix-openclaw,
-      sops-nix,
       ...
     }@inputs:
 
@@ -116,8 +114,8 @@
           specialArgs = { inherit inputs; };
           modules = [
             ./etc/hosts/nixos.nix
+
             inputs.sops-nix.nixosModules.sops
-            inputs.lix-module.nixosModules.lix-installer
           ];
         };
         nixos-laptop = nixpkgs.lib.nixosSystem {
@@ -125,8 +123,8 @@
           specialArgs = { inherit inputs; };
           modules = [
             ./etc/hosts/nixos-laptop.nix
+
             inputs.sops-nix.nixosModules.sops
-            inputs.lix-module.nixosModules.lix-installer
           ];
         };
         nixos-wsl = nixpkgs.lib.nixosSystem {
@@ -134,8 +132,8 @@
           specialArgs = { inherit inputs; };
           modules = [
             ./etc/hosts/nixos-wsl.nix
+
             inputs.sops-nix.nixosModules.sops
-            inputs.lix-module.nixosModules.lix-installer
           ];
         };
       };
