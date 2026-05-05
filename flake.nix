@@ -14,7 +14,6 @@
     lix-module = {
       url = "git+https://git.lix.systems/lix-project/nixos-module";
       inputs.nixpkgs.follows = "nixpkgs";
-
       inputs.lix.url = "git+https://git.lix.systems/lix-project/lix";
     };
 
@@ -106,38 +105,8 @@
 
         overlays = [
           openldapOverlay
-          # lixToolsOverlay
         ];
       };
-
-      sharedModules = [
-        ./etc/configuration.nix
-        sops-nix.nixosModules.sops
-
-        # lix-module.nixosModules.default
-
-        (
-          { pkgs, ... }:
-          {
-            nix.package = pkgs.lix;
-            nixpkgs.overlays = [
-              openldapOverlay
-              # lixToolsOverlay
-            ];
-          }
-        )
-        {
-          networking.extraHosts = ''
-            192.168.18.8 nixos-laptop
-            192.168.18.13 nixos
-          '';
-
-          nixpkgs.overlays = [
-            openldapOverlay
-            lixToolsOverlay
-          ];
-        }
-      ];
     in
 
     {
@@ -145,61 +114,17 @@
         nixos = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
-
-          modules = sharedModules ++ [
-            ./etc/hosts/nixos-hardware.nix
-            ./etc/openclaw.nix
-            nix-openclaw.nixosModules.openclaw-gateway
-            ./etc/nvidia.nix
-            {
-              imports = [ inputs.aagl.nixosModules.default ];
-              networking.hostName = nixpkgs.lib.mkForce "nixos";
-
-              programs.sleepy-launcher.enable = true;
-            }
-          ];
+          modules = [ ./etc/hosts/nixos.nix inputs.sops-nix.nixosModules.sops ];
         };
         nixos-laptop = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
-
-          modules = sharedModules ++ [
-            ./etc/hosts/laptop-hardware.nix
-            ./etc/mesa.nix
-
-            {
-              networking.hostName = nixpkgs.lib.mkForce "nixos-laptop";
-
-              boot.loader.grub.enable = nixpkgs.lib.mkForce false;
-              boot.loader.systemd-boot.enable = nixpkgs.lib.mkForce true;
-              # boot.loader.efi.canTouchEfiVariables = nixpkgs.lib.mkForce true;
-
-              boot.kernelParams = [ "i915.enable_dpcd_backlight=3" ];
-
-              services.upower.enable = true;
-              systemd.tmpfiles.rules = [
-                "w /sys/class/power_supply/BAT1/charge_control_end_threshold - - - - 85"
-              ];
-
-              zramSwap.enable = true;
-            }
-          ];
+          modules = [ ./etc/hosts/nixos-laptop.nix inputs.sops-nix.nixosModules.sops ];
         };
         nixos-wsl = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
-
-          modules = sharedModules ++ [
-            ./etc/configuration-wsl.nix
-
-            inputs.nixos-wsl.nixosModules.default
-            {
-              networking.hostName = nixpkgs.lib.mkForce "nixos-wsl";
-              system.stateVersion = "25.05";
-              wsl.enable = true;
-              wsl.defaultUser = "adam";
-            }
-          ];
+          modules = [ ./etc/hosts/nixos-wsl.nix inputs.sops-nix.nixosModules.sops ];
         };
       };
 
