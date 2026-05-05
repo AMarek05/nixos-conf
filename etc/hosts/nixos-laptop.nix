@@ -1,10 +1,11 @@
 { lib, ... }:
 {
   imports = [
-    ./common.nix
-    ./hosts/laptop-hardware.nix
-    ./mesa.nix
-    ./hyprland.nix
+    ./default.nix
+    ./hardware/laptop-hardware.nix
+
+    ../hyprland.nix
+    ../mesa.nix
   ];
 
   networking.hostName = lib.mkForce "nixos-laptop";

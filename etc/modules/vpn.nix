@@ -1,4 +1,9 @@
-{ lib, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 {
   options.modules.vpn = {
     enable = lib.mkEnableOption "VPN clients (Mullvad, ProtonVPN)";

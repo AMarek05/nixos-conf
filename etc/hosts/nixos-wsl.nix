@@ -1,7 +1,7 @@
 { inputs, lib, ... }:
 {
   imports = [
-    ./common.nix
+    ./default.nix
     ./configuration-wsl.nix
     inputs.nixos-wsl.nixosModules.default
   ];
@@ -21,12 +21,11 @@
     gamemode.enable = lib.mkForce false;
     networking.enable = lib.mkForce false;
     packages.enable = lib.mkForce false;
-    printing.enable = lib.mkForce false;
     security.enable = lib.mkForce false;
     shell.enable = lib.mkForce false;
     user.enable = lib.mkForce false;
     nix-ld.enable = lib.mkForce false;
-    flatpak.enable = lib.mkForce false;
+    sandbox.enable = lib.mkForce false;
     vpn.enable = lib.mkForce false;
   };
 }

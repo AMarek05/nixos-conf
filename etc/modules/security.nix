@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 {
   options.modules.security = {
     enable = lib.mkEnableOption "security (gnupg, pam, dconf, gnome-keyring)";

@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 {
   options.modules.networking = {
     enable = lib.mkEnableOption "networking (NetworkManager, firewall, syncthing, openssh, extraHosts)";

@@ -1,7 +1,7 @@
-{ lib, ... }:
+{ lib, config, ... }:
 {
   options.modules.flatpak = {
-    enable = lib.mkEnableOption "Flatpak sandboxing";
+    enable = lib.mkEnableOption "Sandboxing";
   };
 
   config = lib.mkIf config.modules.flatpak.enable {

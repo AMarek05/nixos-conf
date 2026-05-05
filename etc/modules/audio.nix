@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 {
   options.modules.audio = {
     enable = lib.mkEnableOption "audio (pipewire, rtkit)";

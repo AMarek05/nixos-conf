@@ -1,19 +1,22 @@
 { lib, ... }:
 {
   imports = [
-    ./modules/audio.nix
-    ./modules/console.nix
-    ./modules/fonts.nix
-    ./modules/gamemode.nix
-    ./modules/networking.nix
-    ./modules/packages.nix
-    ./modules/printing.nix
-    ./modules/security.nix
-    ./modules/shell.nix
-    ./modules/user.nix
-    ./modules/nix-ld.nix
-    ./modules/flatpak.nix
-    ./modules/vpn.nix
+    ./audio.nix
+
+    ./packages.nix
+    ./nix-ld.nix
+    ./sandbox.nix
+
+    ./user.nix
+    ./shell.nix
+
+    ./console.nix
+    ./fonts.nix
+
+    ./security.nix
+
+    ./networking.nix
+    ./vpn.nix
   ];
 
   modules = {
@@ -25,7 +28,6 @@
     gamemode.enable = lib.mkDefault true;
     networking.enable = lib.mkDefault true;
     packages.enable = lib.mkDefault true;
-    printing.enable = lib.mkDefault true;
     security.enable = lib.mkDefault true;
     nix-ld.enable = lib.mkDefault true;
     flatpak.enable = lib.mkDefault true;
