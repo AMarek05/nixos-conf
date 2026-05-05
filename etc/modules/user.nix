@@ -1,4 +1,9 @@
-{ lib, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 {
   options.modules.user = {
     enable = lib.mkEnableOption "user account and groups";

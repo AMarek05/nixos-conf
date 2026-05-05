@@ -1,4 +1,9 @@
-{ lib, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 {
   options.modules.packages = {
     enable = lib.mkEnableOption "core system packages";

@@ -1,4 +1,9 @@
-{ lib, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 {
   options.modules.console = {
     enable = lib.mkEnableOption "console (fonts, keymap, kmscon)";

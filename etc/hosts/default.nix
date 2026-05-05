@@ -1,7 +1,13 @@
-{ lib, ... }:
+{
+  inputs,
+  pkgs,
+  lib,
+  ...
+}:
 {
   imports = [
-    ../default.nix
+    ../modules
+
     inputs.sops-nix.nixosModules.sops
   ];
 

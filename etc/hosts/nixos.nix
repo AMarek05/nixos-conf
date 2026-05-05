@@ -1,16 +1,21 @@
-{ inputs, lib, ... }:
+{
+  inputs,
+  lib,
+  pkgs,
+  ...
+}:
 {
   imports = [
-    ./common.nix
-    ./hosts/nixos-hardware.nix
-    ./nvidia.nix
-    ./hyprland.nix
-    ./openclaw.nix
-    {
-      imports = [ inputs.aagl.nixosModules.default ];
-      programs.sleepy-launcher.enable = true;
-    }
+    ./default.nix
+    ./hardware/nixos-hardware.nix
+
+    ../nvidia.nix
+    ../hyprland.nix
+    ../openclaw.nix
+    inputs.aagl.nixosModules.default
   ];
+
+  programs.sleepy-launcher.enable = true;
 
   networking.hostName = lib.mkForce "nixos";
 

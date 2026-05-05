@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 {
   options.modules.gamemode = {
     enable = lib.mkEnableOption "gamemode and steam";
