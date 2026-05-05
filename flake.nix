@@ -64,16 +64,19 @@
       url = "github:AMarek05/forge";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    aagl = {
+      url = "github:ezKEa/aagl-gtk-on-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
     {
-      self,
       nixpkgs,
       home-manager,
       nix-openclaw,
       sops-nix,
-      lix-module,
       ...
     }@inputs:
 
@@ -149,7 +152,10 @@
             nix-openclaw.nixosModules.openclaw-gateway
             ./etc/nvidia.nix
             {
+              imports = [ inputs.aagl.nixosModules.default ];
               networking.hostName = nixpkgs.lib.mkForce "nixos";
+
+              programs.sleepy-launcher.enable = true;
             }
           ];
         };
