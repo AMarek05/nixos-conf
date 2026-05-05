@@ -144,51 +144,29 @@
           specialArgs = { inherit inputs; };
 
           modules = sharedModules ++ [
-            ./etc/hosts/nixos-hardware.nix
-            ./etc/openclaw.nix
+            ./etc/hosts/nixos.nix
             nix-openclaw.nixosModules.openclaw-gateway
-            ./etc/nvidia.nix
-            {
-              networking.hostName = nixpkgs.lib.mkForce "nixos";
-            }
           ];
         };
+
         nixos-laptop = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
 
           modules = sharedModules ++ [
-            ./etc/hosts/laptop-hardware.nix
-            ./etc/mesa.nix
-
-            {
-              networking.hostName = nixpkgs.lib.mkForce "nixos-laptop";
-
-              boot.loader.grub.enable = nixpkgs.lib.mkForce false;
-              boot.loader.systemd-boot.enable = nixpkgs.lib.mkForce true;
-              # boot.loader.efi.canTouchEfiVariables = nixpkgs.lib.mkForce true;
-
-              boot.kernelParams = [ "i915.enable_dpcd_backlight=3" ];
-
-              services.upower.enable = true;
-              systemd.tmpfiles.rules = [
-                "w /sys/class/power_supply/BAT1/charge_control_end_threshold - - - - 85"
-              ];
-
-              zramSwap.enable = true;
-            }
+            ./etc/hosts/nixos-laptop.nix
           ];
         };
+
         nixos-wsl = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
 
           modules = sharedModules ++ [
-            ./etc/configuration-wsl.nix
-
             inputs.nixos-wsl.nixosModules.default
+            ./etc/configuration-wsl.nix
+            ./etc/hosts/nixos-wsl.nix
             {
-              networking.hostName = nixpkgs.lib.mkForce "nixos-wsl";
               system.stateVersion = "25.05";
               wsl.enable = true;
               wsl.defaultUser = "adam";
@@ -229,18 +207,6 @@
                 nix.package = pkgs.lix;
               }
             )
-            {
-              programs.zsh.shellAliases = {
-                nhh = nixpkgs.lib.mkForce "nh home switch --cores 4 --max-jobs 1";
-              };
-              wayland.windowManager.hyprland.settings = {
-                monitor = nixpkgs.lib.mkForce [ ", 1920x1080@59.997000, auto, 1" ];
-                input.touchpad = {
-                  natural_scroll = true;
-                  scroll_factor = 0.3;
-                };
-              };
-            }
           ];
 
           extraSpecialArgs = {
