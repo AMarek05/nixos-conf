@@ -36,7 +36,6 @@
       flatpak
       prismlauncher
       ftb-app
-      lutris-free
       heroic
       ckan
       qbittorrent
