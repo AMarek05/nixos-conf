@@ -8,6 +8,33 @@
     ../mesa.nix
   ];
 
+  nix = {
+    distributedBuilds = true;
+    # Optional: If you want to ONLY build on the remote machine, set max-jobs to 0
+    settings.max-jobs = lib.mkForce 0;
+
+    buildMachines = [
+      {
+        hostName = "nixos";
+        sshUser = "adam";
+        sshKey = "/root/.ssh/id_root";
+        system = "x86_64-linux";
+        maxJobs = 8;
+        speedFactor = 2;
+        supportedFeatures = [
+          "nixos-test"
+          "benchmark"
+          "big-parallel"
+          "kvm"
+        ];
+      }
+    ];
+
+    extraOptions = ''
+      builders-use-substitutes = true
+    '';
+  };
+
   networking.hostName = lib.mkForce "nixos-laptop";
 
   boot.loader.grub.enable = lib.mkForce false;
