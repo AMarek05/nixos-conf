@@ -4,7 +4,11 @@
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
-    hyprland.url = "github:hyprwm/Hyprland";
+
+    hyprland = {
+      url = "github:hyprwm/Hyprland/21fa9b2ee27227c964fdeb8090d98255edb89bec";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     home-manager = {
       url = "github:nix-community/home-manager";
