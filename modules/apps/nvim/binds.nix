@@ -231,7 +231,13 @@
         key = "<leader>ot";
         mode = [ "n" ];
         action = "<cmd>OverseerToggle<CR>";
-        desc = "[O]versee [T]oggle";
+        desc = "[O]verseer [T]oggle";
+      }
+      {
+        key = "<leader>os";
+        mode = [ "n" ];
+        action = "<cmd>OverseerShell<CR>";
+        desc = "[O]verseer [S]hell";
       }
 
       ## Undotree
