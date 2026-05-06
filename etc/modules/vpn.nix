@@ -10,11 +10,6 @@
   };
 
   config = lib.mkIf config.modules.vpn.enable {
-    services.mullvad-vpn = {
-      enable = true;
-      package = pkgs.mullvad-vpn;
-    };
-
     environment.systemPackages = with pkgs; [
       proton-vpn-cli
       proton-vpn

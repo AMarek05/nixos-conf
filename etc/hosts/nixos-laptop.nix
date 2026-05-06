@@ -11,7 +11,10 @@
   nix = {
     distributedBuilds = true;
     # Optional: If you want to ONLY build on the remote machine, set max-jobs to 0
-    settings.max-jobs = lib.mkForce 0;
+    settings = {
+      max-jobs = lib.mkForce 1;
+      cores = lib.mkForce 4;
+    };
 
     buildMachines = [
       {
@@ -20,7 +23,7 @@
         sshKey = "/root/.ssh/id_root";
         system = "x86_64-linux";
         maxJobs = 8;
-        speedFactor = 2;
+        speedFactor = 10;
         supportedFeatures = [
           "nixos-test"
           "benchmark"
