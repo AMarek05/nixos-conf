@@ -32,6 +32,15 @@
     distrobox
   ];
 
+  fileSystems."/home/adam/.local/share/containers/storage" = {
+    device = "/mnt/Shared/podman-disk.img";
+    fsType = "ext4";
+    options = [
+      "loop"
+      "nofail"
+    ];
+  };
+
   boot.loader.grub = {
     enable = true;
     device = "nodev";
