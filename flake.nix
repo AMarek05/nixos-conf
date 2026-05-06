@@ -15,12 +15,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    lix-module = {
-      url = "git+https://git.lix.systems/lix-project/nixos-module";
-      inputs.nixpkgs.follows = "nixpkgs";
-      inputs.lix.url = "git+https://git.lix.systems/lix-project/lix";
-    };
-
     zen-browser = {
       url = "github:0xc000022070/zen-browser-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -82,33 +76,14 @@
     }@inputs:
 
     let
-      openldapOverlay = final: prev: {
-        openldap =
-          if prev.stdenv.hostPlatform.isi686 then
-            prev.openldap.overrideAttrs (old: {
-              doCheck = false;
-            })
-          else
-            prev.openldap;
-      };
-
-      lixToolsOverlay = final: prev: {
-        inherit (prev.lixPackageSets.stable)
-          nixpkgs-review
-          nix-eval-jobs
-          nix-fast-build
-          colmena
-          ;
-      };
-
       hmPkgs = import nixpkgs {
         system = "x86_64-linux";
         config.allowUnfree = true;
 
-        overlays = [
-          openldapOverlay
-        ];
       };
+
+      commonImports = [ inputs.sops-nix.nixosModules.sops ];
+
     in
 
     {
@@ -118,27 +93,27 @@
           specialArgs = { inherit inputs; };
           modules = [
             ./etc/hosts/nixos.nix
-
-            inputs.sops-nix.nixosModules.sops
-          ];
+          ]
+          ++ commonImports;
         };
+
         nixos-laptop = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
           modules = [
             ./etc/hosts/nixos-laptop.nix
-
-            inputs.sops-nix.nixosModules.sops
-          ];
+          ]
+          ++ commonImports;
         };
+
         nixos-wsl = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs; };
           modules = [
             ./etc/hosts/nixos-wsl.nix
 
-            inputs.sops-nix.nixosModules.sops
-          ];
+          ]
+          ++ commonImports;
         };
       };
 
@@ -149,12 +124,6 @@
           modules = [
             ./hosts/nixos.nix
             ./modules/forge.nix
-            (
-              { pkgs, ... }:
-              {
-                nix.package = pkgs.lix;
-              }
-            )
           ];
 
           extraSpecialArgs = {
@@ -168,24 +137,6 @@
           modules = [
             ./hosts/nixos-laptop.nix
             ./modules/forge.nix
-            (
-              { pkgs, ... }:
-              {
-                nix.package = pkgs.lix;
-              }
-            )
-            {
-              programs.zsh.shellAliases = {
-                nhh = nixpkgs.lib.mkForce "nh home switch --cores 4 --max-jobs 1";
-              };
-              wayland.windowManager.hyprland.settings = {
-                monitor = nixpkgs.lib.mkForce [ ", 1920x1080@59.997000, auto, 1" ];
-                input.touchpad = {
-                  natural_scroll = true;
-                  scroll_factor = 0.3;
-                };
-              };
-            }
           ];
 
           extraSpecialArgs = {

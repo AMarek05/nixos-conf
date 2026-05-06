@@ -1,8 +1,11 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 {
   imports = [
     ../modules/default.nix
   ];
+
+  # Apply lix as default nix parser replacement
+  nix.package = pkgs.lix;
 
   programs.home-manager.enable = lib.mkForce true;
 
