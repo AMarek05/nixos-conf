@@ -66,6 +66,11 @@
       url = "github:ezKEa/aagl-gtk-on-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -82,7 +87,10 @@
 
       };
 
-      commonImports = [ inputs.sops-nix.nixosModules.sops ];
+      commonImports = [
+        inputs.sops-nix.nixosModules.sops
+        inputs.nix-index-database.nixosModules.default
+      ];
 
     in
 

@@ -7,8 +7,6 @@
 {
   imports = [
     ../modules
-
-    inputs.sops-nix.nixosModules.sops
   ];
 
   nix.package = pkgs.lix;
@@ -21,6 +19,7 @@
       "https://hyprland.cachix.org"
       "https://ezkea.cachix.org"
     ];
+
     trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
@@ -41,9 +40,17 @@
     ];
   };
 
-  boot.kernelPackages = pkgs.linuxPackages_zen;
+  programs.nix-index-database = {
+    enable = true;
+    comma.enable = true;
+  };
 
-  systemd.services.NetworkManager-wait-online.enable = false;
+  environment.systemPackages = with pkgs; [
+    nix-visualize
+    nix-tree
+  ];
+
+  boot.kernelPackages = pkgs.linuxPackages_zen;
 
   systemd.services."systemd-userdb".enable = false;
   systemd.services."systemd-homed".enable = false;
