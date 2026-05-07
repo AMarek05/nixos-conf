@@ -187,22 +187,7 @@ in
         }
       )
 
-      (lib.mkIf cfg.caelestia.enable {
-        programs.caelestia = {
-          enable = true;
-          systemd.enable = true;
-
-          cli.enable = true;
-          package = inputs.caelestia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default;
-          #.overrideAttrs
-          # (oldAttrs: {
-          #   postPatch = (oldAttrs.postPatch or "") + ''
-          #     # Find all QML files and replace the broken type definition
-          #     find . -name "*.qml" -exec sed -i 's/property easingCurve/property var/g' {} +
-          #   '';
-          # });
-        };
-      })
+      (lib.mkIf cfg.caelestia.enable { })
     ]
   );
 
