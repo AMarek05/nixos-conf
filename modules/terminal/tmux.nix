@@ -1,5 +1,10 @@
 # tmux module — terminal multiplexer configuration
-{ pkgs, config, lib, ... }:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 {
   options.modules.terminal.tmux = {
     enable = lib.mkEnableOption "tmux";
@@ -21,8 +26,6 @@
 
       escapeTime = 0;
       baseIndex = 1;
-
-      newSession = true;
 
       plugins = [
         {
@@ -54,6 +57,10 @@
         bind k select-pane -U
         bind l select-pane -R
 
+        bind f popup -E -w 80% -h 80% "forge pick"
+
+        bind-key C-q run-shell "tmux switch-client -t main && tmux kill-session -t \"#S\""
+
         bind -r C-h select-window -t :-
         bind -r C-l select-window -t :+
 
@@ -61,6 +68,10 @@
         bind -r J resize-pane -D 5
         bind -r K resize-pane -U 5
         bind -r L resize-pane -R 5
+
+        set-option -g detach-on-destroy off
+
+        new-session -d -s servers
       '';
     };
   };
