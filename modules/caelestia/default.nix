@@ -227,11 +227,11 @@ in
             lockBeforeSleep = true;
             timeouts = [
               {
-                timeout = 180;
+                timeout = 300;
                 idleAction = "lock";
               }
               {
-                timeout = 300;
+                timeout = 330;
                 idleAction = "dpms off";
                 returnAction = "dpms on";
               }
@@ -591,4 +591,3 @@ in
     };
   };
 }
-
