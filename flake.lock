@@ -363,11 +363,11 @@
         "nixpkgs-mozilla": "nixpkgs-mozilla"
       },
       "locked": {
-        "lastModified": 1778252953,
-        "narHash": "sha256-k32CZCAzDVu25qXOVaN2SgVn/CzgNA2jH8EcBVVf3YM=",
+        "lastModified": 1778276167,
+        "narHash": "sha256-Ju7JV4mJ7Eg8QMIeyaQKMixDhLpSmWqUSr81dMVIXZ4=",
         "owner": "AMarek05",
         "repo": "forge",
-        "rev": "288f6ef3ebfa63a62f1f3181bf97e97ea4131c48",
+        "rev": "62a43410540d97f3adf67e7c0554f5f7e1c34d69",
         "type": "github"
       },
       "original": {
@@ -862,11 +862,11 @@
         "qmd": "qmd"
       },
       "locked": {
-        "lastModified": 1778236185,
-        "narHash": "sha256-fHi7SDvtcG1ErOU78l2i7Qq5oKMWkyrp+wDkcjuyLfU=",
+        "lastModified": 1778262613,
+        "narHash": "sha256-UGkTrFBLQ1QOhz/+JC/YHZOulPP0G39r9zvEeHPjZJw=",
         "owner": "openclaw",
         "repo": "nix-openclaw",
-        "rev": "11d69d8a1c7524362b42be544fe1687c505ccbda",
+        "rev": "c8f8e92aba96fe01fceb8e4c0f9dda14b7c0ba4b",
         "type": "github"
       },
       "original": {
