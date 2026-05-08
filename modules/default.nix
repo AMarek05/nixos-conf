@@ -13,6 +13,8 @@
     ./apps/main.nix
     ./apps/nvf.nix
     ./apps/stylix.nix
+
+    ./caelestia
   ];
 
   modules = {
@@ -40,5 +42,7 @@
       zsh.enable = lib.mkDefault true;
       starship.enable = lib.mkDefault true;
     };
+
+    caelestia.enable = lib.mkDefault true;
   };
 }
