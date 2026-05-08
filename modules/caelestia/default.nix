@@ -1,5 +1,5 @@
 # caelestia module — declarative openclaw-tui configuration
-{ lib, ... }:
+{ lib, config, ... }:
 let
   inherit (lib) mkOption mkEnableOption types;
   cfg = config.modules.caelestia;
@@ -130,15 +130,42 @@ in
             statusIcons = true;
           };
           entries = [
-            { id = "logo"; enabled = true; }
-            { id = "workspaces"; enabled = true; }
-            { id = "spacer"; enabled = true; }
-            { id = "activeWindow"; enabled = true; }
-            { id = "spacer"; enabled = true; }
-            { id = "tray"; enabled = true; }
-            { id = "clock"; enabled = true; }
-            { id = "statusIcons"; enabled = true; }
-            { id = "power"; enabled = true; }
+            {
+              id = "logo";
+              enabled = true;
+            }
+            {
+              id = "workspaces";
+              enabled = true;
+            }
+            {
+              id = "spacer";
+              enabled = true;
+            }
+            {
+              id = "activeWindow";
+              enabled = true;
+            }
+            {
+              id = "spacer";
+              enabled = true;
+            }
+            {
+              id = "tray";
+              enabled = true;
+            }
+            {
+              id = "clock";
+              enabled = true;
+            }
+            {
+              id = "statusIcons";
+              enabled = true;
+            }
+            {
+              id = "power";
+              enabled = true;
+            }
           ];
         };
 
@@ -166,8 +193,8 @@ in
         general = {
           logo = "";
           apps = {
-            terminal = [ "foot" ];
-            explorer = [ "thunar" ];
+            terminal = [ "ghostty" ];
+            explorer = [ "nautilus" ];
             playback = [ "mpv" ];
             audio = [ "pavucontrol" ];
           };
@@ -210,7 +237,10 @@ in
               }
               {
                 timeout = 600;
-                idleAction = [ "systemctl" "suspend-then-hibernate" ];
+                idleAction = [
+                  "systemctl"
+                  "suspend-then-hibernate"
+                ];
               }
             ];
           };
@@ -252,7 +282,10 @@ in
               name = "Calculator";
               description = "Do simple math equations (powered by Qalc)";
               icon = "calculate";
-              command = [ "autocomplete" "calc" ];
+              command = [
+                "autocomplete"
+                "calc"
+              ];
               dangerous = false;
               enabled = true;
             }
@@ -260,7 +293,10 @@ in
               name = "Scheme";
               description = "Change the current colour scheme";
               icon = "palette";
-              command = [ "autocomplete" "scheme" ];
+              command = [
+                "autocomplete"
+                "scheme"
+              ];
               dangerous = false;
               enabled = true;
             }
@@ -268,7 +304,10 @@ in
               name = "Wallpaper";
               description = "Change the current wallpaper";
               icon = "image";
-              command = [ "autocomplete" "wallpaper" ];
+              command = [
+                "autocomplete"
+                "wallpaper"
+              ];
               dangerous = false;
               enabled = true;
             }
@@ -276,7 +315,10 @@ in
               name = "Variant";
               description = "Change the current scheme variant";
               icon = "colors";
-              command = [ "autocomplete" "variant" ];
+              command = [
+                "autocomplete"
+                "variant"
+              ];
               dangerous = false;
               enabled = true;
             }
@@ -284,7 +326,10 @@ in
               name = "Transparency";
               description = "Change shell transparency";
               icon = "opacity";
-              command = [ "autocomplete" "transparency" ];
+              command = [
+                "autocomplete"
+                "transparency"
+              ];
               dangerous = false;
               enabled = false;
             }
@@ -292,7 +337,11 @@ in
               name = "Random";
               description = "Switch to a random wallpaper";
               icon = "casino";
-              command = [ "caelestia" "wallpaper" "-r" ];
+              command = [
+                "caelestia"
+                "wallpaper"
+                "-r"
+              ];
               dangerous = false;
               enabled = true;
             }
@@ -300,7 +349,10 @@ in
               name = "Light";
               description = "Change the scheme to light mode";
               icon = "light_mode";
-              command = [ "setMode" "light" ];
+              command = [
+                "setMode"
+                "light"
+              ];
               dangerous = false;
               enabled = true;
             }
@@ -308,7 +360,10 @@ in
               name = "Dark";
               description = "Change the scheme to dark mode";
               icon = "dark_mode";
-              command = [ "setMode" "dark" ];
+              command = [
+                "setMode"
+                "dark"
+              ];
               dangerous = false;
               enabled = true;
             }
@@ -316,7 +371,10 @@ in
               name = "Shutdown";
               description = "Shutdown the system";
               icon = "power_settings_new";
-              command = [ "systemctl" "poweroff" ];
+              command = [
+                "systemctl"
+                "poweroff"
+              ];
               dangerous = true;
               enabled = true;
             }
@@ -324,7 +382,10 @@ in
               name = "Reboot";
               description = "Reboot the system";
               icon = "cached";
-              command = [ "systemctl" "reboot" ];
+              command = [
+                "systemctl"
+                "reboot"
+              ];
               dangerous = true;
               enabled = true;
             }
@@ -332,7 +393,11 @@ in
               name = "Logout";
               description = "Log out of the current session";
               icon = "exit_to_app";
-              command = [ "loginctl" "terminate-user" "" ];
+              command = [
+                "loginctl"
+                "terminate-user"
+                ""
+              ];
               dangerous = true;
               enabled = true;
             }
@@ -340,7 +405,10 @@ in
               name = "Lock";
               description = "Lock the current session";
               icon = "lock";
-              command = [ "loginctl" "lock-session" ];
+              command = [
+                "loginctl"
+                "lock-session"
+              ];
               dangerous = false;
               enabled = true;
             }
@@ -348,7 +416,10 @@ in
               name = "Sleep";
               description = "Suspend then hibernate";
               icon = "bedtime";
-              command = [ "systemctl" "suspend-then-hibernate" ];
+              command = [
+                "systemctl"
+                "suspend-then-hibernate"
+              ];
               dangerous = false;
               enabled = true;
             }
@@ -356,7 +427,12 @@ in
               name = "Settings";
               description = "Configure the shell";
               icon = "settings";
-              command = [ "caelestia" "shell" "controlCenter" "open" ];
+              command = [
+                "caelestia"
+                "shell"
+                "controlCenter"
+                "open"
+              ];
               dangerous = false;
               enabled = true;
             }
@@ -424,11 +500,25 @@ in
           dragThreshold = 30;
           vimKeybinds = false;
           commands = {
-            hibernate = [ "systemctl" "hibernate" ];
-            logout = [ "loginctl" "terminate-user" "" ];
-            reboot = [ "systemctl" "reboot" ];
-            shutdown = [ "systemctl" "poweroff" ];
+            hibernate = [
+              "systemctl"
+              "hibernate"
+            ];
+            logout = [
+              "loginctl"
+              "terminate-user"
+              ""
+            ];
+            reboot = [
+              "systemctl"
+              "reboot"
+            ];
+            shutdown = [
+              "systemctl"
+              "poweroff"
+            ];
           };
+
           icons = {
             hibernate = "downloading";
             logout = "logout";
@@ -446,14 +536,36 @@ in
           enabled = true;
           maxToasts = 4;
           quickToggles = [
-            { id = "wifi"; enabled = true; }
-            { id = "bluetooth"; enabled = true; }
-            { id = "mic"; enabled = true; }
-            { id = "settings"; enabled = true; }
-            { id = "gameMode"; enabled = true; }
-            { id = "dnd"; enabled = true; }
-            { id = "vpn"; enabled = false; }
+            {
+              id = "wifi";
+              enabled = true;
+            }
+            {
+              id = "bluetooth";
+              enabled = true;
+            }
+            {
+              id = "mic";
+              enabled = true;
+            }
+            {
+              id = "settings";
+              enabled = true;
+            }
+            {
+              id = "gameMode";
+              enabled = true;
+            }
+            {
+              id = "dnd";
+              enabled = true;
+            }
+            {
+              id = "vpn";
+              enabled = false;
+            }
           ];
+
           toasts = {
             audioInputChanged = true;
             audioOutputChanged = true;
@@ -468,12 +580,15 @@ in
             numLockChanged = true;
             vpnChanged = true;
           };
+
           vpn = {
             enabled = false;
             provider = [ ];
           };
         };
-      } // cfg.settings;
+      }
+      // cfg.settings;
     };
   };
 }
+
