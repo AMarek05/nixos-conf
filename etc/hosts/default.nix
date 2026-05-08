@@ -1,5 +1,4 @@
 {
-  inputs,
   pkgs,
   lib,
   ...
@@ -44,6 +43,8 @@
     enable = true;
     comma.enable = true;
   };
+
+  programs.command-not-found.enable = false;
 
   environment.systemPackages = with pkgs; [
     nix-visualize
