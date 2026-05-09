@@ -44,7 +44,8 @@
     comma.enable = true;
   };
 
-  programs.command-not-found.enable = false;
+  programs.nix-index.enableZshIntegration = lib.mkForce false;
+  programs.nix-index.enableBashIntegration = lib.mkForce false;
 
   environment.systemPackages = with pkgs; [
     nix-visualize
