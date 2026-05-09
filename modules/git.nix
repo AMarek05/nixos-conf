@@ -20,7 +20,9 @@ in
       ignores = [
         ".direnv/"
         ".forge/"
+
         ".wl"
+        ".envrc"
       ];
 
       settings = {

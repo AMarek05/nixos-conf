@@ -363,11 +363,11 @@
         "nixpkgs-mozilla": "nixpkgs-mozilla"
       },
       "locked": {
-        "lastModified": 1778276167,
-        "narHash": "sha256-Ju7JV4mJ7Eg8QMIeyaQKMixDhLpSmWqUSr81dMVIXZ4=",
+        "lastModified": 1778278103,
+        "narHash": "sha256-VzC10pCJ5YQXdSoN8xHmTRTrOkICOP/BFXe4CHKOJk8=",
         "owner": "AMarek05",
         "repo": "forge",
-        "rev": "62a43410540d97f3adf67e7c0554f5f7e1c34d69",
+        "rev": "a55f28a7bbc5c86585f89b91027af2f4dfd1820b",
         "type": "github"
       },
       "original": {

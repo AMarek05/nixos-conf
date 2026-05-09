@@ -1,8 +1,22 @@
 # caelestia module — declarative openclaw-tui configuration
-{ lib, config, ... }:
+{
+  lib,
+  config,
+  inputs,
+  pkgs,
+  ...
+}:
 let
   inherit (lib) mkOption mkEnableOption types;
   cfg = config.modules.caelestia;
+
+  inputHyprland = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+  inputsCaelestia =
+    inputs.caelestia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default.override
+      {
+        hyprland = inputHyprland;
+        withCli = true;
+      };
 in
 {
   options.modules.caelestia = {
@@ -19,6 +33,7 @@ in
   config = lib.mkIf cfg.enable {
     programs.caelestia = {
       enable = true;
+      package = inputsCaelestia;
 
       settings = {
         appearance = {
