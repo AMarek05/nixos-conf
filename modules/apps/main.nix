@@ -40,6 +40,8 @@
       ckan
       qbittorrent
 
+      sillytavern
+
       nautilus
       alacarte
       evince
