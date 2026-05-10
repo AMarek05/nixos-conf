@@ -60,6 +60,7 @@
         bind f popup -E -w 80% -h 80% "forge pick"
 
         bind-key C-q run-shell "tmux switch-client -t main && tmux kill-session -t \"#S\""
+        bind-key C-m run-shell "tmux switch-client -t main"
 
         bind -r C-h select-window -t :-
         bind -r C-l select-window -t :+
