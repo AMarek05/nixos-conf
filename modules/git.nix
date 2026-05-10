@@ -20,9 +20,11 @@ in
       ignores = [
         ".direnv/"
         ".forge/"
+        ".cache/"
 
         ".wl"
         ".envrc"
+        "compile_commands.json"
       ];
 
       settings = {
