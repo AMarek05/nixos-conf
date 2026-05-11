@@ -52,6 +52,8 @@
     nix-tree
   ];
 
+  services.udev.packages = with pkgs; [ avrdude ];
+
   boot.kernelPackages = pkgs.linuxPackages_zen;
 
   systemd.services."systemd-userdb".enable = false;
