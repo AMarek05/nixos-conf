@@ -6,7 +6,7 @@
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
 
     hyprland = {
-      url = "github:hyprwm/Hyprland/21fa9b2ee27227c964fdeb8090d98255edb89bec";
+      url = "github:hyprwm/Hyprland";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
