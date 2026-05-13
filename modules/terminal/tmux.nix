@@ -60,7 +60,9 @@
         bind f popup -E -w 80% -h 80% "forge pick"
 
         bind-key C-q run-shell "tmux switch-client -t main && tmux kill-session -t \"#S\""
-        bind-key C-m run-shell "tmux switch-client -t main"
+        bind-key C-m if-shell "tmux has-session -t main 2>/dev/null" \
+          "switch-client -t main" \
+          "new-session -d -s main; switch-client -t main"
 
         bind -r C-h select-window -t :-
         bind -r C-l select-window -t :+
@@ -72,6 +74,7 @@
 
         set-option -g detach-on-destroy off
 
+        new-session -d -s main
         new-session -d -s servers
       '';
     };
