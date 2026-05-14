@@ -65,6 +65,11 @@
     fsType = "ntfs";
   };
 
+  fileSystems."/home/adam/media" = {
+    device = "/dev/disk/by-uuid/7d625e45-15ac-4374-9a63-49e66b46f31c";
+    fsType = "ext4";
+  };
+
   swapDevices = [
     { device = "/dev/disk/by-uuid/7dadea4b-b2e3-4da9-ac70-048e37b6e65e"; }
   ];
