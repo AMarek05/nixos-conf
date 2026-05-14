@@ -31,7 +31,8 @@
     packages.enable = lib.mkDefault true;
     security.enable = lib.mkDefault true;
     nix-ld.enable = lib.mkDefault true;
-    sandbox.enable = lib.mkDefault true;
     vpn.enable = lib.mkDefault true;
+
+    sandbox.enable = lib.mkDefault false;
   };
 }

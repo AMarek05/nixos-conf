@@ -2,6 +2,7 @@
   inputs,
   lib,
   config,
+  pkgs,
   ...
 }:
 let
@@ -41,6 +42,10 @@ in
           portalPackage = null;
 
           settings = {
+            exec-once = [
+              "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
+            ];
+
             env = [
               "XCURSOR_THEME,Bibata-Modern-Classic"
               "XCURSOR_SIZE,24"

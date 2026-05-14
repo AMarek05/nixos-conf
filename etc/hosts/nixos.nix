@@ -15,6 +15,8 @@
     inputs.aagl.nixosModules.default
   ];
 
+  modules.sandbox.enable = true;
+
   programs.sleepy-launcher.enable = true;
 
   networking.hostName = lib.mkForce "nixos";
@@ -22,24 +24,13 @@
   # No battery on desktop
   services.upower.enable = lib.mkForce false;
 
-  virtualisation.podman = {
-    enable = true;
-    dockerCompat = true;
-    defaultNetwork.settings.dns_enabled = true;
-  };
-
-  environment.systemPackages = with pkgs; [
-    distrobox
+  fileSystems."/home/adam/media".options = [
+    "rw"
+    "realtime"
+    "nofail"
+    "user"
+    "exec"
   ];
-
-  fileSystems."/home/adam/.local/share/containers/storage" = {
-    device = "/mnt/Shared/podman-disk.img";
-    fsType = "ext4";
-    options = [
-      "loop"
-      "nofail"
-    ];
-  };
 
   boot.loader.grub = {
     enable = true;
