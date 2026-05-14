@@ -24,6 +24,7 @@ in
 
         ".wl"
         ".envrc"
+        ".clangd"
         "compile_commands.json"
       ];
 
