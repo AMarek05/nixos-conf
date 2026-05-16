@@ -11,7 +11,8 @@ in
     programs.ghostty = {
       enable = true;
       settings = {
-        theme = "TokyoNight Night";
+        # theme = "TokyoNight Night";
+        theme = "Catppuccin Mocha";
 
         window-padding-x = 5;
         window-padding-y = 5;
@@ -19,8 +20,7 @@ in
 
         clipboard-read = "allow";
 
-        font-family = "JetBrainsMono Nerd Font";
-        font-style = "JetBrainsMono NF Regular";
+        font-family = "0xProto Nerd Font";
 
         app-notifications = false;
         shell-integration-features = "ssh-env,cursor,sudo,title";

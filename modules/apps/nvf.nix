@@ -27,11 +27,15 @@
         options.shell = "${pkgs.zsh}/bin/zsh";
         theme = {
           enable = lib.mkForce true;
-          name = lib.mkForce "tokyonight";
-          style = "night";
+          name = lib.mkForce "catppuccin";
+          style = "mocha";
         };
 
         globals.maplocalleader = " ";
+
+        luaConfigPost = ''
+          vim.api.nvim_set_hl(0, "@property", { fg = "#cba6f7" })
+        '';
       };
 
     };

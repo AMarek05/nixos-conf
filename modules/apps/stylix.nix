@@ -22,7 +22,8 @@
 
       enableReleaseChecks = false;
 
-      base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-dark.yaml";
+      # base16Scheme = "${pkgs.base16-schemes}/share/themes/tokyo-night-dark.yaml";
+      base16Scheme = "${pkgs.base16-schemes}/share/themes/catppuccin-mocha.yaml";
 
       polarity = "dark";
 
@@ -56,8 +57,8 @@
 
       fonts = {
         monospace = {
-          package = pkgs.nerd-fonts.jetbrains-mono;
-          name = "JetBrainsMono Nerd Font";
+          package = pkgs.nerd-fonts._0xproto;
+          name = "0xProto Nerd Font";
         };
       };
     };

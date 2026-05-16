@@ -11,6 +11,40 @@
   };
 
   config = lib.mkIf config.modules.terminal.tmux.enable {
+    home.packages = [ pkgs.gitmux ];
+
+    home.file.".config/.gitmux.conf".text = ''
+      tmux:
+        symbols:
+            branch: ' '
+            hashprefix: ':'
+            revision: ' '
+            staged: ' '
+            conflict: ' '
+            modified: ' '
+            untracked: ' '
+            stashed: ' '
+            clean: ' '
+            insertions: ' '
+            deletions: ' '
+        styles:
+            clear: '#[fg=#cdd6f4]'
+            state: '#[fg=#f38ba8,bold]'
+            branch: '#[fg=#a6e3a1,bold]'
+            remote: '#[fg=#89b4fa]'
+            staged: '#[fg=#a6e3a1,bold]'
+            conflict: '#[fg=#f38ba8,bold]'
+            modified: '#[fg=#f9e2af,bold]'
+            untracked: '#[fg=#cba6f7,bold]'
+            stashed: '#[fg=#89b4fa,bold]'
+            clean: '#[fg=#a6e3a1,bold]'
+            insertions: '#[fg=#a6e3a1,bold]'
+            deletions: '#[fg=#f38ba8,bold]'
+        layout: [branch, divergence, " - ", flags, " ", stats]
+        options:
+          branch_max_len: 0
+    '';
+
     programs.tmux = {
       enable = true;
 
@@ -29,12 +63,39 @@
 
       plugins = [
         {
-          plugin = pkgs.tmuxPlugins.tokyo-night-tmux;
+          plugin = pkgs.tmuxPlugins.catppuccin;
           extraConfig = ''
-            set -g @tokyo-night-tmux_date_format DMY
-            set -g @tokyo-night-tmux_time_format 24H
-            set -g @tokyo-night-tmux_show_battery_widget 0
-            set -g @tokyo-night-tmux_window_id_style fsquare
+            set -g @catppuccin_flavor 'mocha'
+            set -g status-interval 3
+
+            set -g status-style "bg=#1e1e2e,fg=#cdd6f4"
+            set -g @catppuccin_status_background "#1e1e2e"
+
+            set -g @catppuccin_status_left_separator ""
+            set -g @catppuccin_status_right_separator ""
+
+            set -g @catppuccin_window_status_style "rounded"
+            set -g @catppuccin_window_default_text " #W"
+            set -g @catppuccin_window_current_text " #W"
+            set -g @catppuccin_window_current_color "#cba6f7"
+
+            set -g @catppuccin_session_color "#a6e3a1"
+
+            set -g status-left-length 100
+            set -g status-right-length 100
+            set -g status-left ""
+            set -g status-right ""
+
+            set -ga status-left "#{?client_prefix,#[fg=#f9e2af bg=#1e1e2e]#[bg=#f9e2af fg=#11111b bold]󱐋#[fg=#f9e2af bg=#1e1e2e] #[fg=#cdd6f4 bg=#1e1e2e],}"
+
+            set -ga status-left "#[fg=#a6e3a1 bg=#1e1e2e]#[fg=#11111b bg=#a6e3a1 bold] #[fg=#cdd6f4 bg=#313244] #S#[fg=#313244 bg=#1e1e2e] "
+
+            set -g @catppuccin_date_time_text " %b %d, %H:%M"
+
+            set -ga status-right "#(gitmux -cfg $HOME/.config/.gitmux.conf '#{pane_current_path}')"
+            set -ga status-right " "
+            set -ga status-right "#{E:@catppuccin_status_directory}"
+            set -ga status-right "#{E:@catppuccin_status_date_time}"
           '';
         }
         {
