@@ -10,10 +10,8 @@
 
   nix = {
     distributedBuilds = true;
-    # Optional: If you want to ONLY build on the remote machine, set max-jobs to 0
     settings = {
-      max-jobs = lib.mkForce 1;
-      cores = lib.mkForce 4;
+      cores = lib.mkForce 8;
     };
 
     buildMachines = [

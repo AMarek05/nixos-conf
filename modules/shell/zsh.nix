@@ -22,10 +22,24 @@ in
       nh
     ];
 
+    xdg.configFile."zsh/.p10k.zsh".source = ../../store/starship/.p10k.zsh;
+
+    programs.ghostty.enableZshIntegration = lib.mkForce false;
+
     programs.zsh = {
       enable = true;
-
       dotDir = "${config.xdg.configHome}/zsh";
+
+      autosuggestion.enable = true;
+      syntaxHighlighting.enable = true;
+
+      plugins = [
+        {
+          name = "powerlevel10k";
+          src = pkgs.zsh-powerlevel10k;
+          file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+        }
+      ];
 
       oh-my-zsh = {
         enable = true;
@@ -35,32 +49,36 @@ in
         ];
       };
 
-      zplug = {
-        enable = true;
-        plugins = [
-          { name = "zsh-users/zsh-autosuggestions"; }
-          { name = "zsh-users/zsh-syntax-highlighting"; }
-        ];
-      };
-
       localVariables = {
         ZSH_AUTOSUGGEST_MANUAL_REBIND = 1;
       };
 
-      initContent = ''
-        # Change Autosuggest Key
-        bindkey '^ ' autosuggest-accept
+      initContent = lib.mkMerge [
+        (lib.mkBefore ''
+          if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
+            source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+          fi
+        '')
 
-        # Set up transient prompt
-        source ~/.config/.transient_prompt
-      '';
+        (lib.mkAfter ''
+          [[ ! -f "$ZDOTDIR/.p10k.zsh" ]] || source "$ZDOTDIR/.p10k.zsh"
+
+
+          # Change Autosuggest Key
+          bindkey '^ ' autosuggest-accept
+
+          if [[ ! -f ~/.keychain/$HOST-sh ]] || ! pgrep -u "$USER" ssh-agent > /dev/null; then
+            eval "$(${pkgs.keychain}/bin/keychain --eval --quiet git)"
+          else
+            source ~/.keychain/$HOST-sh
+          fi
+        '')
+      ];
 
       shellAliases = {
         c = "clear";
-
         tt = "tmux";
         tta = "tmux attach";
-
         gs = "git status";
 
         ls = "eza -1   --icons=auto --sort=name --group-directories-first";
@@ -69,24 +87,18 @@ in
         lt = "eza      --icons=auto --tree";
 
         st = "${pkgs.sillytavern}/bin/sillytavern";
-
         polluks = "ssh -A inf164182@polluks.cs.put.poznan.pl";
 
         nhc = "nh clean all --keep 3 --no-gcroots";
         nhco = "nh clean all --keep 3 --no-gcroots --optimise";
-
         nhu = "nho -u && sleep 3 && nhh";
         nhr = "nho && sleep 3 && nhh";
-
         nho = "nh os switch";
         nhh = "nh home switch";
 
         rsync = "rsync --info=progress2";
-
         hellfire = "sudo snx-rs -s hellfire.put.poznan.pl -u adam.marek@student.put.poznan.pl -o vpn_Username_Password";
-
         doom = "/home/adam/.config/emacs/bin/doom";
-
         read-sops = "SOPS_AGE_KEY=$(${pkgs.ssh-to-age}/bin/ssh-to-age -- -private-key -i ~/.ssh/age) ${pkgs.sops}/bin/sops -- ~/sys/secrets/openclaw.yaml";
       };
     };
@@ -99,7 +111,7 @@ in
 
     programs.keychain = {
       enable = true;
-      enableZshIntegration = true;
+      enableZshIntegration = false;
       keys = [ "git" ];
     };
   };

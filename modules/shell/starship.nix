@@ -15,8 +15,9 @@ in
     };
 
     home.file = {
-      ".config/starship.toml".source = dotsPath + /starship/starship.toml;
-      # transient prompt sourced by zsh init — populate as desired
+      # ".config/starship.toml".source = dotsPath + /starship/starship.toml;
+      ".config/starship.toml".source = dotsPath + /starship/starship-jetpack.toml;
+
       ".config/.transient_prompt".source = dotsPath + /starship/.transient_prompt;
     };
   };
