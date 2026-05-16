@@ -12,6 +12,7 @@
   config = lib.mkIf config.modules.fonts.enable {
     fonts.packages = with pkgs; [
       nerd-fonts.jetbrains-mono
+      nerd-fonts._0xproto
     ];
 
     i18n = {

@@ -40,7 +40,7 @@
 
     shell = {
       zsh.enable = lib.mkDefault true;
-      starship.enable = lib.mkDefault true;
+      starship.enable = lib.mkDefault false;
     };
 
     caelestia.enable = lib.mkDefault true;
