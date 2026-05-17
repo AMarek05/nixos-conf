@@ -1,4 +1,4 @@
-# caelestia module — declarative openclaw-tui configuration
+# caelestia module — declarative configuration
 {
   lib,
   config,
@@ -31,6 +31,10 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    home.packages = [
+      inputs.caelestia-shell.inputs.caelestia-cli.packages.${pkgs.stdenv.hostPlatform.system}.default
+    ];
+
     programs.caelestia = {
       enable = true;
       package = inputsCaelestia;
@@ -208,7 +212,6 @@ in
         general = {
           logo = "";
           apps = {
-            terminal = [ "ghostty" ];
             explorer = [ "nautilus" ];
             playback = [ "mpv" ];
             audio = [ "pavucontrol" ];

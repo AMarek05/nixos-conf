@@ -67,11 +67,7 @@ in
           # Change Autosuggest Key
           bindkey '^ ' autosuggest-accept
 
-          if [[ ! -f ~/.keychain/$HOST-sh ]] || ! pgrep -u "$USER" ssh-agent > /dev/null; then
-            eval "$(${pkgs.keychain}/bin/keychain --eval --quiet git)"
-          else
-            source ~/.keychain/$HOST-sh
-          fi
+          eval $(keychain --quiet --eval git)
         '')
       ];
 
