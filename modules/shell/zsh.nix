@@ -66,8 +66,6 @@ in
 
           # Change Autosuggest Key
           bindkey '^ ' autosuggest-accept
-
-          eval $(keychain --quiet --eval git)
         '')
       ];
 
@@ -91,6 +89,8 @@ in
         nhr = "nho && sleep 3 && nhh";
         nho = "nh os switch";
         nhh = "nh home switch";
+
+        kc = "eval \"$(SHELL=zsh ${lib.getExe pkgs.keychain} --eval --quiet git)\"";
 
         rsync = "rsync --info=progress2";
         hellfire = "sudo snx-rs -s hellfire.put.poznan.pl -u adam.marek@student.put.poznan.pl -o vpn_Username_Password";
