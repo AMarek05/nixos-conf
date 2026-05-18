@@ -11,6 +11,7 @@
 
   config = lib.mkIf config.modules.env.enable {
     xdg.enable = true;
+    xdg.portal.xdgOpenUsePortal = true;
 
     home.sessionVariables = {
       SHELL = "${pkgs.zsh}/bin/zsh";

@@ -63,5 +63,9 @@
 
   time.timeZone = lib.mkDefault "Europe/Warsaw";
 
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
+  services.tumbler.enable = true;
+
   system.stateVersion = "25.05";
 }

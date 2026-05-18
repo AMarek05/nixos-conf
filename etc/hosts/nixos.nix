@@ -26,7 +26,6 @@
 
   fileSystems."/home/adam/media".options = [
     "rw"
-    "realtime"
     "nofail"
     "user"
     "exec"

@@ -8,6 +8,7 @@
 {
   imports = [
     inputs.zen-browser.homeModules.beta
+    ./dolphin.nix
   ];
 
   options.modules.apps = {
@@ -19,8 +20,6 @@
       thunderbird
 
       keepassxc
-
-      rustlings
 
       vlc
 
@@ -42,7 +41,6 @@
 
       sillytavern
 
-      nautilus
       alacarte
       evince
 
