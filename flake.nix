@@ -80,15 +80,27 @@
     }@inputs:
 
     let
+      customOverlays = final: prev: {
+        grimblast = prev.grimblast.override {
+          hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
+        };
+      };
+
       hmPkgs = import nixpkgs {
         system = "x86_64-linux";
         config.allowUnfree = true;
-
+        overlays = [ customOverlays ];
       };
 
       commonImports = [
         inputs.sops-nix.nixosModules.sops
         inputs.nix-index-database.nixosModules.default
+        (
+          { pkgs, ... }:
+          {
+            nixpkgs.overlays = [ customOverlays ];
+          }
+        )
       ];
 
     in
