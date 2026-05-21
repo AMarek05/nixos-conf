@@ -75,8 +75,8 @@
             set -g @catppuccin_status_right_separator ""
 
             set -g @catppuccin_window_status_style "rounded"
-            set -g @catppuccin_window_default_text " #W"
-            set -g @catppuccin_window_current_text " #W"
+            set -g @catppuccin_window_default_text " #{b:pane_current_command}"
+            set -g @catppuccin_window_current_text " #{b:pane_current_command}"
             set -g @catppuccin_window_current_color "#cba6f7"
 
             set -g @catppuccin_session_color "#a6e3a1"
