@@ -5,6 +5,8 @@
   ...
 }:
 {
+  environment.systemPackages = with pkgs; [ nvtopPackages.nvidia ];
+
   boot.kernelParams = [
     "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
     "nvidia-drm.modeset=1"
@@ -15,11 +17,13 @@
   services.xserver.videoDrivers = [ "nvidia" ];
 
   environment.sessionVariables = {
-    LIBVA_DRIVE_NAME = "nvidia";
+    LIBVA_DRIVER_NAME = "nvidia";
     XDG_SESSION_TYPE = "wayland";
     GBM_BACKEND = "nvidia-drm";
     # Forces Mozilla to use the Wayland EGL backend properly
     MOZ_ENABLE_WAYLAND = "1";
+    NVD_BACKEND = "direct";
+    MOZ_DISABLE_RDD_SANDBOX = "1";
   };
 
   hardware.nvidia = {
