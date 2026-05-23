@@ -1,173 +1,256 @@
-# flake-parts Migration — TODO
+# TODO: Shared Module Library for `etc/modules/` and `modules/`
 
-## Goal
-Replace the hand-written `outputs = inputs: { ... }` in `flake.nix` with the [flake-parts](https://github.com/hercules-ci/flake-parts) framework. Host configurations and module imports stay on disk exactly as they are; only `flake.nix` changes.
+## Problem: Duplicated Aggregator Pattern
 
-## Why flake-parts
-- **Less wiring, more declarative** — `nixosConfigurations`, `homeConfigurations`, and `perSystem` are defined from lists and options, not copy-pasted blocks
-- **`perSystem` auto-exposes `legacyPackages`** — `nix build .#nixosConfigurations.nixos.config.system.build` works without manual `package` declarations
-- **Module-level defaults** — shared NixOS settings (`etc/hosts/default.nix`) and shared HM base (`hosts/common.nix`) can be declared once as flake-parts module defaults, not imported in every host file
-- **`excludeModules` becomes a flake-parts option** — the per-name module exclusion in `lib/modules.nix` (which doesn't exist on this branch) can map to a first-class option
-- **DevShell is mechanical** — adding a devShell for the flake itself is a few lines, not a custom `outputs` block
-
-## Current Structure
+Both module trees contain a structurally identical pattern:
 
 ```
-flake.nix               16 inputs · hand-written outputs · no lib/modules.nix
-                        hmPkgs built manually with customOverlays (grimblast)
-                        commonImports (sops-nix, nix-index, nixpkgs.overlays)
-                        manually wires 3 nixosConfigurations + 3 homeConfigurations
-
-etc/
-  hosts/
-    default.nix         shared NixOS base (lix, nix.settings, boot.kernelPackages,
-                        timezone, udisks, services.udev.packages, etc.)
-    nixos.nix           NixOS host: imports ./default.nix + hardware + singletons
-    nixos-laptop.nix    NixOS host
-    nixos-wsl.nix       NixOS host
-    hardware/           (empty?)
-  modules/
-    default.nix         NixOS module aggregator (audio, packages, nix-ld, sandbox,
-                        gamemode, user, shell, console, fonts, security,
-                        networking, vpn) + { user.enable, audio.enable, ... } options
-    audio.nix, packages.nix, nix-ld.nix, sandbox.nix, gamemode.nix,
-    user.nix, shell.nix, console.nix, fonts.nix, security.nix,
-    networking.nix, vpn.nix
-  hyprland.nix, mesa.nix, nvidia.nix, openclaw.nix, configuration-wsl.nix
-  OpenClaw/
-
-hosts/
-  common.nix            HM base: imports ../modules/default.nix (HM aggregator)
-                        sets home.user + lix + HM enable + allowUnfree
-  nixos.nix              HM config: imports common.nix + modules/forge.nix
-  nixos-laptop.nix       HM config: imports common.nix + modules/forge.nix
-  nixos-wsl.nix           HM config: imports common.nix only
-
-modules/                 HM modules
-  default.nix            HM aggregator (git, util, env, links, terminal, shell,
-                          hyprland, apps, caelestia) + { env.enable, ... } options
-  git.nix, util.nix, env.nix, links.nix
-  terminal/default.nix + ghostty.nix, man.nix, tmux.nix
-  shell/default.nix + scripts.nix, starship.nix, zsh.nix
-  hyprland/default.nix + animations.nix, binds.nix, display.nix, windowrules.nix
-  apps/main.nix + dolphin.nix, nvf.nix, nvim, stylix.nix
-  caelestia/default.nix + ...
-  forge.nix
+etc/modules/default.nix     ← NixOS modules (imported by etc/hosts/default.nix)
+modules/default.nix         ← Home Manager modules (imported by hosts/common.nix)
 ```
 
-**Two independent module trees:**
-- NixOS tree: `etc/modules/` → `etc/hosts/nixos*.nix`
-- HM tree: `modules/` → `hosts/nixos*.nix`
-- Bridge: `hosts/common.nix` (HM) imports `modules/default.nix` (HM aggregator)
+Each `default.nix` does two things:
+1. Imports sub-modules as plain Nix imports
+2. Defines a `modules = { ... }` option set that exposes enable/disable toggles for each sub-module
 
----
+The `modules` option set in both files follows the exact same shape:
 
-## Phase 1 — Add flake-parts input
-
-- [ ] Add `flake-parts` to `inputs` in `flake.nix`
-- [ ] Run `nix flake update` to lock it
-- [ ] Add `imports = [ inputs.flake-parts.flakeModules.easy-achievement ]` or similar to top-level
-
----
-
-## Phase 2 — Restructure `outputs` with mkFlake
-
-**Before:**
 ```nix
-outputs = { nixpkgs, home-manager, ... }@inputs: let hmPkgs = import nixpkgs { ...; overlays = [ customOverlays ]; }; in {
-  nixosConfigurations = {
-    nixos = nixpkgs.lib.nixosSystem { specialArgs = { inherit inputs; }; modules = [ ./etc/hosts/nixos.nix ] ++ commonImports; };
-    ...
-  };
-  homeConfigurations = {
-    "adam@nixos" = home-manager.lib.homeManagerConfiguration { pkgs = hmPkgs; modules = [ ./hosts/nixos.nix ./modules/forge.nix ]; ... };
-    ...
-  };
+modules = {
+  audio.enable    = lib.mkDefault true;   # etc/modules/default.nix
+  networking.enable = lib.mkDefault true;  # etc/modules/default.nix
+
+  git.enable = lib.mkDefault true;         # modules/default.nix
+  env.enable = lib.mkDefault true;         # modules/default.nix
 };
 ```
 
-**After (flake-parts):**
+And the sub-modules themselves (e.g., `audio.nix`, `git.nix`) are self-contained and completely independent of which aggregator they belong to. They just receive `lib` and `config` and define their own `options.modules.<name>` and `config.modules.<name>` blocks.
+
+The result is two near-identical aggregator files that must be kept in sync manually. Adding a new module requires editing two `default.nix` files in parallel.
+
+---
+
+## Proposed Fix: Shared Module Library at `lib/modules.nix`
+
+Create a new file at the repo root: `lib/modules.nix`.
+
+This file exports two helper functions (pure Nix — no IFD):
+
+```
+mkHostNixosModules  → produces the etc/modules/default.nix content
+mkHostHmModules    → produces the modules/default.nix content
+```
+
+Both functions accept an attribute set describing the module entries:
+
 ```nix
-outputs = inputs:
-  inputs.flake-parts.lib.mkFlake { inherit inputs; } ({
-    systems = [ "x86_64-linux" ];
+{
+  # Each entry:
+  #   name      = filename (without .nix) / directory name
+  #   kind      = "file" | "dir"
+  #   optional  = true  → sandbox.enable = lib.mkDefault false
+  #              false → sandbox.enable = lib.mkDefault true
+  #   subModules = [ ... ]  (only for kind = "dir", list of relative imports)
+  entries = [
+    { name = "audio";      kind = "file";   optional = false; }
+    { name = "packages";   kind = "file";   optional = false; }
+    { name = "sandbox";    kind = "file";   optional = true;  }
+    { name = "terminal";   kind = "dir";    optional = false; subModules = [ ./default.nix ]; }
+    { name = "shell";       kind = "dir";    optional = false; subModules = [ ./default.nix ./starship.nix ]; }
+  ];
+}
+```
 
-    perSystem = { config, pkgs', self, ... }: {
-      packages = inputs.flake-parts.lib.fillMissingOutputs { }
+The helper generates:
+- `imports = [ ./audio.nix ./packages.nix ... ]` (all entries)
+- `modules = { audio.enable = lib.mkDefault true; sandbox.enable = lib.mkDefault false; ... }`
 
-      devShells.default = pkgs'.mkShell {
-        inputsFrom = [ config.packages.default ];
-      };
-    };
+---
 
-    # NixOS configurations — declarative from host list
-    flakeModules.easy-achievement = {
-      temperatureBase = 40;
+## Files to Change
 
-      _module.args = {
-        allHosts = [
-          { name = "nixos";       isLaptop = false; isWsl = false; }
-          { name = "nixos-laptop"; isLaptop = true;  isWsl = false; }
-          { name = "nixos-wsl";   isLaptop = false; isWsl = true;  }
-        ];
-      };
-    };
-  });
+### New file: `lib/modules.nix`
+
+```nix
+# lib/modules.nix
+# Shared module library — used by both the NixOS (etc/modules/) and
+# Home Manager (modules/) module trees to avoid duplicated aggregator
+# default.nix files.
+#
+# Each entry drives:
+#   1. The imports list (./name.nix or ./name/)
+#   2. The modules.<name>.enable option default (true, or false for optional)
+#
+# Usage:
+#
+#   let modulesLib = import ./lib/modules.nix;
+#   in modulesLib.mkHostNixosModules { entries = [ ... ]; }
+#
+{ lib }:
+
+let
+  mkModules = entries:
+    builtins.listToAttrs (
+      map (e: {
+        name = e.name;
+        value =
+          if e.optional
+          then lib.mkDefault false
+          else lib.mkDefault true;
+      }) entries
+    );
+
+  mkImports = entries:
+    map (e:
+      if e.kind == "dir" then ./${e.name}
+      else ./${e.name}.nix
+    ) entries;
+in
+
+{
+  # For NixOS module trees (etc/modules/default.nix replacement)
+  mkHostNixosModules = { entries }: {
+    imports = mkImports entries;
+    modules = mkModules entries;
+  };
+
+  # For Home Manager module trees (modules/default.nix replacement)
+  mkHostHmModules = { entries }: {
+    imports = mkImports entries;
+    modules = mkModules entries;
+  };
+}
+```
+
+### Change: `etc/modules/default.nix`
+
+Replace the hand-maintained file with:
+
+```nix
+{ lib, ... }:
+
+let
+  modulesLib = import ../../lib/modules.nix;
+in
+modulesLib.mkHostNixosModules {
+  entries = [
+    # files
+    { name = "audio";      kind = "file"; optional = false; }
+    { name = "packages";   kind = "file"; optional = false; }
+    { name = "nix-ld";     kind = "file"; optional = false; }
+    { name = "sandbox";    kind = "file"; optional = true;  }
+    { name = "gamemode";   kind = "file"; optional = false; }
+    { name = "user";       kind = "file"; optional = false; }
+    { name = "shell";      kind = "file"; optional = false; }
+    { name = "console";    kind = "file"; optional = false; }
+    { name = "fonts";      kind = "file"; optional = false; }
+    { name = "security";   kind = "file"; optional = false; }
+    { name = "networking"; kind = "file"; optional = false; }
+    { name = "vpn";        kind = "file"; optional = false; }
+  ];
+}
+```
+
+### Change: `modules/default.nix`
+
+Replace the hand-maintained file with:
+
+```nix
+{ lib, ... }:
+
+let
+  modulesLib = import ../lib/modules.nix;
+in
+modulesLib.mkHostHmModules {
+  entries = [
+    # files
+    { name = "git";   kind = "file"; optional = false; }
+    { name = "util";  kind = "file"; optional = false; }
+    { name = "env";   kind = "file"; optional = false; }
+    { name = "links"; kind = "file"; optional = false; }
+    # dirs
+    { name = "terminal"; kind = "dir"; optional = false; }
+    { name = "shell";    kind = "dir"; optional = false; }
+    { name = "hyprland"; kind = "dir"; optional = false; }
+    # apps dir (flat files within dir, main.nix handles the imports)
+    { name = "apps";   kind = "dir";  optional = false; }
+    { name = "caelestia"; kind = "dir"; optional = false; }
+  ];
+}
+```
+
+> Note: The `modules/apps/` entry is a special case — `apps/main.nix` imports `apps/dolphin.nix`, `apps/nvf.nix`, `apps/stylix.nix`, and `apps/nvim/` as sub-modules (not `apps/default.nix`). The `apps/` dir has no `default.nix`. To support this, `mkImports` needs to handle a `source` attribute for custom import paths:
+>
+> ```
+> { name = "apps"; kind = "dir"; optional = false; source = ./apps/main.nix; }
+> ```
+>
+> If no `source` is given, it falls back to `./${name}` (the directory).
+
+### Change: `lib/modules.nix` (update with source support)
+
+```nix
+{ lib }:
+
+let
+  mkModules = entries:
+    builtins.listToAttrs (
+      map (e: {
+        name = e.name;
+        value =
+          if e.optional
+          then lib.mkDefault false
+          else lib.mkDefault true;
+      }) entries
+    );
+
+  mkImports = entries:
+    map (e:
+      if e.source != null then e.source
+      else if e.kind == "dir" then ./${e.name}
+      else ./${e.name}.nix
+    ) entries;
+in
+
+{
+  mkHostNixosModules = { entries }: {
+    imports = mkImports entries;
+    modules = mkModules entries;
+  };
+
+  mkHostHmModules = { entries }: {
+    imports = mkImports entries;
+    modules = mkModules entries;
+  };
+}
 ```
 
 ---
 
-## Phase 3 — NixOS Configs via flake-parts
+## What Does NOT Change
 
-- [ ] Define `allHosts` as a `flake-parts` module argument
-- [ ] Generate `nixosConfigurations` from `allHosts` using `mapChannels` or direct attrset construction inside the flake-parts module
-- [ ] Wire `commonImports` (sops-nix, nix-index, nixpkgs.overlays) as module defaults instead of repeating in each host
-- [ ] Wire `etc/hosts/default.nix` as a module default (shared base for all NixOS hosts)
-- [ ] Remove manual `commonImports` list from `flake.nix`
-
----
-
-## Phase 4 — HM Configs via flake-parts
-
-- [ ] Generate `homeConfigurations` from host list similarly
-- [ ] Wire `hosts/common.nix` as HM module default
-- [ ] Handle per-host `modules` additions (e.g. `modules/forge.nix` for nixos + nixos-laptop but not nixos-wsl)
-- [ ] Keep `hmPkgs` override (`customOverlays` for grimblast) — passes through `perSystem`
+- `etc/hosts/default.nix` — still imports `../modules` (unchanged import path)
+- `hosts/common.nix` — still imports `../modules/default.nix` (unchanged import path)
+- All individual module files under `etc/modules/*.nix` — untouched
+- All individual module files under `modules/*.nix`, `modules/*/` — untouched
+- `hosts/hardware/` and `etc/hosts/hardware/` — kept separate as instructed
 
 ---
 
-## Phase 5 — Per-system overlay
+## Order of Implementation
 
-- [ ] Move `customOverlays` (grimblast override) into `perSystem.packages` or a dedicated overlay output
-- [ ] `perSystem` receives `pkgs'` with overlay already applied — no manual `import nixpkgs { overlays = [...] }` needed in `outputs`
-
----
-
-## Phase 6 — Verify build
-
-- [ ] `nix build .#nixosConfigurations.nixos.config.system.build` — boots clean
-- [ ] `nix build .#nixosConfigurations.nixos-laptop...` — same
-- [ ] `nix build .#nixosConfigurations.nixos-wsl...` — same
-- [ ] `nix run .#homeConfigurations."adam@nixos"` — HM applies cleanly
-- [ ] `nix develop` — devShell works
-- [ ] `nix flake check` — no errors
+1. Create `lib/modules.nix` (new file)
+2. Update `etc/modules/default.nix` to use `mkHostNixosModules`
+3. Update `modules/default.nix` to use `mkHostHmModules`
+4. Commit and test: `nixos-rebuild switch --flake .#nixos` and `home-manager switch --flake .#adam@nixos`
 
 ---
 
-## Out of Scope (don't touch)
+## Benefits
 
-- Module contents of `etc/modules/`, `modules/`, `etc/hosts/`, `hosts/` — they stay exactly as-is
-- `etc/hosts/hardware/` — leave it empty or unexamined
-- `modules/nvim/` directory listing failed but that's fine — doesn't affect the migration
-
----
-
-## Key Design Decisions Needed
-
-1. **`flakeModules.easy-achievement` vs raw flake-parts module** — `easy-achievement` is the simplest entry point but imposes some conventions. Raw flake-parts (`inputs.flake-parts.lib.mkFlake { ... }` with explicit `nixosConfigurations` block) gives more control. Recommendation: start with raw, move to `easy-achievement` if it fits.
-
-2. **`allHosts` structure** — each host entry needs `{ name, isLaptop, isWsl }` to drive conditional module inclusion (laptop has battery, WSL has its own module set, etc.). Confirm this is the right shape.
-
-3. **Singletons (nvidia, hyprland, openclaw, aagl)** — currently imported in `etc/hosts/nixos.nix`. Should these stay per-host in the host NixOS files, or should they become a `flake-parts` option like `enableHyprland = true` that auto-injects the module?
-
-4. **`hosts/common.nix` as HM default** — it sets `home.username`, `home.homeDirectory`, `lix`, `home-manager.enable`, `allowUnfree`. With flake-parts this could be the HM module default instead of each host importing it. But `hosts/nixos.nix` and `hosts/nixos-laptop.nix` pass different extra modules. Handle by having the per-host modules override/extend, not replace.
+- Single source of truth for the module list
+- Adding a module: edit `lib/modules.nix` entries in one place, both trees updated
+- Both aggregators remain structurally identical via the shared helper
+- Hardware modules (`etc/hosts/hardware/`, `hosts/`) are unaffected
+- No IFD (imports are deferred, no eval cost at flake parse time)
