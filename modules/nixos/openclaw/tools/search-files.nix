@@ -61,5 +61,5 @@
     jq
   ];
 
-  script = ./bash/search-files.sh;
+  script = ./Bash/search-files.sh;
 }

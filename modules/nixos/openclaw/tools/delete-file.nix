@@ -47,5 +47,5 @@
     trash-cli
   ];
 
-  script = ./bash/delete-file.sh;
+  script = ./Bash/delete-file.sh;
 }
