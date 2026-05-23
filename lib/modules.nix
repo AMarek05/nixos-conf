@@ -4,8 +4,8 @@
 # default.nix files.
 #
 # Each entry drives:
-#   1. The imports list (./name.nix or ./name/)
-#   2. The modules.<name>.enable option default (true, or false for optional)
+#   1. The imports list (path or ./name.nix / ./name/)
+#   2. The modules.<opt>.enable option default (true, or false for optional)
 #
 # Usage in a default.nix:
 #
@@ -24,12 +24,15 @@ let
     builtins.listToAttrs (
       map (e:
         let
+          optName = if e ? opt then e.opt else e.name;
           children = if e ? sub && e.sub != null then mkModulesTree e.sub else {};
-          base = if e.optional then { ${e.name} = { enable = lib.mkDefault false; }; }
-                 else { ${e.name} = { enable = lib.mkDefault true; }; };
+          base =
+            if e.optional
+            then { ${optName} = { enable = lib.mkDefault false; }; }
+            else { ${optName} = { enable = lib.mkDefault true; }; };
         in {
-          name = e.name;
-          value = base.${e.name} // children;
+          name = optName;
+          value = base.${optName} // children;
         }
       ) entries
     );
