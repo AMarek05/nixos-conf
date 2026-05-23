@@ -1,256 +1,96 @@
-# TODO: Shared Module Library for `etc/modules/` and `modules/`
+# TODO: Full flake restructure — merge modules, move OpenClaw in, flatten hardware
 
-## Problem: Duplicated Aggregator Pattern
-
-Both module trees contain a structurally identical pattern:
+## Target Structure
 
 ```
-etc/modules/default.nix     ← NixOS modules (imported by etc/hosts/default.nix)
-modules/default.nix         ← Home Manager modules (imported by hosts/common.nix)
+nixos-conf/
+├── flake.nix
+├── lib/
+│   └── modules.nix              ← shared module library (updated basePaths)
+├── modules/
+│   ├── nixos/                   ← NixOS module tree
+│   │   ├── default.nix          ← uses mkHostNixosModules (aggregator)
+│   │   ├── audio.nix
+│   │   ├── networking.nix
+│   │   ├── sandbox.nix
+│   │   ├── shell.nix            ← option name: modules.sysShell (needs opt = "sysShell")
+│   │   ├── openclaw/             ← everything from etc/OpenClaw/
+│   │   │   ├── default.nix
+│   │   │   ├── modules/
+│   │   │   ├── tools/
+│   │   │   └── providers/
+│   │   └── ...
+│   ├── hm/                      ← HM module tree
+│   │   ├── default.nix          ← uses mkHostHmModules (aggregator)
+│   │   ├── git.nix
+│   │   ├── env.nix
+│   │   ├── links.nix
+│   │   ├── util.nix
+│   │   ├── apps/
+│   │   ├── caelestia/
+│   │   ├── hyprland/
+│   │   ├── nvim/
+│   │   ├── shell/
+│   │   └── terminal/
+│   └── hardware/                ← merged from etc/hosts/hardware/ + hosts/hardware/
+│       ├── nixos/
+│       └── nixos-laptop/
+├── hosts/
+│   ├── default.nix              ← common HM base (was hosts/common.nix)
+│   ├── nixos.nix                ← forces modules.openclaw.enable = true
+│   ├── nixos-laptop.nix
+│   └── nixos-wsl.nix
+└── store/
 ```
 
-Each `default.nix` does two things:
-1. Imports sub-modules as plain Nix imports
-2. Defines a `modules = { ... }` option set that exposes enable/disable toggles for each sub-module
+## What Stays the Same
+- `flake.nix` — no structural changes
+- `secrets/` and `store/` — unchanged
 
-The `modules` option set in both files follows the exact same shape:
+## Path Changes
 
-```nix
-modules = {
-  audio.enable    = lib.mkDefault true;   # etc/modules/default.nix
-  networking.enable = lib.mkDefault true;  # etc/modules/default.nix
+### lib/modules.nix basePaths
+- `mkHostNixosModules`: `basePath = ../../modules/nixos`
+- `mkHostHmModules`: `basePath = ../../modules/hm`
 
-  git.enable = lib.mkDefault true;         # modules/default.nix
-  env.enable = lib.mkDefault true;         # modules/default.nix
-};
-```
+### hosts/default.nix (was common.nix)
+- `imports = [ ../modules/default.nix ]` → `imports = [ ../modules/hm/default.nix ]`
 
-And the sub-modules themselves (e.g., `audio.nix`, `git.nix`) are self-contained and completely independent of which aggregator they belong to. They just receive `lib` and `config` and define their own `options.modules.<name>` and `config.modules.<name>` blocks.
+### etc/hosts/default.nix (→ hosts/default.nix)
+- `imports = [ ../modules ]` → `imports = [ ../../modules/nixos ]`
 
-The result is two near-identical aggregator files that must be kept in sync manually. Adding a new module requires editing two `default.nix` files in parallel.
+### OpenClaw sops.nix
+- Current: `sopsFile = ../../../secrets/openclaw.yaml` (from etc/OpenClaw/modules/)
+- After move to `modules/nixos/openclaw/modules/`: `sopsFile = ../../../../secrets/openclaw.yaml`
 
----
+### modules/nixos/default.nix (new aggregator)
+- Uses `mkHostNixosModules` with `basePath = ../../modules/nixos`
+- Entries: all etc/modules files + openclaw dir
+- `shell` entry needs `opt = "sysShell"` (its module file declares `modules.sysShell`)
 
-## Proposed Fix: Shared Module Library at `lib/modules.nix`
-
-Create a new file at the repo root: `lib/modules.nix`.
-
-This file exports two helper functions (pure Nix — no IFD):
-
-```
-mkHostNixosModules  → produces the etc/modules/default.nix content
-mkHostHmModules    → produces the modules/default.nix content
-```
-
-Both functions accept an attribute set describing the module entries:
-
-```nix
-{
-  # Each entry:
-  #   name      = filename (without .nix) / directory name
-  #   kind      = "file" | "dir"
-  #   optional  = true  → sandbox.enable = lib.mkDefault false
-  #              false → sandbox.enable = lib.mkDefault true
-  #   subModules = [ ... ]  (only for kind = "dir", list of relative imports)
-  entries = [
-    { name = "audio";      kind = "file";   optional = false; }
-    { name = "packages";   kind = "file";   optional = false; }
-    { name = "sandbox";    kind = "file";   optional = true;  }
-    { name = "terminal";   kind = "dir";    optional = false; subModules = [ ./default.nix ]; }
-    { name = "shell";       kind = "dir";    optional = false; subModules = [ ./default.nix ./starship.nix ]; }
-  ];
-}
-```
-
-The helper generates:
-- `imports = [ ./audio.nix ./packages.nix ... ]` (all entries)
-- `modules = { audio.enable = lib.mkDefault true; sandbox.enable = lib.mkDefault false; ... }`
-
----
-
-## Files to Change
-
-### New file: `lib/modules.nix`
-
-```nix
-# lib/modules.nix
-# Shared module library — used by both the NixOS (etc/modules/) and
-# Home Manager (modules/) module trees to avoid duplicated aggregator
-# default.nix files.
-#
-# Each entry drives:
-#   1. The imports list (./name.nix or ./name/)
-#   2. The modules.<name>.enable option default (true, or false for optional)
-#
-# Usage:
-#
-#   let modulesLib = import ./lib/modules.nix;
-#   in modulesLib.mkHostNixosModules { entries = [ ... ]; }
-#
-{ lib }:
-
-let
-  mkModules = entries:
-    builtins.listToAttrs (
-      map (e: {
-        name = e.name;
-        value =
-          if e.optional
-          then lib.mkDefault false
-          else lib.mkDefault true;
-      }) entries
-    );
-
-  mkImports = entries:
-    map (e:
-      if e.kind == "dir" then ./${e.name}
-      else ./${e.name}.nix
-    ) entries;
-in
-
-{
-  # For NixOS module trees (etc/modules/default.nix replacement)
-  mkHostNixosModules = { entries }: {
-    imports = mkImports entries;
-    modules = mkModules entries;
-  };
-
-  # For Home Manager module trees (modules/default.nix replacement)
-  mkHostHmModules = { entries }: {
-    imports = mkImports entries;
-    modules = mkModules entries;
-  };
-}
-```
-
-### Change: `etc/modules/default.nix`
-
-Replace the hand-maintained file with:
-
-```nix
-{ lib, ... }:
-
-let
-  modulesLib = import ../../lib/modules.nix;
-in
-modulesLib.mkHostNixosModules {
-  entries = [
-    # files
-    { name = "audio";      kind = "file"; optional = false; }
-    { name = "packages";   kind = "file"; optional = false; }
-    { name = "nix-ld";     kind = "file"; optional = false; }
-    { name = "sandbox";    kind = "file"; optional = true;  }
-    { name = "gamemode";   kind = "file"; optional = false; }
-    { name = "user";       kind = "file"; optional = false; }
-    { name = "shell";      kind = "file"; optional = false; }
-    { name = "console";    kind = "file"; optional = false; }
-    { name = "fonts";      kind = "file"; optional = false; }
-    { name = "security";   kind = "file"; optional = false; }
-    { name = "networking"; kind = "file"; optional = false; }
-    { name = "vpn";        kind = "file"; optional = false; }
-  ];
-}
-```
-
-### Change: `modules/default.nix`
-
-Replace the hand-maintained file with:
-
-```nix
-{ lib, ... }:
-
-let
-  modulesLib = import ../lib/modules.nix;
-in
-modulesLib.mkHostHmModules {
-  entries = [
-    # files
-    { name = "git";   kind = "file"; optional = false; }
-    { name = "util";  kind = "file"; optional = false; }
-    { name = "env";   kind = "file"; optional = false; }
-    { name = "links"; kind = "file"; optional = false; }
-    # dirs
-    { name = "terminal"; kind = "dir"; optional = false; }
-    { name = "shell";    kind = "dir"; optional = false; }
-    { name = "hyprland"; kind = "dir"; optional = false; }
-    # apps dir (flat files within dir, main.nix handles the imports)
-    { name = "apps";   kind = "dir";  optional = false; }
-    { name = "caelestia"; kind = "dir"; optional = false; }
-  ];
-}
-```
-
-> Note: The `modules/apps/` entry is a special case — `apps/main.nix` imports `apps/dolphin.nix`, `apps/nvf.nix`, `apps/stylix.nix`, and `apps/nvim/` as sub-modules (not `apps/default.nix`). The `apps/` dir has no `default.nix`. To support this, `mkImports` needs to handle a `source` attribute for custom import paths:
->
-> ```
-> { name = "apps"; kind = "dir"; optional = false; source = ./apps/main.nix; }
-> ```
->
-> If no `source` is given, it falls back to `./${name}` (the directory).
-
-### Change: `lib/modules.nix` (update with source support)
-
-```nix
-{ lib }:
-
-let
-  mkModules = entries:
-    builtins.listToAttrs (
-      map (e: {
-        name = e.name;
-        value =
-          if e.optional
-          then lib.mkDefault false
-          else lib.mkDefault true;
-      }) entries
-    );
-
-  mkImports = entries:
-    map (e:
-      if e.source != null then e.source
-      else if e.kind == "dir" then ./${e.name}
-      else ./${e.name}.nix
-    ) entries;
-in
-
-{
-  mkHostNixosModules = { entries }: {
-    imports = mkImports entries;
-    modules = mkModules entries;
-  };
-
-  mkHostHmModules = { entries }: {
-    imports = mkImports entries;
-    modules = mkModules entries;
-  };
-}
-```
-
----
-
-## What Does NOT Change
-
-- `etc/hosts/default.nix` — still imports `../modules` (unchanged import path)
-- `hosts/common.nix` — still imports `../modules/default.nix` (unchanged import path)
-- All individual module files under `etc/modules/*.nix` — untouched
-- All individual module files under `modules/*.nix`, `modules/*/` — untouched
-- `hosts/hardware/` and `etc/hosts/hardware/` — kept separate as instructed
-
----
+### hosts/nixos.nix
+- Forces `modules.openclaw.enable = lib.mkForce true` to enable OpenClaw
 
 ## Order of Implementation
 
-1. Create `lib/modules.nix` (new file)
-2. Update `etc/modules/default.nix` to use `mkHostNixosModules`
-3. Update `modules/default.nix` to use `mkHostHmModules`
-4. Commit and test: `nixos-rebuild switch --flake .#nixos` and `home-manager switch --flake .#adam@nixos`
+1. Create `modules/nixos/` and `modules/hm/` directory structure
+2. Move `etc/modules/` files → `modules/nixos/` (NixOS modules)
+3. Move `modules/` files (HM only) → `modules/hm/`
+4. Move `etc/OpenClaw/` → `modules/nixos/openclaw/`
+5. Fix `sops.nix` sopsFile path (+2 levels of `../`)
+6. Create `modules/hardware/` merging both hardware trees
+7. Update `lib/modules.nix` basePaths
+8. Create `modules/nixos/default.nix` using mkHostNixosModules (with shell opt)
+9. Update `modules/hm/default.nix` basePath and HM entries (apps/shell/terminal/hyprland sub)
+10. Rename `hosts/common.nix` → `hosts/default.nix`, update import path
+11. Update `etc/hosts/default.nix` import path (→ ../../modules/nixos)
+12. Add OpenClaw enable to `hosts/nixos.nix`
+13. Delete `etc/` directory
+14. Delete `hosts/hardware/` (merged into `modules/hardware/`)
+15. Commit and test
 
----
-
-## Benefits
-
-- Single source of truth for the module list
-- Adding a module: edit `lib/modules.nix` entries in one place, both trees updated
-- Both aggregators remain structurally identical via the shared helper
-- Hardware modules (`etc/hosts/hardware/`, `hosts/`) are unaffected
-- No IFD (imports are deferred, no eval cost at flake parse time)
+## OpenClaw Integration
+- OpenClaw is a NixOS module (systemd, apparmor, sops) — lives in `modules/nixos/openclaw/`
+- In `modules/nixos/default.nix`: `{ name = "openclaw"; kind = "dir"; }` — enabled by default
+- `hosts/nixos.nix`: forces on with `modules.openclaw.enable = lib.mkForce true`
+- Not enabled on `nixos-laptop` or `nixos-wsl` unless explicitly added
