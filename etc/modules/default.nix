@@ -1,38 +1,21 @@
 { lib, ... }:
-{
-  imports = [
-    ./audio.nix
 
-    ./packages.nix
-    ./nix-ld.nix
-    ./sandbox.nix
-    ./gamemode.nix
-
-    ./user.nix
-    ./shell.nix
-
-    ./console.nix
-    ./fonts.nix
-
-    ./security.nix
-
-    ./networking.nix
-    ./vpn.nix
+let
+  modulesLib = import ../../lib/modules.nix;
+in
+modulesLib.mkHostNixosModules {
+  entries = [
+    { name = "audio";       kind = "file"; optional = false; }
+    { name = "console";     kind = "file"; optional = false; }
+    { name = "fonts";       kind = "file"; optional = false; }
+    { name = "gamemode";    kind = "file"; optional = false; }
+    { name = "networking";  kind = "file"; optional = false; }
+    { name = "nix-ld";      kind = "file"; optional = false; }
+    { name = "packages";    kind = "file"; optional = false; }
+    { name = "sandbox";     kind = "file"; optional = true;  }
+    { name = "security";    kind = "file"; optional = false; }
+    { name = "shell";       kind = "file"; optional = false; }
+    { name = "user";        kind = "file"; optional = false; }
+    { name = "vpn";         kind = "file"; optional = false; }
   ];
-
-  modules = {
-    user.enable = lib.mkDefault true;
-    sysShell.enable = lib.mkDefault true;
-    audio.enable = lib.mkDefault true;
-    console.enable = lib.mkDefault true;
-    fonts.enable = lib.mkDefault true;
-    gamemode.enable = lib.mkDefault true;
-    networking.enable = lib.mkDefault true;
-    packages.enable = lib.mkDefault true;
-    security.enable = lib.mkDefault true;
-    nix-ld.enable = lib.mkDefault true;
-    vpn.enable = lib.mkDefault true;
-
-    sandbox.enable = lib.mkDefault false;
-  };
 }
