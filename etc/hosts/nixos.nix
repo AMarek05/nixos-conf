@@ -11,11 +11,8 @@
 
     ../nvidia.nix
     ../hyprland.nix
-    ../openclaw.nix
     inputs.aagl.nixosModules.default
   ];
-
-  modules.sandbox.enable = true;
 
   programs.sleepy-launcher.enable = true;
 
