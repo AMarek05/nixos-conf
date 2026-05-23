@@ -5,7 +5,7 @@
 }:
 {
   imports = [
-    ../modules
+    ../../modules/nixos/default.nix
   ];
 
   nix.package = pkgs.lix;

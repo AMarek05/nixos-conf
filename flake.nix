@@ -96,8 +96,8 @@
         system = "x86_64-linux";
         specialArgs = { inherit inputs; };
         modules = [
+          ./modules/nixos/default.nix
           ./etc/hosts/${name}.nix
-          ./etc/hosts/default.nix
         ] ++ commonImports ++ lib.optional isWsl inputs.nixos-wsl.nixosModules.default;
       };
 
@@ -109,7 +109,7 @@
         };
         modules = [
           ./hosts/${name}.nix
-        ] ++ lib.optional (!isWsl) ./modules/forge.nix;
+        ] ++ lib.optional (!isWsl) ./modules/hm/forge.nix;
         extraSpecialArgs = { inherit inputs; };
       };
 
