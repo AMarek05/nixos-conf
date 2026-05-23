@@ -8,6 +8,11 @@
     ../../modules/nixos/default.nix
   ];
 
+  sops = {
+    defaultSopsFile = ../../secrets/openclaw.yaml;
+    age.keyFile = /etc/sops-nix/key.txt;
+  };
+
   nix.package = pkgs.lix;
 
   nixpkgs.config.allowUnfree = true;
