@@ -114,11 +114,11 @@
       };
 
       nixosCfgs = builtins.listToAttrs (
-        map (name: lib.name-value-pair name (mkNixos name false)) hosts
+        map (name: { name = name; value = mkNixos name false; }) hosts
       );
 
       homeCfgs = builtins.listToAttrs (
-        map (name: lib.name-value-pair "adam@${name}" (mkHm name false))
+        map (name: { name = "adam@${name}"; value = mkHm name false; })
           [ "nixos" "nixos-laptop" ]
       ) // { "adam@nixos-wsl" = mkHm "nixos-wsl" true; };
     in {
