@@ -1,7 +1,7 @@
 { lib, ... }:
 
 let
-  modulesLib = import ../lib/modules.nix;
+  modulesLib = import ../lib/modules.nix { inherit lib; };
 in
 modulesLib.mkHostHmModules {
   entries = [

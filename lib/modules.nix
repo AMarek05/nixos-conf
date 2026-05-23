@@ -7,9 +7,9 @@
 #   1. The imports list (./name.nix or ./name/)
 #   2. The modules.<name>.enable option default (true, or false for optional)
 #
-# Usage:
+# Usage in a default.nix:
 #
-#   let modulesLib = import ./lib/modules.nix;
+#   let modulesLib = import ../../lib/modules.nix { inherit lib; };
 #   in modulesLib.mkHostNixosModules { entries = [ ... ]; }
 #
 { lib }:
