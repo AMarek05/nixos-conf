@@ -10,7 +10,7 @@
 
   sops = {
     defaultSopsFile = ../../secrets/openclaw.yaml;
-    age.keyFile = /etc/sops-nix/key.txt;
+    age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   };
 
   nix.package = pkgs.lix;
