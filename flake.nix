@@ -74,7 +74,66 @@
   };
 
   outputs = inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; } ({
+    inputs.flake-parts.lib.mkFlake { inherit inputs; }
+    (let
+      lib = inputs.nixpkgs.lib;
+      hmLib = inputs.home-manager.lib;
+
+      hosts = [ "nixos" "nixos-laptop" "nixos-wsl" ];
+
+      customOverlays = final: prev: {
+        grimblast = prev.grimblast.override {
+          hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
+        };
+      };
+
+      commonImports = [
+        inputs.sops-nix.nixosModules.sops
+        inputs.nix-index-database.nixosModules.default
+        ({ ... }: { nixpkgs.overlays = [ customOverlays ]; })
+      ];
+
+      mkNixos = name: lib.nixosSystem {
+        system = "x86_64-linux";
+        specialArgs = { inherit inputs; };
+        modules = [
+          ./etc/hosts/${name}.nix
+          ./etc/hosts/default.nix
+        ] ++ commonImports;
+      };
+
+      mkHm = name: hmLib.homeManagerConfiguration {
+        pkgs = import inputs.nixpkgs {
+          system = "x86_64-linux";
+          config.allowUnfree = true;
+        };
+        modules = [
+          ./hosts/${name}.nix
+        ] ++ lib.optional (!(lib.hasSuffix "-wsl" name)) ./modules/forge.nix;
+        extraSpecialArgs = { inherit inputs; };
+      };
+
+      nixosCfgs = builtins.listToAttrs (
+        map (name: lib.name-value-pair name (mkNixos name)) hosts
+      );
+
+      homeCfgs = builtins.listToAttrs (
+        map (name: lib.name-value-pair "adam@${name}" (mkHm name)) hosts
+      );
+
+      # WSL uses a different generator
+      nixosCfgs' = nixosCfgs // {
+        nixos-wsl = lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs; };
+          modules = [
+            ./etc/hosts/nixos-wsl.nix
+            ./etc/hosts/default.nix
+            inputs.nixos-wsl.nixosModules.default
+          ] ++ builtins.filter (m: m != inputs.nixos-wsl.nixosModules.default) commonImports;
+        };
+      };
+    in {
       systems = [ "x86_64-linux" ];
 
       perSystem = { pkgs', ... }: {
@@ -82,68 +141,7 @@
         devShells.default = pkgs'.mkShell { };
       };
 
-      # ─── Host list ───────────────────────────────────────────────────
-      hosts = [ "nixos" "nixos-laptop" "nixos-wsl" ];
-
-      _module.args = { inherit (self) hosts; };
-
-      # ─── NixOS configurations ──────────────────────────────────────────
-      flake.nixosConfigurations =
-        let
-          lib = inputs.nixpkgs.lib;
-          customOverlays = final: prev: {
-            grimblast = prev.grimblast.override {
-              hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
-            };
-          };
-          commonImports = [
-            inputs.sops-nix.nixosModules.sops
-            inputs.nix-index-database.nixosModules.default
-            ({ ... }: { nixpkgs.overlays = [ customOverlays ]; })
-          ];
-          mkNixos = name: lib.nixosSystem {
-            system = "x86_64-linux";
-            specialArgs = { inherit inputs; };
-            modules = [
-              ./etc/hosts/${name}.nix
-              ./etc/hosts/default.nix
-            ] ++ commonImports;
-          };
-        in
-          builtins.listToAttrs (
-            map (name: lib.name-value-pair name (mkNixos name)) hosts
-          )
-          // {
-            # WSL has a different generator + extra module
-            nixos-wsl = lib.nixosSystem {
-              system = "x86_64-linux";
-              specialArgs = { inherit inputs; };
-              modules = [
-                ./etc/hosts/nixos-wsl.nix
-                ./etc/hosts/default.nix
-                inputs.nixos-wsl.nixosModules.default
-              ] ++ builtins.filter (m: m != inputs.nixos-wsl.nixosModules.default) commonImports;
-            };
-          };
-
-      # ─── Home-manager configurations ───────────────────────────────────
-      flake.homeConfigurations =
-        let
-          lib = inputs.nixpkgs.lib;
-          hmLib = inputs.home-manager.lib;
-          mkHm = name: hmLib.homeManagerConfiguration {
-            pkgs = import inputs.nixpkgs {
-              system = "x86_64-linux";
-              config.allowUnfree = true;
-            };
-            modules = [
-              ./hosts/${name}.nix
-            ] ++ lib.optional (!(lib.hasSuffix "-wsl" name)) ./modules/forge.nix;
-            extraSpecialArgs = { inherit inputs; };
-          };
-        in
-          builtins.listToAttrs (
-            map (name: lib.name-value-pair "adam@${name}" (mkHm name)) hosts
-          );
+      flake.nixosConfigurations = nixosCfgs';
+      flake.homeConfigurations = homeCfgs;
     });
 }
