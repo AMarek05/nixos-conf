@@ -6,17 +6,17 @@ in
 modulesLib.mkHostNixosModules {
   basePath = ../../etc/modules;
   entries = [
-    { name = "audio";      kind = "file"; }
-    { name = "console";    kind = "file"; }
-    { name = "fonts";      kind = "file"; }
-    { name = "gamemode";   kind = "file"; }
-    { name = "networking"; kind = "file"; }
-    { name = "nix-ld";     kind = "file"; }
-    { name = "packages";   kind = "file"; }
-    { name = "sandbox";    kind = "file"; disabledByDefault = true; }
-    { name = "security";   kind = "file"; }
-    { name = "shell";      kind = "file"; opt = "sysShell"; }
-    { name = "user";       kind = "file"; }
-    { name = "vpn";        kind = "file"; }
+    { name = "audio";       kind = "file"; optional = false; }
+    { name = "console";     kind = "file"; optional = false; }
+    { name = "fonts";       kind = "file"; optional = false; }
+    { name = "gamemode";    kind = "file"; optional = false; }
+    { name = "networking";  kind = "file"; optional = false; }
+    { name = "nix-ld";      kind = "file"; optional = false; }
+    { name = "packages";    kind = "file"; optional = false; }
+    { name = "sandbox";     kind = "file"; optional = true;  }
+    { name = "security";    kind = "file"; optional = false; }
+    { name = "shell";       kind = "file"; optional = false; opt = "sysShell"; }
+    { name = "user";        kind = "file"; optional = false; }
+    { name = "vpn";         kind = "file"; optional = false; }
   ];
 }
