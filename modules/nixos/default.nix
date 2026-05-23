@@ -12,7 +12,7 @@ modulesLib.mkHostNixosModules {
     { name = "gamemode";   kind = "file"; }
     { name = "networking"; kind = "file"; }
     { name = "nix-ld";     kind = "file"; }
-    { name = "openclaw";   kind = "dir";  }
+    { name = "openclaw";   kind = "dir";  optional = true; }
     { name = "packages";   kind = "file"; }
     { name = "sandbox";    kind = "file"; optional = true; }
     { name = "security";   kind = "file"; }
