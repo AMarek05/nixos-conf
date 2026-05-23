@@ -81,8 +81,6 @@
 
       hosts = [ "nixos" "nixos-laptop" "nixos-wsl" ];
 
-      # Grimblast override — applied once in perSystem so it propagates to
-      # both NixOS pkgs (via specialArgs.pkgs) and HM pkgs (via direct import)
       grimblastOverlay = final: prev: {
         grimblast = prev.grimblast.override {
           hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
@@ -115,16 +113,14 @@
         extraSpecialArgs = { inherit inputs; };
       };
 
-      nixosCfgs = lib.mapAttrs' (name: _: lib.name-value-pair name (mkNixos name false)) {
-        nixos = { };
-        nixos-laptop = { };
-      };
+      nixosCfgs = builtins.listToAttrs (
+        map (name: lib.name-value-pair name (mkNixos name false)) hosts
+      );
 
-      homeCfgs = {
-        "adam@nixos" = mkHm "nixos" false;
-        "adam@nixos-laptop" = mkHm "nixos-laptop" false;
-        "adam@nixos-wsl" = mkHm "nixos-wsl" true;
-      };
+      homeCfgs = builtins.listToAttrs (
+        map (name: lib.name-value-pair "adam@${name}" (mkHm name false))
+          [ "nixos" "nixos-laptop" ]
+      ) // { "adam@nixos-wsl" = mkHm "nixos-wsl" true; };
     in {
       systems = [ "x86_64-linux" ];
 
