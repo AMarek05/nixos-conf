@@ -8,7 +8,7 @@
     ./starship.nix
   ];
 
-  options.modules.shell = {
+  options.hmModules.shell = {
     enable = lib.mkEnableOption "shell configuration";
   };
 }

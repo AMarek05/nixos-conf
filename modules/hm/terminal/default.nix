@@ -8,7 +8,7 @@
     ./ghostty.nix
   ];
 
-  options.modules.terminal = {
+  options.hmModules.terminal = {
     enable = lib.mkEnableOption "terminal configuration";
   };
 }

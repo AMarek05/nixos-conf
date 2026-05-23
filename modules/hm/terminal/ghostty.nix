@@ -1,9 +1,9 @@
 { config, lib, ... }:
 let
-  cfg = config.modules.terminal.ghostty;
+  cfg = config.hmModules.terminal.ghostty;
 in
 {
-  options.modules.terminal.ghostty = {
+  options.hmModules.terminal.ghostty = {
     enable = lib.mkEnableOption "Add ghostty installation and configuration";
   };
 

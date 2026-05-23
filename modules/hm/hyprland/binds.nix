@@ -1,6 +1,6 @@
 { config, lib, ... }:
 let
-  cfg = config.modules.hyprland;
+  cfg = config.hmModules.hyprland;
 
   mod = "Super";
 in

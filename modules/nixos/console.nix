@@ -5,11 +5,11 @@
   ...
 }:
 {
-  options.modules.console = {
+  options.nixosModules.console = {
     enable = lib.mkEnableOption "console (fonts, keymap, kmscon)";
   };
 
-  config = lib.mkIf config.modules.console.enable {
+  config = lib.mkIf config.nixosModules.console.enable {
     console = {
       enable = true;
       packages = with pkgs; [ terminus_font ];

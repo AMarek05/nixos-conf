@@ -7,10 +7,10 @@
 }:
 
 let
-  cfg = config.modules.shell.zsh;
+  cfg = config.hmModules.shell.zsh;
 in
 {
-  options.modules.shell.zsh = {
+  options.hmModules.shell.zsh = {
     enable = lib.mkEnableOption "zsh shell";
   };
 

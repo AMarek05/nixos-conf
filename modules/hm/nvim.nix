@@ -5,11 +5,11 @@
   ...
 }:
 {
-  options.modules.nvim = {
+  options.hmModules.nvim = {
     enable = lib.mkEnableOption "nvim";
   };
 
-  config = lib.mkIf config.modules.nvim.enable {
+  config = lib.mkIf config.hmModules.nvim.enable {
     programs.neovim = {
       enable = true;
       defaultEditor = true;

@@ -4,11 +4,11 @@ let
   dotsPath = ../../store;
 in
 {
-  options.modules.shell.starship = {
+  options.hmModules.shell.starship = {
     enable = lib.mkEnableOption "starship";
   };
 
-  config = lib.mkIf config.modules.shell.starship.enable {
+  config = lib.mkIf config.hmModules.shell.starship.enable {
     programs.starship = {
       enable = true;
       enableZshIntegration = true;
