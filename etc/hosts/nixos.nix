@@ -14,6 +14,8 @@
     inputs.aagl.nixosModules.default
   ];
 
+  services.openclaw.enable = lib.mkForce true;
+
   programs.sleepy-launcher.enable = true;
 
   networking.hostName = lib.mkForce "nixos";
