@@ -95,7 +95,7 @@ in
         rsync = "rsync --info=progress2";
         hellfire = "sudo snx-rs -s hellfire.put.poznan.pl -u adam.marek@student.put.poznan.pl -o vpn_Username_Password";
         doom = "/home/adam/.config/emacs/bin/doom";
-        read-sops = "SOPS_AGE_KEY=$(${pkgs.ssh-to-age}/bin/ssh-to-age -- -private-key -i ~/.ssh/age) ${pkgs.sops}/bin/sops -- ~/sys/secrets/openclaw.yaml";
+        read-sops = "SOPS_AGE_KEY=$(${lib.getExe pkgs.ssh-to-age} -private-key -i ~/.ssh/age) ${lib.getExe pkgs.sops}";
       };
     };
 
