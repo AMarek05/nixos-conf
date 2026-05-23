@@ -96,7 +96,7 @@
         inputs.sops-nix.nixosModules.sops
         inputs.nix-index-database.nixosModules.default
         (
-          { pkgs, ... }:
+          { ... }:
           {
             nixpkgs.overlays = [ customOverlays ];
           }
