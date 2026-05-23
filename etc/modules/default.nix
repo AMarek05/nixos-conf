@@ -46,7 +46,6 @@ modulesLib.mkHostNixosModules {
     {
       name = "shell";
       kind = "file";
-      opt = "sysShell";
     }
     {
       name = "user";
