@@ -18,6 +18,7 @@ modulesLib.mkHostHmModules {
       sub = [
         { name = "stylix"; }
         { name = "nvf";    }
+        { name = "nvim";   }
       ];
     }
     { name = "caelestia"; kind = "dir"; }
