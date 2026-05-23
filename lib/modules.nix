@@ -27,7 +27,7 @@ let
           optName = if e ? opt then e.opt else e.name;
           children = if e ? sub && e.sub != null then mkModulesTree e.sub else {};
           base =
-            if e.optional
+            if e.disabledByDefault or false
             then { ${optName} = { enable = lib.mkDefault false; }; }
             else { ${optName} = { enable = lib.mkDefault true; }; };
         in {
