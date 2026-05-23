@@ -4,11 +4,7 @@
   ...
 }:
 {
-  options.modules.user = {
-    enable = lib.mkEnableOption "user account and groups";
-  };
-
-  config = lib.mkIf config.modules.user.enable {
+  config = {
     users.groups.adam = { };
 
     users.users.adam = {
