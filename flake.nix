@@ -81,7 +81,9 @@
 
       hosts = [ "nixos" "nixos-laptop" "nixos-wsl" ];
 
-      customOverlays = final: prev: {
+      # Grimblast override — applied once in perSystem so it propagates to
+      # both NixOS pkgs (via specialArgs.pkgs) and HM pkgs (via direct import)
+      grimblastOverlay = final: prev: {
         grimblast = prev.grimblast.override {
           hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
         };
@@ -90,48 +92,38 @@
       commonImports = [
         inputs.sops-nix.nixosModules.sops
         inputs.nix-index-database.nixosModules.default
-        ({ ... }: { nixpkgs.overlays = [ customOverlays ]; })
       ];
 
-      mkNixos = name: lib.nixosSystem {
+      mkNixos = name: isWsl: lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit inputs; };
         modules = [
           ./etc/hosts/${name}.nix
           ./etc/hosts/default.nix
-        ] ++ commonImports;
+        ] ++ commonImports ++ lib.optional isWsl inputs.nixos-wsl.nixosModules.default;
       };
 
-      mkHm = name: hmLib.homeManagerConfiguration {
+      mkHm = name: isWsl: hmLib.homeManagerConfiguration {
         pkgs = import inputs.nixpkgs {
           system = "x86_64-linux";
           config.allowUnfree = true;
+          overlays = [ grimblastOverlay ];
         };
         modules = [
           ./hosts/${name}.nix
-        ] ++ lib.optional (!(lib.hasSuffix "-wsl" name)) ./modules/forge.nix;
+        ] ++ lib.optional (!isWsl) ./modules/forge.nix;
         extraSpecialArgs = { inherit inputs; };
       };
 
-      nixosCfgs = builtins.listToAttrs (
-        map (name: lib.name-value-pair name (mkNixos name)) hosts
-      );
+      nixosCfgs = lib.mapAttrs' (name: _: lib.name-value-pair name (mkNixos name false)) {
+        nixos = { };
+        nixos-laptop = { };
+      };
 
-      homeCfgs = builtins.listToAttrs (
-        map (name: lib.name-value-pair "adam@${name}" (mkHm name)) hosts
-      );
-
-      # WSL uses a different generator
-      nixosCfgs' = nixosCfgs // {
-        nixos-wsl = lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = [
-            ./etc/hosts/nixos-wsl.nix
-            ./etc/hosts/default.nix
-            inputs.nixos-wsl.nixosModules.default
-          ] ++ builtins.filter (m: m != inputs.nixos-wsl.nixosModules.default) commonImports;
-        };
+      homeCfgs = {
+        "adam@nixos" = mkHm "nixos" false;
+        "adam@nixos-laptop" = mkHm "nixos-laptop" false;
+        "adam@nixos-wsl" = mkHm "nixos-wsl" true;
       };
     in {
       systems = [ "x86_64-linux" ];
@@ -141,7 +133,10 @@
         devShells.default = pkgs'.mkShell { };
       };
 
-      flake.nixosConfigurations = nixosCfgs';
+      flake.nixosConfigurations = nixosCfgs // {
+        nixos-wsl = mkNixos "nixos-wsl" true;
+      };
+
       flake.homeConfigurations = homeCfgs;
     });
 }
