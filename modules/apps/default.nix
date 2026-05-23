@@ -9,6 +9,9 @@
   imports = [
     inputs.zen-browser.homeModules.beta
     ./dolphin.nix
+    ./nvf.nix
+    ./stylix.nix
+    ./nvim
   ];
 
   options.modules.apps = {

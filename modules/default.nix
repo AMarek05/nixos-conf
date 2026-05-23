@@ -10,10 +10,7 @@
     ./shell
     ./hyprland
 
-    ./apps/main.nix
-    ./apps/nvf.nix
-    ./apps/stylix.nix
-
+    ./apps
     ./caelestia
   ];
 
