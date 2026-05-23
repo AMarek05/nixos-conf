@@ -37,8 +37,8 @@ let
   mkImports = basePath: entries:
     map (e:
       if e ? source && e.source != null then e.source
-      else if e.kind == "dir" then ${basePath}/${e.name}
-      else ${basePath}/${e.name}.nix
+      else if e.kind == "dir" then basePath + "/${e.name}"
+      else basePath + "/${e.name}.nix"
     ) entries;
 in
 
