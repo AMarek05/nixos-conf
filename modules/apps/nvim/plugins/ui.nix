@@ -87,7 +87,7 @@
 
         b = [
           ''{ "filetype", colored = true, icon_only = true, icon = { align = 'left' }, separator = "", padding = { left = 2, right = 1 } }''
-          ''{ "filename", symbols = {modified = ' ', readonly = ' '}, padding = { left = 0, right = 1 } }''
+          ''{ "filename", symbols = {modified = ' ', readonly = ' '}, padding = { left = 1, right = 1 } }''
         ];
 
         c = [
