@@ -5,11 +5,11 @@
   ...
 }:
 {
-  options.modules.security = {
+  options.nixosModules.security = {
     enable = lib.mkEnableOption "security (gnupg, pam, dconf, gnome-keyring)";
   };
 
-  config = lib.mkIf config.modules.security.enable {
+  config = lib.mkIf config.nixosModules.security.enable {
     programs.gnupg.agent = {
       enable = true;
       enableSSHSupport = false;

@@ -1,10 +1,10 @@
 { lib, config, ... }:
 {
-  options.modules.networking = {
+  options.nixosModules.networking = {
     enable = lib.mkEnableOption "networking (NetworkManager, firewall, syncthing, openssh, extraHosts)";
   };
 
-  config = lib.mkIf config.modules.networking.enable {
+  config = lib.mkIf config.nixosModules.networking.enable {
     networking.hostName = lib.mkDefault "nixos";
 
     networking.networkmanager.enable = true;

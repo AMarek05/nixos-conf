@@ -6,10 +6,10 @@
   ...
 }:
 let
-  cfg = config.modules.hyprland;
+  cfg = config.hmModules.hyprland;
 in
 {
-  options.modules.hyprland = {
+  options.hmModules.hyprland = {
     enable = lib.mkEnableOption "Enable the hyprland module";
     caelestia.enable = lib.mkEnableOption "Enable caelestia shell submodule";
   };

@@ -1,9 +1,9 @@
 { config, lib, ... }:
 let
-  cfg = config.modules.shell;
+  cfg = config.nixosModules.shell;
 in
 {
-  options.modules.shell = {
+  options.nixosModules.shell = {
     enable = lib.mkEnableOption "system shell configuration (zsh, direnv, dconf)";
   };
 

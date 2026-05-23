@@ -14,11 +14,11 @@
     ./nvim
   ];
 
-  options.modules.apps = {
+  options.hmModules.apps = {
     enable = lib.mkEnableOption "apps";
   };
 
-  config = lib.mkIf config.modules.apps.enable {
+  config = lib.mkIf config.hmModules.apps.enable {
     home.packages = with pkgs; [
       thunderbird
 

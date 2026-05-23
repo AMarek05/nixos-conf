@@ -5,11 +5,11 @@
   ...
 }:
 {
-  options.modules.sandbox = {
+  options.nixosModules.sandbox = {
     enable = lib.mkEnableOption "Sandboxing";
   };
 
-  config = lib.mkIf config.modules.sandbox.enable {
+  config = lib.mkIf config.nixosModules.sandbox.enable {
     services.flatpak.enable = true;
 
     virtualisation.podman = {

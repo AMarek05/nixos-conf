@@ -1,10 +1,10 @@
 { lib, config, ... }:
 {
-  options.modules.audio = {
+  options.nixosModules.audio = {
     enable = lib.mkEnableOption "audio (pipewire, rtkit)";
   };
 
-  config = lib.mkIf config.modules.audio.enable {
+  config = lib.mkIf config.nixosModules.audio.enable {
     security.rtkit.enable = true;
 
     services.pipewire = {

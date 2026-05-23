@@ -8,7 +8,7 @@
 }:
 let
   inherit (lib) mkOption mkEnableOption types;
-  cfg = config.modules.caelestia;
+  cfg = config.hmModules.caelestia;
 
   inputHyprland = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
   inputsCaelestia =
@@ -19,7 +19,7 @@ let
       };
 in
 {
-  options.modules.caelestia = {
+  options.hmModules.caelestia = {
     enable = mkEnableOption "Enable caelestia shell module";
 
     # Direct passthrough to programs.caelestia.settings
