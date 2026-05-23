@@ -9,8 +9,11 @@
   };
 
   config = lib.mkIf config.modules.user.enable {
+    users.groups.adam = { };
+
     users.users.adam = {
       isNormalUser = true;
+      group = "adam";
       extraGroups = [
         "wheel"
         "video"
