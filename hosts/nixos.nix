@@ -2,6 +2,7 @@
 {
   imports = [
     ./common.nix
+    ../../modules/nixos/openclaw
   ];
 
   programs.caelestia.settings.general.idle.timeouts = lib.mkForce [

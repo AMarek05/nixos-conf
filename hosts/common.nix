@@ -1,7 +1,7 @@
 { lib, pkgs, ... }:
 {
   imports = [
-    ../modules/default.nix
+    ../modules/hm/default.nix
   ];
 
   # Apply lix as default nix parser replacement
