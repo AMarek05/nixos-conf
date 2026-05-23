@@ -10,7 +10,10 @@
 # Usage in a default.nix:
 #
 #   let modulesLib = import ../../lib/modules.nix { inherit lib; };
-#   in modulesLib.mkHostNixosModules { entries = [ ... ]; }
+#   in modulesLib.mkHostNixosModules {
+#     basePath = ../../etc/modules;
+#     entries = [ ... ];
+#   }
 #
 { lib }:
 
@@ -31,24 +34,24 @@ let
       ) entries
     );
 
-  mkImports = entries:
+  mkImports = basePath: entries:
     map (e:
       if e ? source && e.source != null then e.source
-      else if e.kind == "dir" then ./${e.name}
-      else ./${e.name}.nix
+      else if e.kind == "dir" then ${basePath}/${e.name}
+      else ${basePath}/${e.name}.nix
     ) entries;
 in
 
 {
   # For NixOS module trees (etc/modules/default.nix replacement)
-  mkHostNixosModules = { entries }: {
-    imports = mkImports entries;
+  mkHostNixosModules = { basePath, entries }: {
+    imports = mkImports basePath entries;
     modules = mkModulesTree entries;
   };
 
   # For Home Manager module trees (modules/default.nix replacement)
-  mkHostHmModules = { entries }: {
-    imports = mkImports entries;
+  mkHostHmModules = { basePath, entries }: {
+    imports = mkImports basePath entries;
     modules = mkModulesTree entries;
   };
 }
