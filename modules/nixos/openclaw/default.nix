@@ -17,7 +17,7 @@ let
   cfg = config.services.openclaw;
 
   # basePath is relative to this file (modules/nixos/openclaw/default.nix)
-  basePath = .;
+  basePath = ./.;
 
   loadModules =
     dir:
