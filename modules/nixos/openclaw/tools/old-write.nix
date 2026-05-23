@@ -6,7 +6,7 @@ let
     version = "1.2.0";
 
     # Point to the local file
-    src = ./rust/write.rs;
+    src = ./Rust/write.rs;
 
     nativeBuildInputs = [ pkgs.rustc ];
 

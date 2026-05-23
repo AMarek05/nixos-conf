@@ -50,5 +50,5 @@
     fd
   ];
 
-  script = ./bash/list-dir.sh;
+  script = ./Bash/list-dir.sh;
 }
