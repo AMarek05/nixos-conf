@@ -24,7 +24,7 @@ let
     builtins.listToAttrs (
       map (e:
         let
-          children = if e.sub != null then mkModulesTree e.sub else {};
+          children = if e ? sub && e.sub != null then mkModulesTree e.sub else {};
           base = if e.optional then { ${e.name} = { enable = lib.mkDefault false; }; }
                  else { ${e.name} = { enable = lib.mkDefault true; }; };
         in {
