@@ -77,19 +77,17 @@
     inputs.flake-parts.lib.mkFlake { inherit inputs; } ({
       systems = [ "x86_64-linux" ];
 
-      perSystem = { config, pkgs', self, ... }: {
+      perSystem = { pkgs', ... }: {
         packages = {};
         devShells.default = pkgs'.mkShell { };
       };
 
-      # Host list
+      # ─── Host list ───────────────────────────────────────────────────
       hosts = [ "nixos" "nixos-laptop" "nixos-wsl" ];
 
       _module.args = { inherit (self) hosts; };
 
-      # ─── NixOS configurations ─────────────────────────────────────────
-      # Each host gets: ./etc/hosts/<name>.nix (singletons) + default.nix (shared)
-      # + commonImports (sops-nix, nix-index, nixpkgs.overlays)
+      # ─── NixOS configurations ──────────────────────────────────────────
       flake.nixosConfigurations =
         let
           lib = inputs.nixpkgs.lib;
@@ -101,7 +99,7 @@
           commonImports = [
             inputs.sops-nix.nixosModules.sops
             inputs.nix-index-database.nixosModules.default
-            ({ pkgs, ... }: { nixpkgs.overlays = [ customOverlays ]; })
+            ({ ... }: { nixpkgs.overlays = [ customOverlays ]; })
           ];
           mkNixos = name: lib.nixosSystem {
             system = "x86_64-linux";
@@ -115,9 +113,8 @@
           builtins.listToAttrs (
             map (name: lib.name-value-pair name (mkNixos name)) hosts
           )
-          //
-          {
-            # WSL uses a different generator
+          // {
+            # WSL has a different generator + extra module
             nixos-wsl = lib.nixosSystem {
               system = "x86_64-linux";
               specialArgs = { inherit inputs; };
@@ -129,19 +126,19 @@
             };
           };
 
-      # ─── Home-manager configurations ──────────────────────────────────
-      # hosts/common.nix (lix, HM enable, home.user) + optional forge.nix
+      # ─── Home-manager configurations ───────────────────────────────────
       flake.homeConfigurations =
         let
           lib = inputs.nixpkgs.lib;
-          mkHm = name: home-manager.lib.homeManagerConfiguration {
+          hmLib = inputs.home-manager.lib;
+          mkHm = name: hmLib.homeManagerConfiguration {
             pkgs = import inputs.nixpkgs {
               system = "x86_64-linux";
               config.allowUnfree = true;
             };
             modules = [
               ./hosts/${name}.nix
-            ] ++ lib.optional (!lib.hasSuffix "-wsl" name) ./modules/forge.nix;
+            ] ++ lib.optional (!(lib.hasSuffix "-wsl" name)) ./modules/forge.nix;
             extraSpecialArgs = { inherit inputs; };
           };
         in
