@@ -33,7 +33,7 @@ let
 
   mkImports = entries:
     map (e:
-      if e.source != null then e.source
+      if e ? source && e.source != null then e.source
       else if e.kind == "dir" then ./${e.name}
       else ./${e.name}.nix
     ) entries;
