@@ -27,8 +27,6 @@ let
     in
     map (f: dir + "/${f}") nixFiles;
 
-  providerModules = loadModules (basePath + "/providers");
-
 in
 {
   imports = [
@@ -37,8 +35,7 @@ in
     (basePath + "/modules/sandbox.nix")
     (basePath + "/modules/sops.nix")
     (basePath + "/modules/tools-loader.nix")
-  ]
-  ++ providerModules;
+  ];
 
   options.services.openclaw = {
     enable = lib.mkEnableOption "OpenClaw AI assistant gateway with hardened sandboxing";
