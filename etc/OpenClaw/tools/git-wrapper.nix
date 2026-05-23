@@ -55,6 +55,9 @@
 
     if [[ -n "$SSH_KEY_PATH" ]]; then
       export GIT_SSH_COMMAND="ssh -i \"$SSH_KEY_PATH\" -o StrictHostKeyChecking=accept-new -o IdentitiesOnly=yes"
+      # Enable SSH commit signing for repositories that want it
+      git config --global gpg.format ssh
+      git config --global ssh.signingkey "$SSH_KEY_PATH"
     fi
 
     exec "${pkgs.git}/bin/git" "$@"
