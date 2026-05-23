@@ -56,5 +56,5 @@
     jq
   ];
 
-  script = ./Bash/sed-inplace.sh;
+  script = ./bash/sed-inplace.sh;
 }
