@@ -8,9 +8,8 @@
   imports = [
     ./default.nix
     ./hardware/nixos-hardware.nix
+    ./hardware/gpu/nvidia.nix
 
-    ../nvidia.nix
-    ../hyprland.nix
     inputs.aagl.nixosModules.default
   ];
 
