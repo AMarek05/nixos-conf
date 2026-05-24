@@ -73,66 +73,87 @@
     flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
-  outputs = inputs:
-    inputs.flake-parts.lib.mkFlake { inherit inputs; }
-    (let
-      lib = inputs.nixpkgs.lib;
-      hmLib = inputs.home-manager.lib;
+  outputs =
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } (
+      let
+        lib = inputs.nixpkgs.lib;
+        hmLib = inputs.home-manager.lib;
 
-      hosts = [ "nixos" "nixos-laptop" "nixos-wsl" ];
+        hosts = [
+          "nixos"
+          "nixos-laptop"
+        ];
 
-      grimblastOverlay = final: prev: {
-        grimblast = prev.grimblast.override {
-          hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
+        grimblastOverlay = final: prev: {
+          grimblast = prev.grimblast.override {
+            hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
+          };
         };
-      };
 
-      commonImports = [
-        inputs.sops-nix.nixosModules.sops
-        inputs.nix-index-database.nixosModules.default
-      ];
+        commonImports = [
+          inputs.sops-nix.nixosModules.sops
+          inputs.nix-index-database.nixosModules.default
+        ];
 
-      mkNixos = name: isWsl: lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs; };
-        modules = [
-          ./modules/nixos/default.nix
-          ./hosts/nixos/${name}.nix
-        ] ++ commonImports ++ lib.optional isWsl inputs.nixos-wsl.nixosModules.default;
-      };
+        mkNixos =
+          name:
+          lib.nixosSystem {
+            system = "x86_64-linux";
+            specialArgs = { inherit inputs; };
+            modules = [
+              ./modules/nixos/default.nix
+              ./hosts/nixos/${name}.nix
+            ]
+            ++ commonImports;
+          };
 
-      mkHm = name: isWsl: hmLib.homeManagerConfiguration {
-        pkgs = import inputs.nixpkgs {
-          system = "x86_64-linux";
-          config.allowUnfree = true;
-          overlays = [ grimblastOverlay ];
-        };
-        modules = [
-          ./hosts/hm/${name}.nix
-        ] ++ lib.optional (!isWsl) ./modules/hm/forge.nix;
-        extraSpecialArgs = { inherit inputs; };
-      };
+        mkHm =
+          name:
+          hmLib.homeManagerConfiguration {
+            pkgs = import inputs.nixpkgs {
+              system = "x86_64-linux";
+              config.allowUnfree = true;
+              overlays = [ grimblastOverlay ];
+            };
+            modules = [
+              ./hosts/hm/${name}.nix
+            ];
+            extraSpecialArgs = { inherit inputs; };
+          };
 
-      nixosCfgs = builtins.listToAttrs (
-        map (name: { name = name; value = mkNixos name false; }) hosts
-      );
+        nixosCfgs = builtins.listToAttrs (
+          map (name: {
+            name = name;
+            value = mkNixos name;
+          }) hosts
+        );
 
-      homeCfgs = builtins.listToAttrs (
-        map (name: { name = "adam@${name}"; value = mkHm name false; })
-          [ "nixos" "nixos-laptop" ]
-      ) // { "adam@nixos-wsl" = mkHm "nixos-wsl" true; };
-    in {
-      systems = [ "x86_64-linux" ];
+        homeCfgs = builtins.listToAttrs (
+          map
+            (name: {
+              name = "adam@${name}";
+              value = mkHm name;
+            })
+            [
+              "nixos"
+              "nixos-laptop"
+            ]
+        );
+      in
+      {
+        systems = [ "x86_64-linux" ];
 
-      perSystem = { pkgs', ... }: {
-        packages = {};
-        devShells.default = pkgs'.mkShell { };
-      };
+        perSystem =
+          { pkgs', ... }:
+          {
+            packages = { };
+            devShells.default = pkgs'.mkShell { };
+          };
 
-      flake.nixosConfigurations = nixosCfgs // {
-        nixos-wsl = mkNixos "nixos-wsl" true;
-      };
-
-      flake.homeConfigurations = homeCfgs;
-    });
+        flake.nixosConfigurations = nixosCfgs;
+        flake.homeConfigurations = homeCfgs;
+      }
+    );
 }
+
