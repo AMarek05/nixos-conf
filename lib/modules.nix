@@ -4,7 +4,7 @@
 # default.nix files.
 #
 # Each entry drives:
-#   1. The imports list (path or ./name.nix / ./name/)
+#   1. The import paths (path or ./name.nix / ./name/)
 #   2. Default enable values for nixosModules.<name> / hmModules.<name>
 #
 # Sub-entries (for dir entries with nested sub-modules) are flattened
@@ -13,28 +13,72 @@
 # optional = true  → enable = lib.mkDefault false  (off by default)
 # optional = false / absent → enable = lib.mkDefault true (on by default)
 #
-# When a dir entry has sub-entries:
-#   - Parent dir gets hmModules.<name>.enable = lib.mkDefault true (unless optional)
-#   - Each sub gets hmModules.<name>.<sub>.enable with its own default
-#
 # Usage in a default.nix:
 #
-#   let modulesLib = import ../../lib/modules.nix { inherit lib; };
+#   let modulesLib = import ../../lib/modules.nix { inherit lib pkgs; };
 #   in modulesLib.mkHostNixosModules {
 #     basePath = ../../modules/nixos;
 #     entries = [ ... ];
 #   }
 #
-{ lib }:
+{ lib, pkgs }:
 
 let
   # Generate import paths from entries
-  mkImports = basePath: entries:
-    map (e:
-      if e ? source && e.source != null then e.source
-      else if e.kind == "dir" then basePath + "/${e.name}"
-      else basePath + "/${e.name}.nix"
-    ) entries;
+  mkImportLines = basePath: entries:
+    let
+      mkEntry = e:
+        if e ? source && e.source != null then
+          "  (import ${lib.strings.escapeNixString e.source})"
+        else if e.kind == "dir" then
+          "  (lib.mkIf config.nixosModules.${e.name}.enable [ (import ${lib.strings.escapeNixString (basePath + "/${e.name}")}) ])"
+        else
+          "  (lib.mkIf config.nixosModules.${e.name}.enable [ (import ${lib.strings.escapeNixString (basePath + "/${e.name}.nix")}) ])";
+    in
+    lib.concatMapStringsSep "\n" mkEntry entries;
+
+  # Generate proxy module string
+  mkNixosProxy = basePath: entries: ''
+    {
+      imports = lib.flatten [
+        ${
+          # For each entry, conditionally import the module
+          lib.concatMapStringsSep "\n" (e:
+            if e ? source && e.source != null then
+              "        (import ${lib.strings.escapeNixString e.source})"
+            else if e.kind == "dir" then
+              "        (lib.mkIf config.nixosModules.${e.name}.enable [ (import ${lib.strings.escapeNixString (basePath + "/${e.name}")}) ])"
+            else
+              "        (lib.mkIf config.nixosModules.${e.name}.enable [ (import ${lib.strings.escapeNixString (basePath + "/${e.name}.nix")}) ])"
+          ) entries
+        }
+      ];
+    }
+  '';
+
+  # Generate imports for HM — similar but with hmModules.<name>.<sub>.enable
+  mkHmProxy = basePath: entries:
+    let
+      mkHmEntry = e:
+        if e ? source && e.source != null then
+          "        (import ${lib.strings.escapeNixString e.source})"
+        else if e.kind == "dir" && e ? sub then
+          # Dir with sub-entries: each sub gets its own mkIf
+          lib.concatMapStringsSep "\n" (sub:
+            "        (lib.mkIf config.hmModules.${e.name}.${sub.name}.enable [ (import ${lib.strings.escapeNixString (basePath + "/${e.name}/${sub.name}.nix")}) ])"
+          ) e.sub
+        else if e.kind == "dir" then
+          "        (lib.mkIf config.hmModules.${e.name}.enable [ (import ${lib.strings.escapeNixString (basePath + "/${e.name}")}) ])"
+        else
+          "        (lib.mkIf config.hmModules.${e.name}.enable [ (import ${lib.strings.escapeNixString (basePath + "/${e.name}.nix")}) ])";
+    in
+    "{
+      imports = lib.flatten [
+        ${
+          lib.concatMapStringsSep "\n" (e: mkHmEntry e) entries
+        }
+      ];
+    }";
 
   # Convert entries to nixosModules attribute set with defaults
   mkNixosModulesConfig = entries:
@@ -50,7 +94,6 @@ let
   mkHmModulesConfig = entries:
     lib.foldl' (acc: e:
       let
-        # Dir with sub: set parent AND all sub entries
         mkDirWithSubConfig = name: subs:
           let
             parentDefault = !(e.optional or false);
@@ -63,11 +106,9 @@ let
             in
             a // { ${subName} = { enable = lib.mkDefault subDefault; }; }
           ) parentAcc subs;
-        # Dir with no sub: just set parent enable
         mkDirConfig = name:
           let defaultEnabled = !(e.optional or false); in
           acc // { ${name} = { enable = lib.mkDefault defaultEnabled; }; };
-        # File entry: just set enable
         mkFileConfig = name:
           let defaultEnabled = !(e.optional or false); in
           acc // { ${name} = { enable = lib.mkDefault defaultEnabled; }; };
@@ -80,18 +121,30 @@ in
 
 {
   # For NixOS module trees (modules/nixos/default.nix)
-  mkHostNixosModules = { basePath, entries }: {
-    imports = mkImports basePath entries;
-    config = {
-      nixosModules = mkNixosModulesConfig entries;
+  mkHostNixosModules = { basePath, entries }:
+    let
+      proxy = pkgs.writeText "nixos-modules-proxy.nix" (mkNixosProxy basePath entries);
+    in
+    {
+      imports = [
+        proxy
+      ];
+      config = {
+        nixosModules = mkNixosModulesConfig entries;
+      };
     };
-  };
 
   # For Home Manager module trees (modules/hm/default.nix)
-  mkHostHmModules = { basePath, entries }: {
-    imports = mkImports basePath entries;
-    config = {
-      hmModules = mkHmModulesConfig entries;
+  mkHostHmModules = { basePath, entries }:
+    let
+      proxy = pkgs.writeText "hm-modules-proxy.nix" (mkHmProxy basePath entries);
+    in
+    {
+      imports = [
+        proxy
+      ];
+      config = {
+        hmModules = mkHmModulesConfig entries;
+      };
     };
-  };
 }
