@@ -1,4 +1,7 @@
-{ inputs, pkgs, ... }:
+# Hyprland compositor configuration
+# Migrated from etc/hyprland.nix
+{ inputs, config, pkgs, lib, ... }:
+
 {
   hardware.graphics = {
     enable = true;

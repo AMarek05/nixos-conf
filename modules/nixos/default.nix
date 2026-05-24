@@ -10,6 +10,7 @@ modulesLib.mkHostNixosModules {
     { name = "console";    kind = "file"; }
     { name = "fonts";      kind = "file"; }
     { name = "gamemode";   kind = "file"; }
+    { name = "hyprland";   kind = "file"; }
     { name = "networking"; kind = "file"; }
     { name = "nix-ld";     kind = "file"; }
     { name = "openclaw";   kind = "dir";  optional = true; }

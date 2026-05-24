@@ -3,9 +3,7 @@
   imports = [
     ./default.nix
     ./hardware/laptop-hardware.nix
-
-    ../hyprland.nix
-    ../mesa.nix
+    ./hardware/gpu/mesa.nix
   ];
 
   nix = {
