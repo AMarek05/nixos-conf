@@ -1,15 +1,8 @@
-# OpenClaw Hardened NixOS Module
-#
-# Self-contained under modules/nixos/openclaw/.
-#
-# Enabled via: nixosModules.openclaw.enable = true (default: false)
-# When enabled, configures services.openclaw.* as the service interface.
-# All .nix files in modules/ and tools/ are auto-sourced.
-
 {
-  config,
   lib,
+  config,
   pkgs,
+  modulesLib,
   ...
 }:
 
@@ -176,7 +169,7 @@ in
 
     security.apparmor.enable = true;
 
-    nixpkgs.config.allowInsecurePredicate =
+    nixpkgs.config.allowUnsecurePredicate =
       pkg:
       builtins.elem (lib.getName pkg) [
         "openclaw"

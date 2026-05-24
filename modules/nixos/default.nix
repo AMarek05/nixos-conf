@@ -1,7 +1,7 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 
 let
-  modulesLib = import ../../lib/modules.nix { inherit lib; };
+  modulesLib = import ../../lib/modules.nix { inherit lib pkgs; };
 in
 modulesLib.mkHostNixosModules {
   basePath = ../../modules/nixos;
