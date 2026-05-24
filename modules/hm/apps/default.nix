@@ -12,6 +12,7 @@
     ./nvf.nix
     ./stylix.nix
     ./nvim
+    ./forge.nix
   ];
 
   options.hmModules.apps = {
@@ -61,3 +62,4 @@
     programs.zen-browser.enable = true;
   };
 }
+
