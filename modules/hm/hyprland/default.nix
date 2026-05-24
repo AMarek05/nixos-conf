@@ -15,6 +15,7 @@ in
 
   imports = [
     ./binds.nix
+
     ./display.nix
     ./windowrules.nix
     ./animations.nix
@@ -25,7 +26,7 @@ in
 
   config = lib.mkIf cfg.enable {
     home.file."Pictures/Wallpapers" = {
-      source = ../../store/wallpapers;
+      source = ../../../store/wallpapers;
       recursive = true;
     };
 

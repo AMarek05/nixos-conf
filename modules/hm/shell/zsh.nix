@@ -22,7 +22,7 @@ in
       nh
     ];
 
-    xdg.configFile."zsh/.p10k.zsh".source = ../../store/starship/.p10k.zsh;
+    xdg.configFile."zsh/.p10k.zsh".source = ../../../store/starship/.p10k.zsh;
 
     programs.ghostty.enableZshIntegration = lib.mkForce false;
 
