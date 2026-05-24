@@ -1,9 +1,8 @@
 { config, lib, ... }:
 let
-  cfg = config.hmModules.git;
-in
-{
-  options.hmModules.git = {
+  cfg = config.hmModules.user.git;
+in {
+  options.hmModules.user.git = {
     enable = lib.mkEnableOption "git";
   };
 

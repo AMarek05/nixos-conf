@@ -6,24 +6,11 @@ in
 modulesLib.mkHostHmModules {
   basePath = ../../modules/hm;
   entries = [
-    # files
-    {
-      name = "env";
-      kind = "file";
-    }
-    {
-      name = "git";
-      kind = "file";
-    }
-    {
-      name = "links";
-      kind = "file";
-    }
-    {
-      name = "util";
-      kind = "file";
-    }
     # dirs with nested options
+    {
+      name = "user";
+      kind = "dir";
+    }
     {
       name = "apps";
       kind = "dir";
@@ -45,10 +32,16 @@ modulesLib.mkHostHmModules {
       name = "shell";
       kind = "dir";
       sub = [
-        { name = "zsh"; }
+        { name = "links"; }
+        {
+          name = "scripts";
+        }
         {
           name = "starship";
           optional = true;
+        }
+        {
+          name = "zsh";
         }
       ];
     }

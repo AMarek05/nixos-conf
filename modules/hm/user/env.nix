@@ -5,11 +5,11 @@
   ...
 }:
 {
-  options.hmModules.env = {
+  options.hmModules.user.env = {
     enable = lib.mkEnableOption "env";
   };
 
-  config = lib.mkIf config.hmModules.env.enable {
+  config = lib.mkIf config.hmModules.user.env.enable {
     xdg.enable = true;
     xdg.portal.xdgOpenUsePortal = true;
 

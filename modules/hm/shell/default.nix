@@ -3,6 +3,7 @@
 
 {
   imports = [
+    ./links.nix
     ./scripts.nix
     ./zsh.nix
     ./starship.nix
