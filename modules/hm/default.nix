@@ -25,9 +25,6 @@ modulesLib.mkHostHmModules {
     {
       name = "hyprland";
       kind = "dir";
-      sub = [
-        { name = "caelestia"; }
-      ];
     }
     {
       name = "shell";
