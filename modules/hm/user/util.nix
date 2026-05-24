@@ -4,9 +4,11 @@
   pkgs,
   ...
 }:
+
 let
   cfg = config.hmModules.user.util;
-in {
+in
+{
   options.hmModules.user.util = {
     enable = lib.mkEnableOption "util";
   };

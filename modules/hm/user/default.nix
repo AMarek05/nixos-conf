@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, config, ... }:
 
 {
   imports = [
@@ -13,3 +13,4 @@
 
   config = lib.mkIf config.hmModules.user.enable { };
 }
+
