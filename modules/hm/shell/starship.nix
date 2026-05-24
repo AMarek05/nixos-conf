@@ -1,7 +1,7 @@
 { lib, config, ... }:
 
 let
-  dotsPath = ../../store;
+  dotsPath = ../../../store;
 in
 {
   options.hmModules.shell.starship = {
