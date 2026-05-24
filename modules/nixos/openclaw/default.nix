@@ -1,10 +1,9 @@
 # OpenClaw Hardened NixOS Module
 #
-# Main entry point — imports all sub-modules and defines the services.openclaw
-# option set. Self-contained under modules/nixos/openclaw/.
+# Self-contained under modules/nixos/openclaw/.
 #
-# Usage in a host config:
-#   imports = [ ./openclaw.nix ];   # or: modules.nixos.openclaw.enable = true;
+# Enabled via: nixosModules.openclaw.enable = true (default: false)
+# When enabled, configures services.openclaw.* as the service interface.
 
 {
   config,
@@ -29,6 +28,9 @@ let
 
 in
 {
+  # Enable/disable via nixosModules.openclaw.enable
+  options.nixosModules.openclaw.enable = lib.mkEnableOption "OpenClaw AI assistant";
+
   imports = [
     (basePath + "/modules/user.nix")
     (basePath + "/modules/systemd.nix")
@@ -38,7 +40,7 @@ in
   ];
 
   options.services.openclaw = {
-    enable = lib.mkEnableOption "OpenClaw AI assistant gateway with hardened sandboxing";
+    enable = lib.mkEnableOption "OpenClaw service (auto-enabled when nixosModules.openclaw.enable is true)";
 
     package = lib.mkOption {
       type = lib.types.package;
@@ -68,7 +70,7 @@ in
     bindAddress = lib.mkOption {
       type = lib.types.str;
       default = "127.0.0.1";
-      description = "Address to bind the gateway to. Default is localhost only for security.";
+      description = "Address to bind the gateway to.";
     };
 
     user = lib.mkOption {
@@ -144,7 +146,7 @@ in
     };
   };
 
-  config = {
+  config = lib.mkIf config.nixosModules.openclaw.enable {
     services.openclaw = {
       enable = true;
 
