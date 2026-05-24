@@ -14,6 +14,7 @@
   ];
 
   nixosModules.openclaw.enable = lib.mkForce true;
+  nixosModules.sandbox.enable = lib.mkForce true;
 
   programs.sleepy-launcher.enable = true;
 
