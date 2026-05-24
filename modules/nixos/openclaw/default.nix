@@ -4,6 +4,7 @@
 #
 # Enabled via: nixosModules.openclaw.enable = true (default: false)
 # When enabled, configures services.openclaw.* as the service interface.
+# All .nix files in modules/ and tools/ are auto-sourced.
 
 {
   config,
@@ -18,26 +19,34 @@ let
   # basePath is relative to this file (modules/nixos/openclaw/default.nix)
   basePath = ./.;
 
-  loadModules =
+  # Auto-source all .nix files in a directory (excluding _template.nix)
+  autoImportDir =
     dir:
     let
       files = builtins.attrNames (builtins.readDir dir);
-      nixFiles = builtins.filter (f: lib.hasSuffix ".nix" f && f != "_template.nix") files;
+      nixFiles = lib.filter (f: lib.hasSuffix ".nix" f && f != "_template.nix") files;
     in
     map (f: dir + "/${f}") nixFiles;
+
+  # Recursively collect all tool .nix files
+  toolFiles =
+    let
+      toolsDir = basePath + "/tools";
+      files = builtins.attrNames (builtins.readDir toolsDir);
+      nixFiles = lib.filter (f: lib.hasSuffix ".nix" f && f != "_template.nix" && f != "TODO.md") files;
+    in
+    map (f: toolsDir + "/${f}") nixFiles;
+
+  # Load all tool definitions (used by tools-loader.nix)
+  loadedTools = map (f: import f { inherit config lib pkgs cfg; }) toolFiles;
 
 in
 {
   # Enable/disable via nixosModules.openclaw.enable
   options.nixosModules.openclaw.enable = lib.mkEnableOption "OpenClaw AI assistant";
 
-  imports = [
-    (basePath + "/modules/user.nix")
-    (basePath + "/modules/systemd.nix")
-    (basePath + "/modules/sandbox.nix")
-    (basePath + "/modules/sops.nix")
-    (basePath + "/modules/tools-loader.nix")
-  ];
+  # Auto-source all sub-modules in modules/
+  imports = autoImportDir (basePath + "/modules");
 
   options.services.openclaw = {
     enable = lib.mkEnableOption "OpenClaw service (auto-enabled when nixosModules.openclaw.enable is true)";
