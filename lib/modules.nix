@@ -26,69 +26,121 @@
 
 let
   # Generate import paths from entries
-  mkImports = basePath: entries:
-    map (e:
-      if e ? source && e.source != null then e.source
-      else if e.kind == "dir" then basePath + "/${e.name}"
-      else basePath + "/${e.name}.nix"
+  mkImports =
+    basePath: entries:
+    map (
+      e:
+      if e ? source && e.source != null then
+        e.source
+      else if e.kind == "dir" then
+        basePath + "/${e.name}"
+      else
+        basePath + "/${e.name}.nix"
     ) entries;
 
   # Convert entries to nixosModules attribute set with defaults
-  mkNixosModulesConfig = entries:
-    lib.foldl' (acc: e:
+  mkNixosModulesConfig =
+    entries:
+    lib.foldl' (
+      acc: e:
       let
         defaultEnabled = !(e.optional or false);
       in
-      acc // { ${e.name} = { enable = lib.mkDefault defaultEnabled; }; }
+      acc
+      // {
+        ${e.name} = {
+          enable = lib.mkDefault defaultEnabled;
+        };
+      }
     ) { } entries;
 
   # Convert entries + sub-entries to hmModules attribute set with defaults
   # When a dir has sub-entries: sets BOTH parent enable AND sub enables
-  mkHmModulesConfig = entries:
-    lib.foldl' (acc: e:
+  mkHmModulesConfig =
+    entries:
+    lib.foldl' (
+      acc: e:
       let
         # Dir with sub: set parent AND all sub entries
-        mkDirWithSubConfig = name: subs:
+        mkDirWithSubConfig =
+          name: subs:
           let
             parentDefault = !(e.optional or false);
-            parentAcc = acc // { ${name} = { enable = lib.mkDefault parentDefault; }; };
+
+            # 1. Build the nested set of sub-modules (e.g., { dolphin = { enable = true; }; nvim = { enable = true; }; })
+            subConfigs = lib.foldl' (
+              subAcc: sub:
+              let
+                subDefault = !(sub.optional or false);
+              in
+              subAcc
+              // {
+                ${sub.name} = {
+                  enable = lib.mkDefault subDefault;
+                };
+              }
+            ) { } subs;
           in
-          lib.foldl' (a: sub:
-            let
-              subDefault = !(sub.optional or false);
-              subName = "${name}.${sub.name}";
-            in
-            a // { ${subName} = { enable = lib.mkDefault subDefault; }; }
-          ) parentAcc subs;
+          acc
+          // {
+            ${name} = {
+              enable = lib.mkDefault parentDefault;
+            }
+            // subConfigs;
+          };
         # Dir with no sub: just set parent enable
-        mkDirConfig = name:
-          let defaultEnabled = !(e.optional or false); in
-          acc // { ${name} = { enable = lib.mkDefault defaultEnabled; }; };
+        mkDirConfig =
+          name:
+          let
+            defaultEnabled = !(e.optional or false);
+          in
+          acc
+          // {
+            ${name} = {
+              enable = lib.mkDefault defaultEnabled;
+            };
+          };
         # File entry: just set enable
-        mkFileConfig = name:
-          let defaultEnabled = !(e.optional or false); in
-          acc // { ${name} = { enable = lib.mkDefault defaultEnabled; }; };
+        mkFileConfig =
+          name:
+          let
+            defaultEnabled = !(e.optional or false);
+          in
+          acc
+          // {
+            ${name} = {
+              enable = lib.mkDefault defaultEnabled;
+            };
+          };
       in
-      if e.kind == "dir" && e ? sub then mkDirWithSubConfig e.name e.sub
-      else if e.kind == "dir" then mkDirConfig e.name
-      else mkFileConfig e.name
+      if e.kind == "dir" && e ? sub then
+        mkDirWithSubConfig e.name e.sub
+      else if e.kind == "dir" then
+        mkDirConfig e.name
+      else
+        mkFileConfig e.name
     ) { } entries;
 in
 
 {
   # For NixOS module trees (modules/nixos/default.nix)
-  mkHostNixosModules = { basePath, entries }: {
-    imports = mkImports basePath entries;
-    config = {
-      nixosModules = mkNixosModulesConfig entries;
+  mkHostNixosModules =
+    { basePath, entries }:
+    {
+      imports = mkImports basePath entries;
+      config = {
+        nixosModules = mkNixosModulesConfig entries;
+      };
     };
-  };
 
   # For Home Manager module trees (modules/hm/default.nix)
-  mkHostHmModules = { basePath, entries }: {
-    imports = mkImports basePath entries;
-    config = {
-      hmModules = mkHmModulesConfig entries;
+  mkHostHmModules =
+    { basePath, entries }:
+    {
+      imports = mkImports basePath entries;
+      config = {
+        hmModules = mkHmModulesConfig entries;
+      };
     };
-  };
 }
+
