@@ -97,7 +97,7 @@
         specialArgs = { inherit inputs; };
         modules = [
           ./modules/nixos/default.nix
-          ./etc/hosts/${name}.nix
+          ./hosts/nixos/${name}.nix
         ] ++ commonImports ++ lib.optional isWsl inputs.nixos-wsl.nixosModules.default;
       };
 
@@ -108,7 +108,7 @@
           overlays = [ grimblastOverlay ];
         };
         modules = [
-          ./hosts/${name}.nix
+          ./hosts/hm/${name}.nix
         ] ++ lib.optional (!isWsl) ./modules/hm/forge.nix;
         extraSpecialArgs = { inherit inputs; };
       };
