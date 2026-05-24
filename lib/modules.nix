@@ -13,6 +13,10 @@
 # optional = true  → enable = lib.mkDefault false  (off by default)
 # optional = false / absent → enable = lib.mkDefault true (on by default)
 #
+# When a dir entry has sub-entries:
+#   - Parent dir gets hmModules.<name>.enable = lib.mkDefault true (unless optional)
+#   - Each sub gets hmModules.<name>.<sub>.enable with its own default
+#
 # Usage in a default.nix:
 #
 #   let modulesLib = import ../../lib/modules.nix { inherit lib; };
@@ -42,25 +46,33 @@ let
     ) { } entries;
 
   # Convert entries + sub-entries to hmModules attribute set with defaults
+  # When a dir has sub-entries: sets BOTH parent enable AND sub enables
   mkHmModulesConfig = entries:
     lib.foldl' (acc: e:
       let
-        mkSubConfig = parentName: subs:
+        # Dir with sub: set parent AND all sub entries
+        mkDirWithSubConfig = name: subs:
+          let
+            parentDefault = !(e.optional or false);
+            parentAcc = acc // { ${name} = { enable = lib.mkDefault parentDefault; }; };
+          in
           lib.foldl' (a: sub:
             let
               subDefault = !(sub.optional or false);
-              subName = "${parentName}.${sub.name}";
+              subName = "${name}.${sub.name}";
             in
             a // { ${subName} = { enable = lib.mkDefault subDefault; }; }
-          ) a subs;
+          ) parentAcc subs;
+        # Dir with no sub: just set parent enable
         mkDirConfig = name:
           let defaultEnabled = !(e.optional or false); in
           acc // { ${name} = { enable = lib.mkDefault defaultEnabled; }; };
+        # File entry: just set enable
         mkFileConfig = name:
           let defaultEnabled = !(e.optional or false); in
           acc // { ${name} = { enable = lib.mkDefault defaultEnabled; }; };
       in
-      if e.kind == "dir" && e ? sub then mkSubConfig e.name e.sub
+      if e.kind == "dir" && e ? sub then mkDirWithSubConfig e.name e.sub
       else if e.kind == "dir" then mkDirConfig e.name
       else mkFileConfig e.name
     ) { } entries;
