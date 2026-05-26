@@ -40,7 +40,6 @@
   nixosModules.hyprland.enable = false;
   nixosModules.networking.enable = false;
   nixosModules.nix-ld.enable = false;
-  nixosModules.packages.enable = false;
   nixosModules.security.enable = false;
   nixosModules.shell.enable = false;
   nixosModules.vpn.enable = false;
