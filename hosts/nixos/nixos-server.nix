@@ -1,10 +1,13 @@
 { pkgs, lib, ... }:
 {
-  import = [
+  imports = [
     ./hardware/server-hardware.nix
   ];
 
   networking.hostName = "nixos-server";
+
+  boot.loader.grub.enable = false;
+  boot.loader.systemd-boot.enable = true;
 
   services.openssh = {
     enable = true;
@@ -25,4 +28,6 @@
   nixosModules.security.enable = false;
   nixosModules.shell.enable = false;
   nixosModules.vpn.enable = false;
+
+  system.stateVersion = "25.11";
 }
