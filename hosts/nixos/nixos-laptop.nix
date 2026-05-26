@@ -34,6 +34,8 @@
     '';
   };
 
+  nixosModules.tailscale.enable = lib.mkForce true;
+
   networking.hostName = lib.mkForce "nixos-laptop";
 
   boot.loader.grub.enable = lib.mkForce false;

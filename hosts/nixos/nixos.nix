@@ -15,6 +15,7 @@
 
   nixosModules.openclaw.enable = lib.mkForce true;
   nixosModules.sandbox.enable = lib.mkForce true;
+  nixosModules.tailscale.enable = lib.mkForce true;
 
   programs.sleepy-launcher.enable = true;
 
@@ -72,3 +73,4 @@
   boot.loader.efi.canTouchEfiVariables = false;
   boot.loader.timeout = null;
 }
+
