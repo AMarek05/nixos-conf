@@ -96,13 +96,6 @@
           inputs.nix-index-database.nixosModules.default
         ];
 
-<<<<<<< HEAD
-      commonImports = [
-        inputs.sops-nix.nixosModules.sops
-        inputs.nix-index-database.nixosModules.default
-        (
-          { ... }:
-=======
         mkNixos =
           name:
           lib.nixosSystem {
@@ -153,7 +146,6 @@
 
         perSystem =
           { pkgs', ... }:
->>>>>>> feature/flake-parts
           {
             packages = { };
             devShells.default = pkgs'.mkShell { };
@@ -164,4 +156,3 @@
       }
     );
 }
-
