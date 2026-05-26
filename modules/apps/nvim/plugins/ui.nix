@@ -28,36 +28,35 @@
       noice.setupOpts = {
         cmdline.format = {
           filter = {
-            pattern = "^:%s*!"; # Detects :!
-            icon = ""; # Change this to any icon you want
-            lang = "bash"; # Force Bash syntax highlighting
+            pattern = "^:%s*!";
+            icon = "";
+            lang = "bash";
 
-            # Optional: changing the title of the input box
             title = " Shell ";
           };
-          routes = [
-            {
-              view = "popup";
-              filter = {
-                event = "msg_show";
-                kind = "shell_out";
-                find = ".*"; # Catch all output text
-              };
-              opts = {
-                persistent = true; # if you want it to stay until you close it manually
-              };
-            }
-            {
-              filter = {
-                event = "notify";
-                find = "require%('lspconfig'%)";
-              };
-              opts = {
-                skip = true;
-              };
-            }
-          ];
         };
+        routes = [
+          {
+            view = "popup";
+            filter = {
+              event = "msg_show";
+              kind = "shell_out";
+              find = ".*"; # Catch all output text
+            };
+            opts = {
+              persistent = true;
+            };
+          }
+          {
+            filter = {
+              event = "notify";
+              find = "require%('lspconfig'%)";
+            };
+            opts = {
+              skip = true;
+            };
+          }
+        ];
       };
     };
 
