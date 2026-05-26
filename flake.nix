@@ -147,10 +147,10 @@
         systems = [ "x86_64-linux" ];
 
         perSystem =
-          { pkgs', ... }:
+          { pkgs, ... }:
           {
             packages = { };
-            devShells.default = pkgs'.mkShell { };
+            devShells.default = pkgs.mkShell { };
           };
 
         flake.nixosConfigurations = nixosCfgs;
