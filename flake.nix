@@ -41,7 +41,6 @@
 
     caelestia-shell = {
       url = "github:caelestia-dots/shell";
-
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.quickshell.follows = "quickshell";
     };
@@ -70,110 +69,99 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    flake-parts.url = "github:hercules-ci/flake-parts";
   };
 
   outputs =
-    {
-      nixpkgs,
-      home-manager,
-      ...
-    }@inputs:
+    inputs:
+    inputs.flake-parts.lib.mkFlake { inherit inputs; } (
+      let
+        lib = inputs.nixpkgs.lib;
+        hmLib = inputs.home-manager.lib;
 
-    let
-      customOverlays = final: prev: {
-        grimblast = prev.grimblast.override {
-          hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
+        hosts = [
+          "nixos"
+          "nixos-laptop"
+        ];
+
+        grimblastOverlay = final: prev: {
+          grimblast = prev.grimblast.override {
+            hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
+          };
         };
-      };
 
-      hmPkgs = import nixpkgs {
-        system = "x86_64-linux";
-        config.allowUnfree = true;
-        overlays = [ customOverlays ];
-      };
+        commonImports = [
+          inputs.sops-nix.nixosModules.sops
+          inputs.nix-index-database.nixosModules.default
+        ];
 
+<<<<<<< HEAD
       commonImports = [
         inputs.sops-nix.nixosModules.sops
         inputs.nix-index-database.nixosModules.default
         (
           { ... }:
+=======
+        mkNixos =
+          name:
+          lib.nixosSystem {
+            system = "x86_64-linux";
+            specialArgs = { inherit inputs; };
+            modules = [
+              ./modules/nixos/default.nix
+              ./hosts/nixos/${name}.nix
+            ]
+            ++ commonImports;
+          };
+
+        mkHm =
+          name:
+          hmLib.homeManagerConfiguration {
+            pkgs = import inputs.nixpkgs {
+              system = "x86_64-linux";
+              config.allowUnfree = true;
+              overlays = [ grimblastOverlay ];
+            };
+            modules = [
+              ./hosts/hm/${name}.nix
+            ];
+            extraSpecialArgs = { inherit inputs; };
+          };
+
+        nixosCfgs = builtins.listToAttrs (
+          map (name: {
+            name = name;
+            value = mkNixos name;
+          }) hosts
+        );
+
+        homeCfgs = builtins.listToAttrs (
+          map
+            (name: {
+              name = "adam@${name}";
+              value = mkHm name;
+            })
+            [
+              "nixos"
+              "nixos-laptop"
+            ]
+        );
+      in
+      {
+        systems = [ "x86_64-linux" ];
+
+        perSystem =
+          { pkgs', ... }:
+>>>>>>> feature/flake-parts
           {
-            nixpkgs.overlays = [ customOverlays ];
-          }
-        )
-      ];
-
-    in
-
-    {
-      nixosConfigurations = {
-        nixos = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = [
-            ./etc/hosts/nixos.nix
-          ]
-          ++ commonImports;
-        };
-
-        nixos-laptop = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = [
-            ./etc/hosts/nixos-laptop.nix
-          ]
-          ++ commonImports;
-        };
-
-        nixos-wsl = nixpkgs.lib.nixosSystem {
-          system = "x86_64-linux";
-          specialArgs = { inherit inputs; };
-          modules = [
-            ./etc/hosts/nixos-wsl.nix
-
-          ]
-          ++ commonImports;
-        };
-      };
-
-      homeConfigurations = {
-        "adam@nixos" = home-manager.lib.homeManagerConfiguration {
-          pkgs = hmPkgs;
-
-          modules = [
-            ./hosts/nixos.nix
-            ./modules/forge.nix
-          ];
-
-          extraSpecialArgs = {
-            inherit inputs;
+            packages = { };
+            devShells.default = pkgs'.mkShell { };
           };
-        };
 
-        "adam@nixos-laptop" = home-manager.lib.homeManagerConfiguration {
-          pkgs = hmPkgs;
-
-          modules = [
-            ./hosts/nixos-laptop.nix
-            ./modules/forge.nix
-          ];
-
-          extraSpecialArgs = {
-            inherit inputs;
-          };
-        };
-
-        "adam@nixos-wsl" = home-manager.lib.homeManagerConfiguration {
-          pkgs = hmPkgs;
-
-          modules = [
-            ./hosts/nixos-wsl.nix
-          ];
-
-          extraSpecialArgs = {
-            inherit inputs;
-          };
-        };
-      };
-    };
+        flake.nixosConfigurations = nixosCfgs;
+        flake.homeConfigurations = homeCfgs;
+      }
+    );
 }
+

@@ -1,0 +1,41 @@
+# Hyprland compositor configuration
+# Migrated from etc/hyprland.nix
+{ inputs, config, pkgs, lib, ... }:
+
+{
+  options.nixosModules.hyprland = {
+    enable = lib.mkEnableOption "Hyprland compositor";
+  };
+
+  config = lib.mkIf config.nixosModules.hyprland.enable {
+    hardware.graphics = {
+      enable = true;
+      enable32Bit = true;
+    };
+
+    services.greetd = {
+      enable = true;
+      settings = {
+        default_session = {
+          command = "${pkgs.tuigreet}/bin/tuigreet
+            --time
+            --astrisks
+            --user-menu
+            --theme \"border=magenta;text=cyan;prompt=green;time=yellow;action=blue;button=magenta;container=black;input=yellow\"
+            --cmd 'start-hyprland'";
+          user = "greeter";
+        };
+      };
+    };
+
+    programs.hyprland = {
+      enable = true;
+
+      package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+      portalPackage =
+        inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+
+      xwayland.enable = true;
+    };
+  };
+}
