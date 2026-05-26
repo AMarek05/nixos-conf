@@ -10,6 +10,11 @@ modulesLib.mkHostHmModules {
     {
       name = "user";
       kind = "dir";
+      sub = [
+        { name = "util"; }
+        { name = "git"; }
+        { name = "env"; }
+      ];
     }
     {
       name = "apps";
@@ -33,9 +38,6 @@ modulesLib.mkHostHmModules {
       kind = "dir";
       sub = [
         { name = "links"; }
-        {
-          name = "scripts";
-        }
         {
           name = "starship";
           optional = true;
