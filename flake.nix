@@ -83,6 +83,7 @@
         hosts = [
           "nixos"
           "nixos-laptop"
+          "nixos-server"
         ];
 
         grimblastOverlay = final: prev: {
@@ -138,6 +139,7 @@
             [
               "nixos"
               "nixos-laptop"
+              "nixos-server"
             ]
         );
       in
