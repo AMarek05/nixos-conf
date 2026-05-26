@@ -4,7 +4,23 @@
     ./hardware/server-hardware.nix
   ];
 
-  networking.hostName = "nixos-server";
+  networking = {
+    hostName = "nixos-server";
+
+    useDHCP = false;
+
+    interfaces.ens18.ipv4.addresses = [
+      {
+        address = "10.10.10.10";
+        prefixLength = 24;
+      }
+    ];
+    defaultGateway = "10.10.10.1";
+    nameservers = [
+      "1.1.1.1"
+      "8.8.8.8"
+    ];
+  };
 
   boot.loader.grub.enable = false;
   boot.loader.systemd-boot.enable = true;
