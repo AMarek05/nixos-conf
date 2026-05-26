@@ -40,6 +40,7 @@
     # services.resolved.enable = true;
 
     networking.extraHosts = ''
+      20.100.176.55 azure
       192.168.18.8 nixos-laptop
       192.168.18.13 nixos
     '';
