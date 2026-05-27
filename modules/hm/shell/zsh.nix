@@ -96,6 +96,8 @@ in
         hellfire = "sudo snx-rs -s hellfire.put.poznan.pl -u adam.marek@student.put.poznan.pl -o vpn_Username_Password";
         doom = "/home/adam/.config/emacs/bin/doom";
         read-sops = "SOPS_AGE_KEY=$(${lib.getExe pkgs.ssh-to-age} -private-key -i ~/.ssh/age) ${lib.getExe pkgs.sops}";
+
+        serv-rebuild = "nixos-rebuild switch --flake ~/sys#nixos-server --target-host nixos-server --sudo --ask-sudo-password";
       };
     };
 
