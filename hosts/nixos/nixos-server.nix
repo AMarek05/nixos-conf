@@ -2,6 +2,7 @@
 {
   imports = [
     ./default.nix
+    ./server
     ./hardware/server-hardware.nix
   ];
 
