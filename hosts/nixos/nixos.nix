@@ -72,5 +72,8 @@
 
   boot.loader.efi.canTouchEfiVariables = false;
   boot.loader.timeout = null;
-}
 
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
+  services.tumbler.enable = true;
+}
