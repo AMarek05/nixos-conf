@@ -10,6 +10,12 @@
   };
 
   config = lib.mkIf config.nixosModules.security.enable {
+
+    environment.systemPackages = with pkgs; [
+      sops
+      ssh-to-age
+    ];
+
     programs.gnupg.agent = {
       enable = true;
       enableSSHSupport = false;
