@@ -48,5 +48,9 @@
     "w /sys/class/power_supply/BAT1/charge_control_end_threshold - - - - 85"
   ];
 
+  services.udisks2.enable = true;
+  services.gvfs.enable = true;
+  services.tumbler.enable = true;
+
   zramSwap.enable = true;
 }

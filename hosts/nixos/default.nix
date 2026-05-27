@@ -44,6 +44,15 @@
     ];
   };
 
+  programs.ssh.extraConfig = ''
+    Host nixos-server
+      HostName nixos-server
+      User adam
+      ProxyJump admin
+
+      ForwardAgent yes
+  '';
+
   programs.nix-index-database = {
     enable = true;
     comma.enable = true;
@@ -57,8 +66,6 @@
     nix-tree
   ];
 
-  services.udev.packages = with pkgs; [ avrdude ];
-
   boot.kernelPackages = pkgs.linuxPackages_zen;
 
   systemd.services."systemd-userdb".enable = false;
@@ -67,10 +74,6 @@
   systemd.sockets."systemd-userdb".enable = false;
 
   time.timeZone = lib.mkDefault "Europe/Warsaw";
-
-  services.udisks2.enable = true;
-  services.gvfs.enable = true;
-  services.tumbler.enable = true;
 
   system.stateVersion = "25.05";
 }

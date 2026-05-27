@@ -1,6 +1,7 @@
 { pkgs, lib, ... }:
 {
   imports = [
+    ./default.nix
     ./hardware/server-hardware.nix
   ];
 
@@ -11,13 +12,14 @@
 
     interfaces.ens18.ipv4.addresses = [
       {
-        address = "10.10.10.10";
+        address = "10.20.30.10";
         prefixLength = 24;
       }
     ];
-    defaultGateway = "10.10.10.1";
+
+    defaultGateway = "10.20.30.1";
     nameservers = [
-      "1.1.1.1"
+      "10.20.20.5"
       "8.8.8.8"
     ];
   };
@@ -44,5 +46,7 @@
   nixosModules.shell.enable = false;
   nixosModules.vpn.enable = false;
 
-  system.stateVersion = "25.11";
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
+
+  system.stateVersion = lib.mkForce "25.11";
 }
