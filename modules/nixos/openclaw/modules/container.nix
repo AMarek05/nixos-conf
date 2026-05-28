@@ -47,88 +47,89 @@ in
     # NixOS container
     virtualisation.containers.enable = true;
 
-    virtualisation.containers.containers.openclaw = {
-      autoStart = true;
-      ensureColonSeparatedRecordOfLocalSystemdUnits = true;
+    virtualisation.containers.containersConf = [
+      {
+        name = "openclaw";
+        autoStart = true;
+        ensureColonSeparatedRecordOfLocalSystemdUnits = true;
 
-      # Bridge networking — container gets its own NIC on host's bridge
-      networkMode = "bridge";
+        # Bridge networking — container gets its own NIC on host's bridge
+        networkMode = "bridge";
 
-      config = { pkgs, ... }: {
-        # Inherit the openclaw module but run as container
-        imports = [
-          ../../../modules/nixos/openclaw
-        ];
+        config = { pkgs, ... }: {
+          # Inherit the openclaw module but run as container
+          imports = [
+            ../../../modules/nixos/openclaw
+          ];
 
-        networking.hostName = cfg.container.hostName;
-        networking.useNetworkd = false;
-        networking.useDHCP = false;
+          networking.hostName = cfg.container.hostName;
+          networking.useNetworkd = false;
+          networking.useDHCP = false;
 
-        # Static IP on the bridge
-        networking.interfaces.br0.ipv4.addresses = [
-          {
-            address = cfg.container.ip;
-            prefixLength = 24;
-          }
-        ];
+          # Static IP on the bridge
+          networking.interfaces.br0.ipv4.addresses = [
+            {
+              address = cfg.container.ip;
+              prefixLength = 24;
+            }
+          ];
 
-        # Default gateway = host's IP on the bridge
-        networking.defaultGateway = "10.20.30.1";
+          # Default gateway = host's IP on the bridge
+          networking.defaultGateway = "10.20.30.1";
 
-        # Disable unnecessary services in container
-        systemd.services."systemd-update-utmp".enable = false;
-        systemd.services."systemd-resolved".enable = false;
-        systemd.services.getty.enable = false;
-        systemd.services.logind.enable = false;
+          # Disable unnecessary services in container
+          systemd.services."systemd-update-utmp".enable = false;
+          systemd.services."systemd-resolved".enable = false;
+          systemd.services.getty.enable = false;
+          systemd.services.logind.enable = false;
 
-        # AppArmor is handled by the host; not needed in container
-        security.apparmor.enable = false;
+          # AppArmor is handled by the host; not needed in container
+          security.apparmor.enable = false;
 
-        # OpenClaw service (systemd module imported above won't apply in container,
-        # but we set the options directly here)
-        services.openclaw = {
-          enable = true;
+          # OpenClaw service
+          services.openclaw = {
+            enable = true;
 
-          bindAddress = "0.0.0.0";
-          port = 18789;
+            bindAddress = "0.0.0.0";
+            port = 18789;
 
-          sandboxedExecs.extraBins = {
-            "jq" = pkgs.jq.bin;
-            "rg" = pkgs.ripgrep;
-            "sed" = pkgs.gnused;
-            "xxd" = pkgs.xxd;
-            "patch" = pkgs.patch;
+            sandboxedExecs.extraBins = {
+              "jq" = pkgs.jq.bin;
+              "rg" = pkgs.ripgrep;
+              "sed" = pkgs.gnused;
+              "xxd" = pkgs.xxd;
+              "patch" = pkgs.patch;
+            };
+
+            servicePath = with pkgs; [ bash ];
           };
 
-          servicePath = with pkgs; [ bash ];
-        };
+          # Mount workspace from host
+          fileSystems."/var/lib/openclaw" = {
+            device = cfg.container.dataDir;
+            fsType = "none";
+            options = [ "bind" "rw" ];
+          };
 
-        # Mount workspace from host
-        fileSystems."/var/lib/openclaw" = {
-          device = cfg.container.dataDir;
-          fsType = "none";
-          options = [ "bind" "rw" ];
-        };
+          # Mount SOPS decrypted secrets from host
+          fileSystems."/run/secrets" = {
+            device = "/run/secrets";
+            fsType = "none";
+            options = [ "bind" "ro" ];
+          };
 
-        # Mount SOPS decrypted secrets from host
-        # The host's sops-nix decrypts these; we just see plaintext files
-        fileSystems."/run/secrets" = {
-          device = "/run/secrets";
-          fsType = "none";
-          options = [ "bind" "ro" ];
-        };
+          # Make openclaw available
+          environment.systemPackages = with pkgs; [ openclaw ];
 
-        # Make openclaw available
-        environment.systemPackages = with pkgs; [ openclaw ];
-
-        # Container needs git config for commits
-        programs.git = {
-          enable = true;
-          userName = "Claw";
-          userEmail = "278452676+amarek-machine@users.noreply.github.com";
+          # Container needs git config for commits
+          programs.git = {
+            enable = true;
+            userName = "Claw";
+            userEmail = "278452676+amarek-machine@users.noreply.github.com";
+          };
         };
-      };
-    };
+      }
+    ];
 
     # Port forward: host port → container IP:18789
     # This is implemented via iptables on the host
