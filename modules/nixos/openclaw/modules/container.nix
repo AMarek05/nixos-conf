@@ -199,7 +199,7 @@ in
             ${cfg.container.image} \
             env PATH=${lib.getExe pkgs.openclaw}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
             OPENCLAW_LOAD_SHELL_ENV=0 \
-            ${lib.getExe pkgs.openclaw} gateway --verbose
+            ${lib.getExe pkgs.openclaw} gateway --verbose --allow-unconfigured
         '';
 
         ExecStop = "${pkgs.podman}/bin/podman stop -t 10 openclaw";
