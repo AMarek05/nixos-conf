@@ -178,7 +178,7 @@ in
           (pkgs.writeShellScript "openclaw-net-setup" ''
             set -e
             if ! ${pkgs.podman}/bin/podman network inspect ${cfg.container.networkName} >/dev/null 2>&1; then
-              ${pkgs.podman}/bin/podman network create ${cfg.container.networkName}
+              ${pkgs.podman}/bin/podman network create --subnet=10.20.30.0/24 ${cfg.container.networkName}
             fi
             ${pkgs.podman}/bin/podman rm --force openclaw 2>/dev/null || true
           '')
