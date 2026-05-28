@@ -67,7 +67,6 @@ in
   config = lib.mkIf cfg.container.enable {
     virtualisation.podman = {
       enable = true;
-      enableHttp = true;
     };
 
     # Create custom bridge network with static IP
