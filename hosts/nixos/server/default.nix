@@ -1,11 +1,16 @@
 { config, lib, ... }:
 {
+  imports = [
+    ./graphics.nix
+  ];
+
+  sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
 
   sops.secrets."cloudflare_dns_key" = {
     sopsFile = ../../../secrets/serv.yaml;
     owner = "acme";
     group = "acme";
-    mode = 0400;
+    mode = "0400";
   };
 
   security.acme = {
@@ -29,26 +34,42 @@
     443
   ];
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      sillytavern = prev.sillytavern.overrideAttrs (old: {
+        postInstall = (old.postInstall or "") + ''
+          mkdir -p $out/lib/node_modules/sillytavern/public/scripts/extensions/third-party
+        '';
+      });
+    })
+  ];
+
   services.sillytavern = {
     enable = true;
 
     port = 8000;
   };
 
-  services.caddy = {
-    enable = true;
-
-    virtualHosts."st.amarek.org".extraConfig = ''
-      reverse_proxy localhost:8000
-    '';
-    virtualHosts."plex.amarek.org".extraConfig = ''
-      reverse_proxy localhost:32400
-    '';
-  };
-
   services.plex = {
     enable = true;
 
     openFirewall = true;
+  };
+
+  services.caddy = {
+    enable = true;
+
+    virtualHosts."st.amarek.org" = {
+      useACMEHost = "amarek.org";
+      extraConfig = ''
+        reverse_proxy 127.0.0.1:8000
+      '';
+    };
+    virtualHosts."plex.amarek.org" = {
+      useACMEHost = "amarek.org";
+      extraConfig = ''
+        reverse_proxy 127.0.0.1:32400
+      '';
+    };
   };
 }
