@@ -83,9 +83,6 @@ in
 
       # Disable bubblewrap sandbox (container already isolates)
       sandbox.enable = false;
-
-      # Disable apparmor (NixOS-specific)
-      apparmor.enable = false;
     };
 
 
