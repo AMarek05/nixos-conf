@@ -30,32 +30,33 @@
 
   sops.secrets."nim-api-key" = {
     sopsFile = ../../../secrets/openclaw.yaml;
-    owner = "root";
+    owner = lib.mkForce "root";
   };
 
   sops.secrets."openrouter-api-key" = {
     sopsFile = ../../../secrets/openclaw.yaml;
-    owner = "root";
+    owner = lib.mkForce "root";
   };
 
   sops.secrets."minimax-api-key" = {
     sopsFile = ../../../secrets/openclaw.yaml;
-    owner = "root";
+    owner = lib.mkForce "root";
   };
 
   sops.secrets."gh-token" = {
     sopsFile = ../../../secrets/openclaw.yaml;
-    owner = "root";
+    owner = lib.mkForce "root";
   };
 
   sops.secrets."claw-bot-key" = {
     sopsFile = ../../../secrets/openclaw.yaml;
-    owner = "root";
+    owner = lib.mkForce "root";
   };
+
 
   sops.secrets."claw-ssh-key" = {
     sopsFile = ../../../secrets/openclaw.yaml;
-    owner = "root";
+    owner = lib.mkForce "root";
     mode = "0400";
   };
 
