@@ -90,9 +90,11 @@ in
     # SOPS secret paths are declared in the host's services.openclaw block.
     # We reference them via config.sops.secrets in the env generator.
 
-    # Ensure secrets directory exists
+    # Ensure .openclaw directory exists and is writable by the container
     systemd.tmpfiles.rules = [
-      "d /run/secrets.d 0755 root root -"
+      "d /run/secrets.d 0755 root root -",
+      "d /var/lib/openclaw/.openclaw 0755 root root -",
+      "d /var/lib/openclaw/workspace 0755 root root -"
     ];
 
     # Generate secrets env file from decrypted SOPS files
