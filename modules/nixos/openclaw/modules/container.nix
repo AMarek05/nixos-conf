@@ -175,7 +175,7 @@ in
 
         ExecStartPre = [
           # Create custom bridge network if it doesn't exist (created at runtime, not via Nix)
-          ''${pkgs.podman}/bin/podman network inspect ${cfg.container.networkName} >/dev/null 2>&1 || ${pkgs.podman}/bin/podman network create --driver=bridge ${cfg.container.networkName}''
+          ''${pkgs.podman}/bin/podman network inspect ${cfg.container.networkName} >/dev/null 2>&1 || ${pkgs.podman}/bin/podman network create ${cfg.container.networkName}''
           # Remove any stale container
           ''${pkgs.podman}/bin/podman rm --force openclaw 2>/dev/null || true''
         ];
