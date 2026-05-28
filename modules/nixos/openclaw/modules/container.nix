@@ -62,7 +62,7 @@ in
 
     image = lib.mkOption {
       type = lib.types.str;
-      default = "docker.io/library/alpine:3";
+      default = "docker.io/library/debian:stable-slim";
       description = "Container image to use.";
     };
   };
