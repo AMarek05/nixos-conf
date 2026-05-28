@@ -80,9 +80,6 @@ in
 
       # Override the defaults with container-appropriate values
       bindAddress = "0.0.0.0";
-
-      # Disable bubblewrap sandbox (container already isolates)
-      sandbox.enable = false;
     };
 
 
