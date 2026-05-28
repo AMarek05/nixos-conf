@@ -174,12 +174,9 @@ in
         Group = "root";
 
         ExecStartPre = [
-          # Recreate openclaw network with correct subnet each time
-          # (podman network create won't overwrite an existing network)
+          # Remove any stale container
           (pkgs.writeShellScript "openclaw-net-setup" ''
             set -e
-            ${pkgs.podman}/bin/podman network rm --force ${cfg.container.networkName} 2>/dev/null || true
-            ${pkgs.podman}/bin/podman network create --subnet=10.20.30.0/24 ${cfg.container.networkName}
             ${pkgs.podman}/bin/podman rm --force openclaw 2>/dev/null || true
           '')
         ];
@@ -189,8 +186,6 @@ in
             --rm \
             --name openclaw \
             --hostname openclaw \
-            --network ${cfg.container.networkName} \
-            --ip ${cfg.container.ip} \
             --publish 0.0.0.0:${toString cfg.container.webUiPort}:${toString cfg.port} \
             --volume /var/lib/openclaw:/var/lib/openclaw:rw \
             --volume /nix/var/nix/profiles/system:/nix/var/nix/profiles/system:ro \
