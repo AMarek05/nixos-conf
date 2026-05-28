@@ -188,28 +188,18 @@ in
             --network ${cfg.container.networkName} \
             --ip ${cfg.container.ip} \
             --publish 0.0.0.0:${toString cfg.container.webUiPort}:${toString cfg.port} \
-            --volume ${cfg.container.dataDir}:/var/lib/openclaw:rw \
+            --volume /var/lib/openclaw:/var/lib/openclaw:rw \
+            --volume /nix/var/nix/profiles/system:/nix/var/nix/profiles/system:ro \
             --volume /run/secrets.d:/run/secrets.d:ro \
             --env-file /run/secrets.d/env \
-            --read-only=true \
             --read-onlytmpfs=/tmp:size=64m,noexec \
             --cap-drop=all \
             --security-opt=no-new-privileges \
-            --user ${toString cfg.container.user}:${toString cfg.container.group} \
-            --os linux \
-            --arch x86_64 \
+            --user 0:0 \
             ${cfg.container.image} \
-            /bin/sh -c '
-              for f in /run/secrets.d/*; do
-                if [ -f "$f" ]; then
-                  name=$(basename "$f")
-                  export "$name=$(cat "$f")"
-                fi
-              done
-              mkdir -p /var/lib/openclaw/workspace
-              mkdir -p /var/lib/openclaw/.openclaw/agents/main/agent
-              exec /nix/var/nix/profiles/system/bin/openclaw gateway --verbose
-            '
+            env PATH=/nix/var/nix/profiles/system/bin:/nix/var/nix/profiles/system/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+            OPENCLAW_LOAD_SHELL_ENV=0 \
+            /nix/var/nix/profiles/system/bin/openclaw gateway --verbose
         '';
 
         ExecStop = "${pkgs.podman}/bin/podman stop -t 10 openclaw";
