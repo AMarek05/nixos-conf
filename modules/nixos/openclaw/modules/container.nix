@@ -198,6 +198,7 @@ in
             --user 0:0 \
             ${cfg.container.image} \
             env PATH=${lib.getExe pkgs.openclaw}:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+            HOME=/var/lib/openclaw \
             OPENCLAW_LOAD_SHELL_ENV=0 \
             ${lib.getExe pkgs.openclaw} gateway --verbose --allow-unconfigured
         '';
