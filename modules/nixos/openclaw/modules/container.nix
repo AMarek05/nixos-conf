@@ -4,6 +4,9 @@
 # Uses SOPS-nix for secrets on the host, mounts decrypted files into the container.
 # Workspace is bind-mounted from the host.
 #
+# Approach: systemd service with a `podman run` exec, which is the idiomatic
+# NixOS way to run Podman containers declaratively.
+#
 {
   config,
   lib,
@@ -53,6 +56,12 @@ in
       default = 1000;
       description = "GID to run the container process as.";
     };
+
+    image = lib.mkOption {
+      type = lib.types.str;
+      default = "docker.io/library/alpine:3";
+      description = "Container image to use.";
+    };
   };
 
   config = lib.mkIf cfg.container.enable {
@@ -61,7 +70,7 @@ in
       enableHttp = true;
     };
 
-    # Create custom bridge network
+    # Create custom bridge network with static IP
     virtualisation.podman.networks.${cfg.container.networkName} = {
       driver = "bridge";
       subnet = "${lib.head (lib.splitString "." cfg.container.ip)}.${
@@ -72,57 +81,160 @@ in
           lib.elemAt (lib.splitString "." cfg.container.ip) 2}.1";
     };
 
-    # Podman container definition
-    virtualisation.podman.containers = {
-      openclaw = {
-        image = "docker.io/library/alpine:3";
-        autoStart = true;
+    # SOPS secret paths (decrypted by sops-nix at runtime)
+    sops.secrets."nim-api-key" = {
+      sopsFile = ../../../secrets/openclaw.yaml;
+      owner = "root";
+      mode = "0400";
+    };
+    sops.secrets."openrouter-api-key" = {
+      sopsFile = ../../../secrets/openclaw.yaml;
+      owner = "root";
+      mode = "0400";
+    };
+    sops.secrets."minimax-api-key" = {
+      sopsFile = ../../../secrets/openclaw.yaml;
+      owner = "root";
+      mode = "0400";
+    };
+    sops.secrets."gh-token" = {
+      sopsFile = ../../../secrets/openclaw.yaml;
+      owner = "root";
+      mode = "0400";
+    };
+    sops.secrets."claw-bot-key" = {
+      sopsFile = ../../../secrets/openclaw.yaml;
+      owner = "root";
+      mode = "0400";
+    };
 
-        user = {
-          uid = cfg.container.user;
-          gid = cfg.container.group;
-        };
+    # Ensure secrets are writable by root (container reads them via secret files)
+    systemd.tmpfiles.rules = [
+      "d /run/secrets.d 0755 root root -"
+    ];
 
-        # Inject secrets as environment variables via secret files
-        environment = {
-          NVIDIA_API_KEY_FILE = "/run/secrets.d/NVIDIA_API_KEY";
-          OPENROUTER_API_KEY_FILE = "/run/secrets.d/OPENROUTER_API_KEY";
-          MINIMAX_API_KEY_FILE = "/run/secrets.d/MINIMAX_API_KEY";
-          GH_TOKEN_FILE = "/run/secrets.d/GH_TOKEN";
-          DISCORD_BOT_TOKEN_FILE = "/run/secrets.d/DISCORD_BOT_TOKEN";
-          OPENCLAW_LOAD_SHELL_ENV = "0";
-        };
+    # Generate secrets env file from decrypted SOPS files
+    systemd.services.openclaw-container-env = {
+      description = "OpenClaw container secrets generator";
+      wantedBy = [ "openclaw-container.service" ];
+      after = [ "sops-nix.service" ];
+      wants = [ "sops-nix.service" ];
 
-        volumes = [
-          "${cfg.container.dataDir}:/var/lib/openclaw:rw"
-          "/run/secrets.d:/run/secrets.d:ro"
-        ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        User = "root";
+        Group = "root";
 
-        portMappings = [
+        ExecStart = pkgs.writeShellScript "openclaw-container-gen-env" ''
+          set -euo pipefail
+
+          # Wait for sops-nix to decrypt secrets (up to 30s)
+          for i in $(seq 1 60); do
+            if [ -f "${config.sops.secrets."nim-api-key".path}" ]; then
+              break
+            fi
+            sleep 0.5
+          done
+
+          # Write secret files and env file
           {
-            hostPort = cfg.container.webUiPort;
-            containerPort = cfg.port;
-            protocol = "tcp";
-          }
+            if [ -f "${config.sops.secrets."nim-api-key".path}" ]; then
+              cp "${config.sops.secrets."nim-api-key".path}" /run/secrets.d/NVIDIA_API_KEY
+              echo "NVIDIA_API_KEY=$(<${config.sops.secrets."nim-api-key".path})"
+            fi
+            if [ -f "${config.sops.secrets."openrouter-api-key".path}" ]; then
+              cp "${config.sops.secrets."openrouter-api-key".path}" /run/secrets.d/OPENROUTER_API_KEY
+              echo "OPENROUTER_API_KEY=$(<${config.sops.secrets."openrouter-api-key".path})"
+            fi
+            if [ -f "${config.sops.secrets."minimax-api-key".path}" ]; then
+              cp "${config.sops.secrets."minimax-api-key".path}" /run/secrets.d/MINIMAX_API_KEY
+              echo "MINIMAX_API_KEY=$(<${config.sops.secrets."minimax-api-key".path})"
+            fi
+            if [ -f "${config.sops.secrets."gh-token".path}" ]; then
+              cp "${config.sops.secrets."gh-token".path}" /run/secrets.d/GH_TOKEN
+              echo "GH_TOKEN=$(<${config.sops.secrets."gh-token".path})"
+            fi
+            if [ -f "${config.sops.secrets."claw-bot-key".path}" ]; then
+              cp "${config.sops.secrets."claw-bot-key".path}" /run/secrets.d/DISCORD_BOT_TOKEN
+              echo "DISCORD_BOT_TOKEN=$(<${config.sops.secrets."claw-bot-key".path})"
+            fi
+            echo "OPENCLAW_LOAD_SHELL_ENV=0"
+          } > /run/secrets.d/env
+
+          chmod 600 /run/secrets.d/env
+          chmod 600 /run/secrets.d/*
+        '';
+      };
+    };
+
+    # OpenClaw container as a systemd service with `podman run`
+    systemd.services.openclaw-container = {
+      description = "OpenClaw Podman Container";
+      wantedBy = [ "multi-user.target" ];
+      after = [
+        "sops-nix.service"
+        "openclaw-container-env.service"
+        "podman.socket"
+        "network-online.target"
+      ];
+      requires = [
+        "openclaw-container-env.service"
+        "podman.socket"
+      ];
+      wants = [ "network-online.target" ];
+
+      serviceConfig = {
+        Type = "exec";
+        Restart = "on-failure";
+        RestartSec = "5s";
+        User = "root";
+        Group = "root";
+
+        ExecStartPre = [
+          # Ensure network exists
+          "${pkgs.podman}/bin/podman network exists ${cfg.container.networkName} || ${pkgs.podman}/bin/podman network create --driver=bridge ${cfg.container.networkName}"
+          # Remove any stale container
+          "${pkgs.podman}/bin/podman rm --force openclaw 2>/dev/null || true"
         ];
 
-        networks = [ cfg.container.networkName ];
+        # Run the container using host's openclaw from nix store
+        # Mount workspace, secrets, and read-only nix store
+        ExecStart = lib.mkForce ''
+          ${pkgs.podman}/bin/podman run \
+            --rm \
+            --name openclaw \
+            --hostname openclaw \
+            --network ${cfg.container.networkName} \
+            --ip ${cfg.container.ip} \
+            --publish 0.0.0.0:${toString cfg.container.webUiPort}:${toString cfg.port} \
+            --volume ${cfg.container.dataDir}:/var/lib/openclaw:rw \
+            --volume /run/secrets.d:/run/secrets.d:ro \
+            --env-file /run/secrets.d/env \
+            --read-only=true \
+            --read-onlytmpfs=/tmp:size=64m,noexec \
+            --cap-drop=all \
+            --security-opt=no-new-privileges \
+            --user ${toString cfg.container.user}:${toString cfg.container.group} \
+            --os linux \
+            --arch x86_64 \
+            ${cfg.container.image} \
+            /bin/sh -c '
+              for f in /run/secrets.d/*; do
+                if [ -f "$f" ]; then
+                  name=$(basename "$f")
+                  export "$name=$(cat "$f")"
+                fi
+              done
+              mkdir -p /var/lib/openclaw/workspace
+              mkdir -p /var/lib/openclaw/.openclaw/agents/main/agent
+              exec /nix/var/nix/profiles/system/bin/openclaw gateway --verbose
+            '
+        '';
 
-        command = [
-          "sh"
-          "-c"
-          ''
-            # Read secret files and export as env vars
-            for f in /run/secrets.d/*; do
-              if [ -f "$f" ]; then
-                name=$(basename "$f")
-                export "$name=$(cat "$f")"
-              fi
-            done
-            mkdir -p /var/lib/openclaw/workspace /var/lib/openclaw/.openclaw/agents/main/agent
-            exec /nix/var/nix/profiles/system/bin/openclaw gateway --verbose
-          ''
-        ];
+        ExecStop = "${pkgs.podman}/bin/podman stop -t 10 openclaw";
+        KillMode = "mixed";
+        TimeoutStopSec = 30;
       };
     };
   };
