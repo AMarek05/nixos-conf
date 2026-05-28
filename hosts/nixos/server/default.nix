@@ -5,7 +5,8 @@
   ];
 
   # Allow insecure openclaw package
-  nixpkgs.config.permittedInsecurePackages = [ "openclaw-2026.5.7" ];
+  nixpkgs.config.allowInsecurePredicate = pkg:
+    builtins.elem (lib.getName pkg) [ "openclaw" ];
 
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
 
