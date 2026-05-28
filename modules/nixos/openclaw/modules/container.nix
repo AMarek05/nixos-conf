@@ -87,32 +87,8 @@ in
       enable = true;
     };
 
-    # SOPS secret paths (decrypted by sops-nix at runtime)
-    sops.secrets."nim-api-key" = {
-      sopsFile = ../../../secrets/openclaw.yaml;
-      owner = "root";
-      mode = "0400";
-    };
-    sops.secrets."openrouter-api-key" = {
-      sopsFile = ../../../secrets/openclaw.yaml;
-      owner = "root";
-      mode = "0400";
-    };
-    sops.secrets."minimax-api-key" = {
-      sopsFile = ../../../secrets/openclaw.yaml;
-      owner = "root";
-      mode = "0400";
-    };
-    sops.secrets."gh-token" = {
-      sopsFile = ../../../secrets/openclaw.yaml;
-      owner = "root";
-      mode = "0400";
-    };
-    sops.secrets."claw-bot-key" = {
-      sopsFile = ../../../secrets/openclaw.yaml;
-      owner = "root";
-      mode = "0400";
-    };
+    # SOPS secret paths are declared in the host's services.openclaw block.
+    # We reference them via config.sops.secrets in the env generator.
 
     # Ensure secrets directory exists
     systemd.tmpfiles.rules = [
@@ -153,7 +129,7 @@ in
               cp "${config.sops.secrets."openrouter-api-key".path}" /run/secrets.d/OPENROUTER_API_KEY
               echo "OPENROUTER_API_KEY=$(<${config.sops.secrets."openrouter-api-key".path})"
             fi
-echo "OPENROUTER_API_KEY=$(<${config.sops.secrets."openrouter-api-key".path})"
+              echo "OPENROUTER_API_KEY=$(<${config.sops.secrets."openrouter-api-key".path})"
             fi
             if [ -f "${config.sops.secrets."minimax-api-key".path}" ]; then
               cp "${config.sops.secrets."minimax-api-key".path}" /run/secrets.d/MINIMAX_API_KEY
