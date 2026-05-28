@@ -6,6 +6,9 @@
 #
 # Approach: systemd service with `podman run` directly — the idiomatic NixOS way.
 #
+# NOTE: Disables sandboxedExecs and tools to break the circular evaluation chain
+# between tools-loader.nix (evaluates all tool files) -> sandboxedExecs.package -> openclaw-sandboxed-bins
+#
 {
   config,
   lib,
@@ -31,6 +34,7 @@ in
       default = "openclaw";
       description = "Name of the Podman bridge network.";
     };
+
 
     webUiPort = lib.mkOption {
       type = lib.types.port;
@@ -64,6 +68,27 @@ in
   };
 
   config = lib.mkIf cfg.container.enable {
+    # Disable tool loading and sandboxed execs to break the circular eval chain.
+    # The tools-loader.nix imports all tool/*.nix files at module eval time,
+    # and those files reference sandboxedExecs.package which includes
+    # openclaw-sandboxed-bins (a symlinkJoin). With these disabled, the eval
+    # chain is broken and the container config evaluates without infinite recursion.
+    services.openclaw = {
+      enable = true;
+      tools.enable = false;
+      sandboxedExecs.enable = false;
+
+      # Override the defaults with container-appropriate values
+      bindAddress = "0.0.0.0";
+
+      # Disable bubblewrap sandbox (container already isolates)
+      sandbox.enable = false;
+
+      # Disable apparmor (NixOS-specific)
+      apparmor.enable = false;
+    };
+
+
     virtualisation.podman = {
       enable = true;
     };
@@ -133,6 +158,8 @@ in
             if [ -f "${config.sops.secrets."openrouter-api-key".path}" ]; then
               cp "${config.sops.secrets."openrouter-api-key".path}" /run/secrets.d/OPENROUTER_API_KEY
               echo "OPENROUTER_API_KEY=$(<${config.sops.secrets."openrouter-api-key".path})"
+            fi
+echo "OPENROUTER_API_KEY=$(<${config.sops.secrets."openrouter-api-key".path})"
             fi
             if [ -f "${config.sops.secrets."minimax-api-key".path}" ]; then
               cp "${config.sops.secrets."minimax-api-key".path}" /run/secrets.d/MINIMAX_API_KEY
