@@ -1,11 +1,10 @@
 # OpenClaw Container Configuration
 #
-# Deploys OpenClaw as a Podman rootless container on the host.
+# Deploys OpenClaw as a Podman container on the host.
 # Uses SOPS-nix for secrets on the host, mounts decrypted files into the container.
 # Workspace is bind-mounted from the host.
 #
-# Approach: systemd service with a `podman run` exec, which is the idiomatic
-# NixOS way to run Podman containers declaratively.
+# Approach: systemd service with `podman run` directly — the idiomatic NixOS way.
 #
 {
   config,
@@ -69,17 +68,6 @@ in
       enable = true;
     };
 
-    # Create custom bridge network with static IP
-    virtualisation.podman.networks.${cfg.container.networkName} = {
-      driver = "bridge";
-      subnet = "${lib.head (lib.splitString "." cfg.container.ip)}.${
-          lib.elemAt (lib.splitString "." cfg.container.ip) 1}.${
-          lib.elemAt (lib.splitString "." cfg.container.ip) 2}.0/24";
-      gateway = "${lib.head (lib.splitString "." cfg.container.ip)}.${
-          lib.elemAt (lib.splitString "." cfg.container.ip) 1}.${
-          lib.elemAt (lib.splitString "." cfg.container.ip) 2}.1";
-    };
-
     # SOPS secret paths (decrypted by sops-nix at runtime)
     sops.secrets."nim-api-key" = {
       sopsFile = ../../../secrets/openclaw.yaml;
@@ -107,7 +95,7 @@ in
       mode = "0400";
     };
 
-    # Ensure secrets are writable by root (container reads them via secret files)
+    # Ensure secrets directory exists
     systemd.tmpfiles.rules = [
       "d /run/secrets.d 0755 root root -"
     ];
@@ -191,14 +179,12 @@ in
         Group = "root";
 
         ExecStartPre = [
-          # Ensure network exists
-          "${pkgs.podman}/bin/podman network exists ${cfg.container.networkName} || ${pkgs.podman}/bin/podman network create --driver=bridge ${cfg.container.networkName}"
+          # Create custom bridge network if it doesn't exist (created at runtime, not via Nix)
+          ''${pkgs.podman}/bin/podman network inspect ${cfg.container.networkName} >/dev/null 2>&1 || ${pkgs.podman}/bin/podman network create --driver=bridge ${cfg.container.networkName}''
           # Remove any stale container
-          "${pkgs.podman}/bin/podman rm --force openclaw 2>/dev/null || true"
+          ''${pkgs.podman}/bin/podman rm --force openclaw 2>/dev/null || true''
         ];
 
-        # Run the container using host's openclaw from nix store
-        # Mount workspace, secrets, and read-only nix store
         ExecStart = lib.mkForce ''
           ${pkgs.podman}/bin/podman run \
             --rm \
