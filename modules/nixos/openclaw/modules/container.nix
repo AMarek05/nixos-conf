@@ -174,12 +174,12 @@ in
         Group = "root";
 
         ExecStartPre = [
-          # Create custom bridge network if it doesn't exist
+          # Recreate openclaw network with correct subnet each time
+          # (podman network create won't overwrite an existing network)
           (pkgs.writeShellScript "openclaw-net-setup" ''
             set -e
-            if ! ${pkgs.podman}/bin/podman network inspect ${cfg.container.networkName} >/dev/null 2>&1; then
-              ${pkgs.podman}/bin/podman network create --subnet=10.20.30.0/24 ${cfg.container.networkName}
-            fi
+            ${pkgs.podman}/bin/podman network rm --force ${cfg.container.networkName} 2>/dev/null || true
+            ${pkgs.podman}/bin/podman network create --subnet=10.20.30.0/24 ${cfg.container.networkName}
             ${pkgs.podman}/bin/podman rm --force openclaw 2>/dev/null || true
           '')
         ];
