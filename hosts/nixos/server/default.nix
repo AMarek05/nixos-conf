@@ -4,6 +4,9 @@
     ./graphics.nix
   ];
 
+  # Allow insecure openclaw package
+  nixpkgs.config.permittedInsecurePackages = [ "openclaw-2026.5.7" ];
+
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
 
   sops.secrets."cloudflare_dns_key" = {
