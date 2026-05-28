@@ -4,6 +4,8 @@
     ./default.nix
     ./server
     ./hardware/server-hardware.nix
+    # Manual imports
+    ../modules/nixos/openclaw/podman.nix
   ];
 
   networking = {
@@ -46,6 +48,15 @@
   nixosModules.security.enable = false;
   nixosModules.shell.enable = false;
   nixosModules.vpn.enable = false;
+
+  # ─── openclaw container ──────────────────────────────────────────────
+  # podman.nix is imported directly above; bare openclaw service is off
+  services.openclaw-podman = {
+    enable = true;
+    user = "adam";
+    stateDir = "/home/adam/.openclaw";
+  };
+  nixosModules.openclaw.enable = false;  # disabled: podman handles it instead
 
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
 
