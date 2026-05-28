@@ -13,9 +13,50 @@
     mode = "0400";
   };
 
+  services.openclaw = {
+    enable = true;
+
+    container = {
+      enable = true;
+      ip = "10.20.30.20";
+      webUiPort = 18790;
+      dataDir = "/var/lib/openclaw";
+    };
+  };
+
+  sops.secrets."nim-api-key" = {
+    sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "root";
+  };
+
+  sops.secrets."openrouter-api-key" = {
+    sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "root";
+  };
+
+  sops.secrets."minimax-api-key" = {
+    sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "root";
+  };
+
+  sops.secrets."gh-token" = {
+    sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "root";
+  };
+
+  sops.secrets."claw-bot-key" = {
+    sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "root";
+  };
+
+  sops.secrets."claw-ssh-key" = {
+    sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "root";
+    mode = "0400";
+  };
+
   sops.secrets."newt_env" = {
     sopsFile = ../../../secrets/serv.yaml;
-
     owner = "adam";
     group = "adam";
     mode = "0444";
