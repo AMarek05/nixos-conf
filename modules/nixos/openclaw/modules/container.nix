@@ -196,7 +196,8 @@ in
             --volume /nix/var/nix/profiles/system:/nix/var/nix/profiles/system:ro \
             --volume /run/secrets.d:/run/secrets.d:ro \
             --env-file /run/secrets.d/env \
-            --read-only-tmpfs=/tmp:size=64m,noexec \
+            --read-only \
+            --tmpfs /tmp:size=64m,noexec \
             --cap-drop=all \
             --security-opt=no-new-privileges \
             --user 0:0 \
