@@ -188,7 +188,7 @@ in
             --hostname openclaw \
             --publish 0.0.0.0:${toString cfg.container.webUiPort}:${toString cfg.port} \
             --volume /var/lib/openclaw:/var/lib/openclaw:rw \
-            --volume /nix/var/nix/profiles/system:/nix/var/nix/profiles/system:ro \
+            --volume /run/current-system:/run/current-system:ro \
             --volume /run/secrets.d:/run/secrets.d:ro \
             --env-file /run/secrets.d/env \
             --read-only \
@@ -197,9 +197,9 @@ in
             --security-opt=no-new-privileges \
             --user 0:0 \
             ${cfg.container.image} \
-            env PATH=/nix/var/nix/profiles/system/bin:/nix/var/nix/profiles/system/sbin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
+            env PATH=/run/current-system/sw/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin \
             OPENCLAW_LOAD_SHELL_ENV=0 \
-            /nix/var/nix/profiles/system/bin/openclaw gateway --verbose
+            /run/current-system/sw/bin/openclaw gateway --verbose
         '';
 
         ExecStop = "${pkgs.podman}/bin/podman stop -t 10 openclaw";
