@@ -129,8 +129,6 @@ in
               cp "${config.sops.secrets."openrouter-api-key".path}" /run/secrets.d/OPENROUTER_API_KEY
               echo "OPENROUTER_API_KEY=$(<${config.sops.secrets."openrouter-api-key".path})"
             fi
-              echo "OPENROUTER_API_KEY=$(<${config.sops.secrets."openrouter-api-key".path})"
-            fi
             if [ -f "${config.sops.secrets."minimax-api-key".path}" ]; then
               cp "${config.sops.secrets."minimax-api-key".path}" /run/secrets.d/MINIMAX_API_KEY
               echo "MINIMAX_API_KEY=$(<${config.sops.secrets."minimax-api-key".path})"
