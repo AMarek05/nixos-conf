@@ -30,6 +30,9 @@ let
 
       # Execute the real git, injecting the SSH signing rules statelessly
       exec ${pkgs.git}/bin/git \
+        -c user.name="Claw" \
+        -c user.email="278452676+amarek-machine@users.noreply.github.com" \
+        -c g.branch.autosetuprebase=always \
         -c gpg.format=ssh \
         -c user.signingkey="$SSH_KEY_PATH" \
         -c commit.gpgsign=true \
