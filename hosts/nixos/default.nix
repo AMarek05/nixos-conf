@@ -51,6 +51,12 @@
       ProxyJump admin
 
       ForwardAgent yes
+
+    Host admin
+      HostName admin
+      User root
+
+      ForwardAgent yes
   '';
 
   programs.nix-index-database = {
