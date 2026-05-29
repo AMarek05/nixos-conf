@@ -4,10 +4,7 @@
 
 {
   imports = [
-    ../../../modules/nixos/openclaw/modules/user.nix
-    ../../../modules/nixos/openclaw/modules/sops.nix
-    ../../../modules/nixos/openclaw/modules/tools-loader.nix
-    ../../../modules/nixos/openclaw/modules/systemd.nix
+    ../../../modules/nixos/openclaw
   ];
 
   # ── Static networking on the virtual ethernet (ve-+) ───────────────────
@@ -46,8 +43,9 @@
   };
 
   # ── OpenClaw service ───────────────────────────────────────────────────
+  nixosModules.openclaw.enable = true;
+
   services.openclaw = {
-    enable = true;
     sandboxedExecs.enable = false;
     tools.enable = false;
     servicePath = with pkgs; [
