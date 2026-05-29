@@ -6,6 +6,8 @@
   ];
 
   # ── Container host-side config ────────────────────────────────────────────────
+  virtualisation.containers.enable = true;
+
   networking.nat = {
     enable = true;
     internalInterfaces = [ "ve-+" ];
