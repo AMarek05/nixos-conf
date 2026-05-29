@@ -149,6 +149,9 @@
 
   services.forgejo = {
     enable = true;
+
+    settings.server.DOMAIN = "git.amarek.org";
+    settings.server.ROOT_URL = "https://git.amarek.org/";
   };
 
   services.caddy = {
@@ -177,7 +180,7 @@
     virtualHosts."git.amarek.org" = {
       useACMEHost = "amarek.org";
       extraConfig = ''
-        reverse_proxy 127.0.0.1:3080
+        reverse_proxy 127.0.0.1:3000
       '';
     };
   };
