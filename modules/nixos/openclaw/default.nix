@@ -31,7 +31,17 @@ let
     map (f: toolsDir + "/${f}") nixFiles;
 
   # Load all tool definitions (used by tools-loader.nix)
-  loadedTools = map (f: import f { inherit config lib pkgs cfg; }) toolFiles;
+  loadedTools = map (
+    f:
+    import f {
+      inherit
+        config
+        lib
+        pkgs
+        cfg
+        ;
+    }
+  ) toolFiles;
 
 in
 {
@@ -175,9 +185,9 @@ in
         "openclaw"
       ];
 
-    users.users.adam.extraGroups = [ cfg.group ];
     environment.systemPackages = with pkgs; [
       openclaw
     ];
   };
 }
+
