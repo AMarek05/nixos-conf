@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  inputs,
+  ...
+}:
 {
   imports = [
     ./graphics.nix
@@ -11,9 +16,18 @@
     hostAddress = "192.168.100.10";
     localAddress = "192.168.100.11";
 
-    config = { config, pkgs, inputs, ... }: {
-      imports = [ ./openclaw.nix ];
-    };
+    specialArgs = { inherit inputs; };
+
+    config =
+      {
+        config,
+        pkgs,
+        inputs,
+        ...
+      }:
+      {
+        imports = [ ./openclaw.nix ];
+      };
 
     forwardPorts = [
       {
