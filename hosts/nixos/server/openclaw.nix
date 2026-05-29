@@ -1,10 +1,16 @@
 # OpenClaw Container Guest OS Configuration
 # A minimal NixOS VM that runs only the OpenClaw service
-{ pkgs, lib, ... }:
+{
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 
 {
   imports = [
     ../../../modules/nixos/openclaw
+    inputs.sops-nix.nixosModules.sops
   ];
 
   # ── Static networking on the virtual ethernet (ve-+) ───────────────────
@@ -67,3 +73,4 @@
   time.timeZone = "Europe/Warsaw";
   system.stateVersion = "24.11";
 }
+
