@@ -56,24 +56,66 @@
   services.openclaw = {
     sandboxedExecs.enable = false;
     tools.enable = false;
+
     servicePath = with pkgs; [
       bash
       coreutils
       jq
+
       ripgrep
+      fd
       gnused
+
       xxd
       patch
-      fd
+
       nix
+      neovim
     ];
+
     extraConfig = {
-      gateway.bind = "lan";
-      gateway.controlUi.allowedOrigins = [ "10.20.10.10" "192.168.100.11" ];
+      tools.exec.security = "full";
+      tools.exec.ask = "off";
+
+      gateway = {
+        bind = "lan";
+
+        trustedProxies = [
+          "192.168.100.10"
+          "100.64.0.0/10"
+        ];
+
+        controlUi.allowedOrigins = [
+          "https://openclaw.amarek.org"
+        ];
+      };
+
+      plugins.entries = {
+        memory-wiki.enabled = true;
+      };
     };
   };
+
+  systemd.services.openclaw = {
+    serviceConfig = {
+      TimeoutStopSpec = "2s";
+      KillSignal = "SIGINT";
+      KillMode = "control-group";
+      SendSIGKILL = true;
+    };
+  };
+
+  environment.systemPackages = with pkgs; [
+    neovim
+    cargo
+    git
+    gh
+
+    gnused
+    fd
+    ripgrep
+  ];
 
   time.timeZone = "Europe/Warsaw";
   system.stateVersion = "24.11";
 }
-
