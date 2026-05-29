@@ -5,7 +5,6 @@
     ./default.nix
     ./server
     ./hardware/server-hardware.nix
-    ./server/openclaw.nix
   ];
 
   networking = {
