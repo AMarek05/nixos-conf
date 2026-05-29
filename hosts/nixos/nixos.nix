@@ -13,7 +13,6 @@
     inputs.aagl.nixosModules.default
   ];
 
-  nixosModules.openclaw.enable = lib.mkForce true;
   nixosModules.sandbox.enable = lib.mkForce true;
   nixosModules.tailscale.enable = lib.mkForce true;
 
