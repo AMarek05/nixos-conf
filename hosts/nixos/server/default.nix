@@ -5,6 +5,41 @@
     ./openclaw.nix
   ];
 
+  # ── Container host-side config ────────────────────────────────────────────────
+  networking.nat = {
+    enable = true;
+    internalInterfaces = [ "ve-+" ];
+    externalInterface = "ens18";
+  };
+
+  virtualisation.containers.openclaw = {
+    autoStart = true;
+    privateNetwork = true;
+    hostAddress = "192.168.100.10";
+    localAddress = "192.168.100.11";
+
+    configFile = ./openclaw.nix;
+
+    forwardPorts = [
+      {
+        containerPort = 18789;
+        hostPort = 18789;
+        protocol = "tcp";
+      }
+    ];
+
+    bindMounts = {
+      "/var/lib/sops-nix/age_key" = {
+        hostPath = "/var/lib/sops-nix/age_key";
+        isReadOnly = true;
+      };
+      "/var/lib/openclaw/workspace" = {
+        hostPath = "/var/lib/openclaw/workspace";
+        isReadOnly = false;
+      };
+    };
+  };
+
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
 
   sops.secrets."cloudflare_dns_key" = {
