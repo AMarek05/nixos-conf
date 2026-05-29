@@ -69,6 +69,7 @@
     ];
     extraConfig = {
       gateway.bind = "lan";
+      gateway.controlUi.allowedOrigins = [ "10.20.10.10" "192.168.100.11" ];
     };
   };
 
