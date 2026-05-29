@@ -44,7 +44,7 @@ let
     GH_TOKEN_PATH="${config.sops.secrets."gh-token".path}"
 
     if [[ -f "$GH_TOKEN_PATH" ]]; then
-      GH_TOKEN=$(cat "$GH_TOKEN_PATH")
+      GH_TOKEN=$(${pkgs.coreutils}/bin/cat "$GH_TOKEN_PATH")
       if [[ -n "$GH_TOKEN" ]]; then
         export GH_TOKEN
       fi
@@ -156,14 +156,15 @@ in
     (with pkgs; [
       neovim
       cargo
-      git-wrapper
-      gh-wrapper
 
       gnused
       fd
       ripgrep
     ])
-    ++ [ git-wrapper gh-wrapper ];
+    ++ [
+      git-wrapper
+      gh-wrapper
+    ];
 
   time.timeZone = "Europe/Warsaw";
   system.stateVersion = "24.11";
