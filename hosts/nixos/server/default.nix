@@ -2,6 +2,7 @@
 {
   imports = [
     ./graphics.nix
+    ./openclaw.nix
   ];
 
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];

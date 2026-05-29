@@ -7,6 +7,7 @@ let
   ageKeyHost = "/var/lib/sops-nix/age_key";
   workspaceHost = "/var/lib/openclaw/workspace";
 in
+{
   imports = [
     ../../../modules/nixos/openclaw/modules/user.nix
     ../../../modules/nixos/openclaw/modules/sops.nix
@@ -14,8 +15,39 @@ in
     ../../../modules/nixos/openclaw/modules/systemd.nix
   ];
 
-  # ── Identity ───────────────────────────────────────────────────────────
-  networking.hostName = "openclaw";
+  # ── NAT for container network ────────────────────────────────────────────────
+  networking.nat = {
+    enable = true;
+    internalInterfaces = [ "ve-+" ];
+    externalInterface = "ens18";
+  };
+
+  # ── OpenClaw container ─────────────────────────────────────────────────────
+  virtualisation.containers.openclaw = {
+    autoStart = true;
+    privateNetwork = true;
+    hostAddress = "192.168.100.10";
+    localAddress = "192.168.100.11";
+
+    forwardPorts = [
+      {
+        containerPort = 18789;
+        hostPort = 18789;
+        protocol = "tcp";
+      }
+    ];
+
+    bindMounts = {
+      "/var/lib/sops-nix/age_key" = {
+        hostPath = "/var/lib/sops-nix/age_key";
+        isReadOnly = true;
+      };
+      "/var/lib/openclaw/workspace" = {
+        hostPath = "/var/lib/openclaw/workspace";
+        isReadOnly = false;
+      };
+    };
+  };
 
   # ── Static networking on the virtual ethernet (ve-+) ───────────────────
   #   hostAddress  : address on the HOST's end of the veth pair  (gateway for container)
@@ -71,6 +103,8 @@ in
       gnused
       xxd
       patch
+      fd
+      nix
     ];
 
     # Gateway binds to the container's LAN interface (all-container block)
