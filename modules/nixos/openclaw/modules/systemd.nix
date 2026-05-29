@@ -10,25 +10,6 @@ let
   cfg = config.services.openclaw;
   sandbox = cfg.sandboxedExecs;
 
-  baselineApprovals = pkgs.writeText "exec-approvals.json" (
-    builtins.toJSON {
-      version = 1;
-      defaults = {
-        security = "allowlist";
-        ask = "on-miss";
-        askFallback = "deny";
-        autoAllowSkills = false;
-        allowlist = [ "${sandbox.package}/bin/*" ];
-      };
-
-      agents.main = {
-        security = "allowlist";
-        ask = "on-miss";
-        allowlist = [ "${sandbox.package}/bin/*" ];
-      };
-    }
-  );
-
   # Base JSON structure
   baseConfig = {
     gateway = {
@@ -144,6 +125,8 @@ in
         SHELL = "${pkgs.bash}/bin/bash";
         OPENCLAW_LOAD_SHELL_ENV = "0";
 
+        OPENCLAW_NIX_MODE = "1";
+
         GIT_AUTHOR_NAME = "Claw";
         GIT_AUTHOR_EMAIL = "278452676+amarek-machine@users.noreply.github.com";
         GIT_COMITTER_NAME = "Claw";
@@ -193,69 +176,51 @@ in
       };
 
       preStart = ''
-          # Ensure Agent directory exists
-            ${pkgs.coreutils}/bin/mkdir -p ${cfg.homedir}/.openclaw/agents/main/agent
+        # Ensure Agent directory exists
+          ${pkgs.coreutils}/bin/mkdir -p ${cfg.homedir}/.openclaw/agents/main/agent
 
-            # 1. Sync Global Config & Preserve Token
-            if [ -f ${cfg.homedir}/.openclaw/openclaw.json ]; then
-              ${pkgs.jq}/bin/jq -s '.[0] * .[1]' \
-                ${cfg.homedir}/.openclaw/openclaw.json \
-                ${openclawConfigFile} > ${cfg.homedir}/.openclaw/openclaw_tmp.json
+          # 1. Sync Global Config & Preserve Token
+          if [ -f ${cfg.homedir}/.openclaw/openclaw.json ]; then
+            ${pkgs.jq}/bin/jq -s '.[0] * .[1]' \
+              ${cfg.homedir}/.openclaw/openclaw.json \
+              ${openclawConfigFile} > ${cfg.homedir}/.openclaw/openclaw_tmp.json
 
-              mv ${cfg.homedir}/.openclaw/openclaw_tmp.json ${cfg.homedir}/.openclaw/openclaw.json
-            else
-              ${pkgs.coreutils}/bin/cp ${openclawConfigFile} ${cfg.homedir}/.openclaw/openclaw.json
-            fi
+            mv ${cfg.homedir}/.openclaw/openclaw_tmp.json ${cfg.homedir}/.openclaw/openclaw.json
+          else
+            ${pkgs.coreutils}/bin/cp ${openclawConfigFile} ${cfg.homedir}/.openclaw/openclaw.json
+          fi
 
-            # 2. Inject Secrets into Agent Auth Profile (NESTED PROFILES SCHEMA)
-            ${pkgs.jq}/bin/jq -n \
-              --arg nv_key "$(${pkgs.coreutils}/bin/cat ${config.sops.secrets."nim-api-key".path})" \
-              --arg mn_key "$(${pkgs.coreutils}/bin/cat ${config.sops.secrets."minimax-api-key".path})" \
-              --arg or_key "$(${pkgs.coreutils}/bin/cat ${config.sops.secrets."openrouter-api-key".path})" \
-              '{
-                "profiles": {
-                  "nvidia-nim:default": {
-                    "type": "api_key",
-                    "provider": "nvidia-nim",
-                    "key": $nv_key
-                  },
-                  "openrouter:default": {
-                    "type": "api_key",
-                    "provider": "openrouter",
-                    "key": $or_key
-                  },
-                  "minimax:global": {
-                    "type": "api_key",
-                    "provider": "minimax",
-                    "key": $mn_key
-                  }
+          # 2. Inject Secrets into Agent Auth Profile (NESTED PROFILES SCHEMA)
+          ${pkgs.jq}/bin/jq -n \
+            --arg nv_key "$(${pkgs.coreutils}/bin/cat ${config.sops.secrets."nim-api-key".path})" \
+            --arg mn_key "$(${pkgs.coreutils}/bin/cat ${config.sops.secrets."minimax-api-key".path})" \
+            --arg or_key "$(${pkgs.coreutils}/bin/cat ${config.sops.secrets."openrouter-api-key".path})" \
+            '{
+              "profiles": {
+                "nvidia-nim:default": {
+                  "type": "api_key",
+                  "provider": "nvidia-nim",
+                  "key": $nv_key
+                },
+                "openrouter:default": {
+                  "type": "api_key",
+                  "provider": "openrouter",
+                  "key": $or_key
+                },
+                "minimax:global": {
+                  "type": "api_key",
+                  "provider": "minimax",
+                  "key": $mn_key
                 }
-              }' \
-              > ${cfg.homedir}/.openclaw/agents/main/agent/auth-profiles.json
+              }
+            }' \
+            > ${cfg.homedir}/.openclaw/agents/main/agent/auth-profiles.json
 
-            APPROVALS_FILE="${cfg.homedir}/.openclaw/exec-approvals.json"
+          APPROVALS_FILE="${cfg.homedir}/.openclaw/exec-approvals.json"
 
-        if [ -f "$APPROVALS_FILE" ]; then
-          # We merge the Nix baseline with the existing file.
-          # We map all entries to objects to fix the "Cannot index string" error.
-          ${pkgs.jq}/bin/jq --slurpfile base ${baselineApprovals} '
-            ($base[0] * .) | 
-            .agents.main.allowlist = (
-              (($base[0].agents.main.allowlist // []) + (.agents.main.allowlist // [])) 
-              | map(if type == "string" then {pattern: .} else . end) 
-              | unique_by(.pattern)
-            )
-          ' "$APPROVALS_FILE" > "$APPROVALS_FILE.tmp"
-
-          ${pkgs.coreutils}/bin/mv "$APPROVALS_FILE.tmp" "$APPROVALS_FILE"
-        else
-          # Fresh install: just copy the baseline
-          ${pkgs.coreutils}/bin/cp --no-preserve=mode,ownership ${baselineApprovals} "$APPROVALS_FILE"
-        fi
-
-            ${pkgs.coreutils}/bin/chmod 600 ${cfg.homedir}/.openclaw/openclaw.json
-            ${pkgs.coreutils}/bin/chmod 600 ${cfg.homedir}/.openclaw/agents/main/agent/auth-profiles.json
-            ${pkgs.coreutils}/bin/chmod 600 "$APPROVALS_FILE"
+          ${pkgs.coreutils}/bin/chmod 600 ${cfg.homedir}/.openclaw/openclaw.json
+          ${pkgs.coreutils}/bin/chmod 600 ${cfg.homedir}/.openclaw/agents/main/agent/auth-profiles.json
+          ${pkgs.coreutils}/bin/chmod 600 "$APPROVALS_FILE"
       '';
 
       postStop = ''
