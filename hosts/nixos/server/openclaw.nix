@@ -27,6 +27,21 @@ let
       exec ${pkgs.git}/bin/git "$@"
     fi
   '';
+
+  gh-wrapper = pkgs.writeShellScriptBin "gh" ''
+    set -euo pipefail
+
+    GH_TOKEN_PATH="${config.sops.secrets."gh-token".path}"
+
+    if [[ -f "$GH_TOKEN_PATH" ]]; then
+      GH_TOKEN=$(cat "$GH_TOKEN_PATH")
+      if [[ -n "$GH_TOKEN" ]]; then
+        export GH_TOKEN
+      fi
+    fi
+
+    exec ${pkgs.gh}/bin/gh "$@"
+  '';
 in
 
 {
@@ -132,13 +147,13 @@ in
       neovim
       cargo
       git-wrapper
-      gh
+      gh-wrapper
 
       gnused
       fd
       ripgrep
     ])
-    ++ [ git-wrapper ];
+    ++ [ git-wrapper gh-wrapper ];
 
   time.timeZone = "Europe/Warsaw";
   system.stateVersion = "24.11";
