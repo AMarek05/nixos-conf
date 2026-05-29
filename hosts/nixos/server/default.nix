@@ -6,15 +6,7 @@
   ];
 
   # ── Container host-side config ────────────────────────────────────────────────
-  virtualisation.containers.enable = true;
-
-  networking.nat = {
-    enable = true;
-    internalInterfaces = [ "ve-+" ];
-    externalInterface = "ens18";
-  };
-
-  virtualisation.containers.openclaw = {
+  containers.openclaw = {
     autoStart = true;
     privateNetwork = true;
     hostAddress = "192.168.100.10";
@@ -40,6 +32,12 @@
         isReadOnly = false;
       };
     };
+  };
+
+  networking.nat = {
+    enable = true;
+    internalInterfaces = [ "ve-+" ];
+    externalInterface = "ens18";
   };
 
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
