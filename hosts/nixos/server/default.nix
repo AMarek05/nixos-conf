@@ -1,8 +1,60 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  inputs,
+  pkgs,
+  ...
+}:
 {
   imports = [
     ./graphics.nix
   ];
+
+  # ── Container host-side config ────────────────────────────────────────────────
+  containers.openclaw = {
+    autoStart = true;
+    privateNetwork = true;
+    hostAddress = "192.168.100.10";
+    localAddress = "192.168.100.11";
+
+    specialArgs = { inherit inputs; };
+
+    config =
+      {
+        ...
+      }:
+      {
+        imports = [ ./openclaw.nix ];
+      };
+
+    bindMounts = {
+      "/var/lib/sops-nix/age_key" = {
+        hostPath = "/var/lib/sops-nix/age_key";
+        isReadOnly = true;
+      };
+      "/var/lib/openclaw/workspace" = {
+        hostPath = "/var/lib/openclaw/workspace";
+        isReadOnly = false;
+      };
+    };
+  };
+
+  systemd.services."container@openclaw".serviceConfig = {
+    TimeoutStopSec = lib.mkForce "5s";
+    KillMode = lib.mkForce "mixed";
+    KillSignal = lib.mkForce "SIGKILL";
+    ExecStopPost = lib.mkForce [
+      "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/openclaw"
+      "-${pkgs.coreutils}/bin/sleep 1"
+      "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/openclaw"
+    ];
+  };
+
+  networking.nat = {
+    enable = true;
+    internalInterfaces = [ "ve-+" ];
+    externalInterface = "ens18";
+  };
 
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
 
@@ -45,6 +97,7 @@
     22
     80
     443
+    18789
   ];
 
   networking.firewall.allowedUDPPorts = [
@@ -181,6 +234,12 @@
       useACMEHost = "amarek.org";
       extraConfig = ''
         reverse_proxy 127.0.0.1:3000
+      '';
+    };
+    virtualHosts."openclaw.amarek.org" = {
+      useACMEHost = "amarek.org";
+      extraConfig = ''
+        reverse_proxy 192.168.100.11:18789
       '';
     };
   };
