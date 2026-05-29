@@ -15,6 +15,7 @@
 
   # ── Static networking on the virtual ethernet (ve-+) ───────────────────
   networking.hostName = "openclaw";
+  networking.usePredictableInterfaceNames = false;
 
   networking.interfaces.eth.ipv4.addresses = [
     {
