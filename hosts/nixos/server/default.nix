@@ -96,6 +96,7 @@
     22
     80
     443
+    18789
   ];
 
   networking.firewall.allowedUDPPorts = [
