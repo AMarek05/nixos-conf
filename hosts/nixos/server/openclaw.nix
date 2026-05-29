@@ -15,9 +15,11 @@ let
 
     if [[ -f "$SSH_KEY_PATH" ]]; then
       # Create a persistent allowedSignersFile once (reuse on subsequent calls)
+      # Format: "<principal> <key-type> <key>" — ssh-keygen output lacks the principal
       SIGNERS_FILE="$HOME/.ssh/allowed_signers"
       if [[ ! -f "$SIGNERS_FILE" ]]; then
-        ${pkgs.openssh}/bin/ssh-keygen -y -f "$SSH_KEY_PATH" 2>/dev/null > "$SIGNERS_FILE"
+        PUBKEY=$(${pkgs.openssh}/bin/ssh-keygen -y -f "$SSH_KEY_PATH" 2>/dev/null)
+        echo "278452676+amarek-machine@users.noreply.github.com $PUBKEY" > "$SIGNERS_FILE"
       fi
 
       # Configure git to use this signers file for verification
