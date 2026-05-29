@@ -14,6 +14,13 @@ let
     SSH_KEY_PATH="${config.sops.secrets."claw-ssh-key".path}"
 
     if [[ -f "$SSH_KEY_PATH" ]]; then
+      # Build allowedSignersFile from the SSH key itself
+      SIGNERS_FILE=$(mktemp)
+      ${pkgs.openssh}/bin/ssh-keygen -y -f "$SSH_KEY_PATH" 2>/dev/null > "$SIGNERS_FILE"
+
+      # Configure git to use this signers file for verification
+      ${pkgs.git}/bin/git config --global gpg.ssh.allowedSignersFile "$SIGNERS_FILE"
+
       export GIT_SSH_COMMAND="${pkgs.openssh}/bin/ssh -i \"$SSH_KEY_PATH\" -o StrictHostKeyChecking=accept-new -o IdentitiesOnly=yes"
 
       # Execute the real git, injecting the SSH signing rules statelessly
