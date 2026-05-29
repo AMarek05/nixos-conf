@@ -2,7 +2,6 @@
 {
   imports = [
     ./graphics.nix
-    ./openclaw.nix
   ];
 
   # ── Container host-side config ────────────────────────────────────────────────
