@@ -46,7 +46,7 @@
   };
 
   # ── OpenClaw service ───────────────────────────────────────────────────
-  nixosModules.openclaw.enable = true;
+  services.openclaw.enable = true;
 
   services.openclaw = {
     sandboxedExecs.enable = false;
