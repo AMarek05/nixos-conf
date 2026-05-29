@@ -3,14 +3,12 @@
 {
   pkgs,
   lib,
-  inputs,
   ...
 }:
 
 {
   imports = [
     ../../../modules/nixos/openclaw
-    inputs.sops-nix.nixosModules.sops
   ];
 
   # ── Static networking on the virtual ethernet (ve-+) ───────────────────
