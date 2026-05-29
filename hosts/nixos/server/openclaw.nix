@@ -2,10 +2,32 @@
 # A minimal NixOS VM that runs only the OpenClaw service
 {
   pkgs,
-  lib,
+  config,
   inputs,
   ...
 }:
+
+let
+  git-wrapper = pkgs.writeShellScriptBin "git" ''
+    set -euo pipefail
+
+    SSH_KEY_PATH="${config.sops.secrets."claw-ssh-key".path}"
+
+    if [[ -f "$SSH_KEY_PATH" ]]; then
+      export GIT_SSH_COMMAND="${pkgs.openssh}/bin/ssh -i \"$SSH_KEY_PATH\" -o StrictHostKeyChecking=accept-new -o IdentitiesOnly=yes"
+
+      # Execute the real git, injecting the SSH signing rules statelessly
+      exec ${pkgs.git}/bin/git \
+        -c gpg.format=ssh \
+        -c user.signingkey="$SSH_KEY_PATH" \
+        -c commit.gpgsign=true \
+        "$@"
+    else
+      # Fallback to standard git if the key hasn't been provisioned yet
+      exec ${pkgs.git}/bin/git "$@"
+    fi
+  '';
+in
 
 {
   imports = [
@@ -105,16 +127,18 @@
     };
   };
 
-  environment.systemPackages = with pkgs; [
-    neovim
-    cargo
-    git
-    gh
+  environment.systemPackages =
+    (with pkgs; [
+      neovim
+      cargo
+      git-wrapper
+      gh
 
-    gnused
-    fd
-    ripgrep
-  ];
+      gnused
+      fd
+      ripgrep
+    ])
+    ++ [ git-wrapper ];
 
   time.timeZone = "Europe/Warsaw";
   system.stateVersion = "24.11";
