@@ -46,9 +46,8 @@
   };
 
   # ── OpenClaw service ───────────────────────────────────────────────────
-  services.openclaw.enable = true;
-
   services.openclaw = {
+    enable = true;
     sandboxedExecs.enable = false;
     tools.enable = false;
     servicePath = with pkgs; [
@@ -62,7 +61,6 @@
       fd
       nix
     ];
-
     extraConfig = {
       gateway.bind = "lan";
     };
