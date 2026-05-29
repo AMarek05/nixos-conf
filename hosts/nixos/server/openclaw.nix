@@ -50,6 +50,7 @@
   };
 
   # ── OpenClaw service ───────────────────────────────────────────────────
+  networking.firewall.allowedTCPPorts = [ 18789 ];
   nixosModules.openclaw.enable = true;
 
   services.openclaw = {
