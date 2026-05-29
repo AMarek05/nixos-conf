@@ -80,19 +80,19 @@ Static networking: each container gets an address on the `ve-+` internal network
 
 ---
 
-### 3. `ai` — SillyTavern + Newt
+### 3. `ai` — SillyTavern
 
-**Rationale:** AI chat interface + backend. Newt is the API bridge. These two are tightly coupled and both are relatively lightweight.
+**Rationale:** AI chat interface. Newt (WireGuard/pangolin userspace endpoint) **must stay on the host** — it requires direct network interface access that containers cannot provide.
 
 **Services:**
 - `services.sillytavern` — port 8000, custom config file
-- `services.newt` — environment-backed API service
 
 **Container networking:** `localAddress = "192.168.100.14"`
 **Bind mounts:** SillyTavern `configFile` at `/var/lib/SillyTavern/config.yaml.bak` needs bind mount if it lives on the host
 **Special considerations:**
 - SillyTavern's `postInstall` overlay hook creates a directory in the nix store — fine inside the container
-- Newt needs its `environmentFile` SOPS secret — pass via bind mount or re-define sops secret inside the container
+- Newt stays on the host — it is a WireGuard userspace client (pangolin endpoint) and cannot be containerized
+- Caddy proxy for `st.amarek.org` must route to the container's `192.168.100.14:8000`
 
 ---
 
@@ -124,6 +124,7 @@ Static networking: each container gets an address on the `ve-+` internal network
 | `boot.loader` | Cannot be containerized |
 | SSH (port 22) | Host-level |
 | Tailscale/WireGuard | VPN terminates at host network layer |
+| `services.newt` | WireGuard userspace (pangolin) — needs direct TUN access, cannot be containerized |
 | `systemd.services."container@*"` | Container lifecycle management |
 
 ---
