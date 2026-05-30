@@ -129,12 +129,6 @@
     environmentFile = config.sops.secrets."newt_env".path;
   };
 
-  services.plex = {
-    enable = true;
-
-    openFirewall = true;
-  };
-
   services.jellyfin = {
     enable = true;
 
