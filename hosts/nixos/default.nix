@@ -57,6 +57,12 @@
       User root
 
       ForwardAgent yes
+
+    Host amarek
+      HostName 212.127.78.174
+      Port 2222
+
+      User root
   '';
 
   programs.nix-index-database = {
