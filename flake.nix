@@ -3,6 +3,8 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
+    nixpkgs-stable.url = "github:Nixos/nixpkgs/nixos-25.11";
+
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
 
     hyprland = {
@@ -80,11 +82,11 @@
         lib = inputs.nixpkgs.lib;
         hmLib = inputs.home-manager.lib;
 
-        hosts = [
-          "nixos"
-          "nixos-laptop"
-          "nixos-server"
-        ];
+        hosts = {
+          "nixos" = inputs.nixpkgs;
+          "nixos-laptop" = inputs.nixpkgs;
+          "nixos-server" = inputs.nixpkgs;
+        };
 
         grimblastOverlay = final: prev: {
           grimblast = prev.grimblast.override {
@@ -98,8 +100,8 @@
         ];
 
         mkNixos =
-          name:
-          lib.nixosSystem {
+          name: pkgsInput:
+          pkgsInput.lib.nixosSystem {
             system = "x86_64-linux";
             specialArgs = { inherit inputs; };
             modules = [
@@ -110,9 +112,9 @@
           };
 
         mkHm =
-          name:
+          name: pkgsInput:
           hmLib.homeManagerConfiguration {
-            pkgs = import inputs.nixpkgs {
+            pkgs = import pkgsInput {
               system = "x86_64-linux";
               config.allowUnfree = true;
               overlays = [ grimblastOverlay ];
@@ -123,25 +125,15 @@
             extraSpecialArgs = { inherit inputs; };
           };
 
-        nixosCfgs = builtins.listToAttrs (
-          map (name: {
-            name = name;
-            value = mkNixos name;
+        nixosCfgs = builtins.mapAttrs mkNixos hosts;
+
+        homeCfgs = builtins.listToAttrs (
+          lib.mapAttrsToList (name: pkgsInput: {
+            name = "adam@${name}";
+            value = mkHm name pkgsInput;
           }) hosts
         );
 
-        homeCfgs = builtins.listToAttrs (
-          map
-            (name: {
-              name = "adam@${name}";
-              value = mkHm name;
-            })
-            [
-              "nixos"
-              "nixos-laptop"
-              "nixos-server"
-            ]
-        );
       in
       {
         systems = [ "x86_64-linux" ];
