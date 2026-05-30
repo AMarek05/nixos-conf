@@ -97,6 +97,7 @@
     22
     80
     443
+    2222
     18789
   ];
 
@@ -203,9 +204,32 @@
   services.forgejo = {
     enable = true;
 
-    settings.server.DOMAIN = "git.amarek.org";
-    settings.server.ROOT_URL = "https://git.amarek.org/";
+    user = "git";
+    group = "git";
+
+    lfs.enable = true;
+
+    settings.server = {
+      DOMAIN = "git.amarek.org";
+      ROOT_URL = "https://git.amarek.org/";
+
+      START_SSH_SERVER = true;
+
+      SSH_LISTEN_PORT = 2222;
+
+      SSH_PORT = 22;
+      SSH_DOMAIN = "amarek.org";
+    };
   };
+
+  users.users.git = {
+    home = config.services.forgejo.stateDir;
+    useDefaultShell = true;
+    group = "git";
+    isSystemUser = true;
+  };
+
+  users.groups.git = { };
 
   services.caddy = {
     enable = true;
