@@ -220,6 +220,8 @@
       SSH_PORT = 22;
       SSH_DOMAIN = "amarek.org";
     };
+
+    settings.repository.ENABLE_PUSH_CREATE_USER = true;
   };
 
   users.users.git = {
