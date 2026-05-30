@@ -11,10 +11,11 @@
 
   nixpkgs.config.allowUnfree = true;
 
+  home.enableNixpkgsReleaseCheck = false;
+
   home = {
     username = "adam";
     homeDirectory = "/home/adam";
     stateVersion = "24.11"; # Please read the comment before changing.
   };
 }
-

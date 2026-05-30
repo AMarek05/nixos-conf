@@ -26,6 +26,7 @@
       keepassxc
 
       vlc
+      kdePackages.kdenlive
 
       grim
       slurp
@@ -62,4 +63,3 @@
     programs.zen-browser.enable = true;
   };
 }
-
