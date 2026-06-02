@@ -13,6 +13,13 @@
     inputs.sops-nix.nixosModules.sops
   ];
 
+  nix.experimental-features = [
+    "nix-command"
+    "flakes"
+  ];
+
+  nixpkgs.config.allowUnfreePredicate = pkg: pkgs.lib.hasPrefix "open-webui" pkg.pname;
+
   # ── Static networking on the virtual ethernet (ve-+) ───────────────────
   networking.hostName = "hermes";
   networking.usePredictableInterfaceNames = false;
@@ -52,6 +59,7 @@
     owner = "hermes";
     group = "hermes";
     content = ''
+      API_SERVER_HOST=0.0.0.0
       API_SERVER_KEY=${config.sops.placeholder."hermes-api-key"}
     '';
   };
