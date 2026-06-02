@@ -86,7 +86,16 @@ in
 
   sops.secrets."open-webui-api-key" = {
     sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "root";
+    mode = "0444";
+  };
+
+  sops.templates."open-webui-env" = {
     owner = "open-webui";
+    group = "open-webui";
+    content = ''
+      OPENAI_API_KEY=${config.sops.placeholder."open-webui-api-key"}
+    '';
   };
 
   sops.templates."hermes-env" = {
@@ -177,16 +186,13 @@ in
     host = "0.0.0.0";
     port = 8080;
     openFirewall = false;
+    environmentFile = config.sops.templates."open-webui-env".path;
     environment = {
       SCARF_NO_ANALYTICS = "True";
       DO_NOT_TRACK = "True";
       ANONYMIZED_TELEMETRY = "False";
-      # Point to Hermes API server
-
       WEBUI_AUTH = "False";
-
       OPENAI_API_BASE_URL = "http://192.168.100.12:8642/v1";
-      OPENAI_API_KEY = config.sops.secrets."open-webui-api-key".path;
     };
   };
 
