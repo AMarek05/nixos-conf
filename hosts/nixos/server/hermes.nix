@@ -132,6 +132,15 @@
 
   users.groups.hermes.gid = 970;
 
+  users.users.open-webui = {
+    uid = 969;
+    group = "open-webui";
+    isSystemUser = true;
+    description = "Open WebUI";
+  };
+
+  users.groups.open-webui.gid = 969;
+
   # ── Open WebUI ──────────────────────────────────────────────────────
   # Connects to hermes API server at 127.0.0.1:8642
   services.open-webui = {
