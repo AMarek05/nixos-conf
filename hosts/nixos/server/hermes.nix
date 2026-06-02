@@ -35,10 +35,15 @@
   };
 
   # ── Hermes Agent service ──────────────────────────────────────────────
-  # hermes-agent's own _HERMES_PROVIDER_ENV_BLOCKLIST (tools/environments/local.py)
-  # scrubs MINIMAX_API_KEY from tool subprocess environments. So the key is
-  # available to the hermes-gateway process (which needs it for API calls) but
-  # blocked from reaching any tool subprocesses the agent spawns.
+  # The hermes module's activation script writes cfg.environment and
+  # cfg.environmentFiles to ~/.hermes/.env (via load_hermes_dotenv at Python
+  # startup). hermes-agent's own _HERMES_PROVIDER_ENV_BLOCKLIST scrubs
+  # MINIMAX_API_KEY from tool subprocess environments.
+  #
+  # We use EnvironmentFile=/run/secrets/minimax-api-key — sops-nix decrypts
+  # the secret here at runtime (systemd tmpfiles.d), and systemd's
+  # EnvironmentFile= injects it into the service process env. The activation
+  # script also writes the same path to ~/.hermes/.env for load_hermes_dotenv.
   services.hermes-agent = {
     enable = true;
 
@@ -57,13 +62,11 @@
       providers.openai = null;
     };
 
-    # The module's activation script writes these to ~/.hermes/.env.
-    # hermes reads it at startup via load_hermes_dotenv() — no .env file
-    # ever appears in the store. The key is available to the gateway process
-    # and scrubbed from tool subprocesses by _HERMES_PROVIDER_ENV_BLOCKLIST.
-    environment = {
-      MINIMAX_API_KEY = config.sops.secrets."minimax-api-key".path;
-    };
+    # Point at the runtime-decrypted SOPS secret. sops-nix writes the
+    # decrypted content to /run/secrets/ at boot (before this service starts).
+    environmentFiles = [
+      config.sops.secrets."minimax-api-key".path
+    ];
   };
 
   # ── Network ───────────────────────────────────────────────────────────
