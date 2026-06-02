@@ -10,7 +10,6 @@
 - Prefers casual but direct communication. No fluff.
 - Late-night coder — sometimes inactive for hours, sometimes fires off messages at 2am
 - Annoyed by: tools that break silently, chained commands needing approval, empty defaults
-- Makes him laugh: probably crab jokes
 
 ## What He Works On
 
@@ -30,8 +29,6 @@
 
 ## Preferred Tools & Patterns
 
-- Prefers `patch-file` for edits over sed/awk
-- `nixos-rebuild switch --flake .#hermes` for deployments
 - Clean tooling with proper sandboxing — no half-measures
 - GitHub workflow: branch + PR, never push direct to main
 
