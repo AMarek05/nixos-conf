@@ -91,6 +91,16 @@
     ];
   };
 
+  systemd.services.hermes-open-webui-perms = {
+    description = "Set permissions on open-webui directory before container starts";
+    wantedBy = [ "container@hermes.service" ];
+    before = [ "container@hermes.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "${pkgs.coreutils}/bin/chown -R 969:969 /var/lib/open-webui";
+    };
+  };
+
   networking.nat = {
     enable = true;
     internalInterfaces = [ "ve-+" ];
