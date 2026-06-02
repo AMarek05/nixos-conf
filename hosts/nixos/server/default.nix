@@ -39,6 +39,34 @@
     };
   };
 
+  containers.hermes-agent = {
+    autoStart = true;
+    privateNetwork = true;
+    hostAddress = "192.168.100.10";
+    localAddress = "192.168.100.12";
+
+    specialArgs = { inherit inputs; };
+
+    config =
+      {
+        ...
+      }:
+      {
+        imports = [ ./hermes.nix ];
+      };
+
+    bindMounts = {
+      "/var/lib/sops-nix/age_key" = {
+        hostPath = "/var/lib/sops-nix/age_key";
+        isReadOnly = true;
+      };
+      "/var/lib/hermes" = {
+        hostPath = "/var/lib/hermes";
+        isReadOnly = false;
+      };
+    };
+  };
+
   systemd.services."container@openclaw".serviceConfig = {
     TimeoutStopSec = lib.mkForce "5s";
     KillMode = lib.mkForce "mixed";
@@ -99,6 +127,7 @@
     443
     2222
     18789
+    8080
   ];
 
   networking.firewall.allowedUDPPorts = [
@@ -260,6 +289,13 @@
       useACMEHost = "amarek.org";
       extraConfig = ''
         reverse_proxy 192.168.100.11:18789
+      '';
+    };
+
+    virtualHosts."hermes.amarek.org" = {
+      useACMEHost = "amarek.org";
+      extraConfig = ''
+        reverse_proxy 192.168.100.12:8080
       '';
     };
   };
