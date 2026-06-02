@@ -71,9 +71,9 @@
     TimeoutStopSec = lib.mkForce "5s";
     KillMode = lib.mkForce "mixed";
     ExecStopPost = lib.mkForce [
-      "-${pkgs.coreutils}/bin/sleep 2"
       "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/openclaw"
       "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/openclaw"
+      "-${pkgs.coreutils}/bin/rm -f /run/systemd/machines/openclaw"
     ];
   };
 
@@ -81,9 +81,9 @@
     TimeoutStopSec = lib.mkForce "5s";
     KillMode = lib.mkForce "mixed";
     ExecStopPost = lib.mkForce [
-      "-${pkgs.coreutils}/bin/sleep 2"
       "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/hermes"
       "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/hermes"
+      "-${pkgs.coreutils}/bin/rm -f /run/systemd/machines/hermes"
     ];
   };
 
