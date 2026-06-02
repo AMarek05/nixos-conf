@@ -61,7 +61,7 @@
 
     user = "hermes";
     group = "hermes";
-    createUser = true;
+    createUser = false;
 
     stateDir = "/var/lib/hermes";
 
@@ -80,6 +80,17 @@
     ];
   };
 
+  users.users.hermes = {
+    uid = 970;
+    group = "hermes";
+    isSystemUser = true;
+
+    home = "/var/lib/hermes";
+    description = "Hermes Agent";
+  };
+
+  users.groups.hermes.gid = 970;
+
   # ── Network ───────────────────────────────────────────────────────────
   networking.firewall.allowedTCPPorts = [ 8080 ];
 
@@ -87,3 +98,4 @@
   time.timeZone = "Europe/Warsaw";
   system.stateVersion = "24.11";
 }
+
