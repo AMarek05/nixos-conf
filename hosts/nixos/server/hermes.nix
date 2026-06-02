@@ -122,8 +122,20 @@
 
   users.groups.hermes.gid = 970;
 
+  # ── Open WebUI ──────────────────────────────────────────────────────
+  # Connects to hermes API server at 127.0.0.1:8642
+  services.open-webui = {
+    enable = true;
+    host = "0.0.0.0";
+    port = 8280;
+    environment = {
+      OLLAMA_API_BASE_URL = "http://127.0.0.1:8642/v1";
+      WEBUI_AUTH = "False";
+    };
+  };
+
   # ── Network ───────────────────────────────────────────────────────────
-  networking.firewall.allowedTCPPorts = [ 8642 ];
+  networking.firewall.allowedTCPPorts = [ 8642 8280 ];
 
   # ── Timezone ──────────────────────────────────────────────────────────
   time.timeZone = "Europe/Warsaw";
