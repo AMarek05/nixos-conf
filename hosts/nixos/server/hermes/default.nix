@@ -11,7 +11,7 @@ let
   cfg = config.services.hermes-agent;
 
   hermes-soul-file = pkgs.writeText "SOUL.md" (builtins.readFile ./SOUL.md);
-  hermes-user-file = pkgs.writeText "SOUL.md" (builtins.readFile ./USER.md.md);
+  hermes-user-file = pkgs.writeText "USER.md" (builtins.readFile ./USER.md);
 
   git-wrapper = pkgs.writeShellScriptBin "git" ''
     set -euo pipefail
