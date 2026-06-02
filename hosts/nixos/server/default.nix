@@ -64,6 +64,10 @@
         hostPath = "/var/lib/hermes";
         isReadOnly = false;
       };
+      "/var/lib/open-webui" = {
+        hostPath = "/var/lib/open-webui";
+        isReadOnly = false;
+      };
     };
   };
 
