@@ -76,8 +76,15 @@
     # load_hermes_dotenv() at startup. The blocklist scrub prevents
     # MINIMAX_API_KEY from reaching tool subprocesses.
     environmentFiles = [
-      config.sopsTemplates."hermes-env".path
+      config.sops.templates."hermes-env".path
     ];
+  };
+
+  systemd.services.hermes-agent.serviceConfig = {
+    TimeoutStopSec = "2s";
+    KillSignal = "SIGINT";
+    KillMode = "control-group";
+    SendSIGKILL = true;
   };
 
   users.users.hermes = {
@@ -98,4 +105,3 @@
   time.timeZone = "Europe/Warsaw";
   system.stateVersion = "24.11";
 }
-
