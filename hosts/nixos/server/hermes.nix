@@ -132,6 +132,11 @@
   # ── Network ───────────────────────────────────────────────────────────
   networking.firewall.allowedTCPPorts = [ 8280 ];
 
+  # ── Network ───────────────────────────────────────────────────────────
+  environment.systemPackages = [
+    inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
+  ];
+
   # ── Timezone ──────────────────────────────────────────────────────────
   time.timeZone = "Europe/Warsaw";
   system.stateVersion = "24.11";
