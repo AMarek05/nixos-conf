@@ -164,7 +164,7 @@
   # Disable DynamicUser so the service runs as our static open-webui user (uid 969)
   # which matches the sops secret file owner.
   systemd.services."open-webui" = {
-    serviceConfig.DynamicUser = false;
+    serviceConfig.DynamicUser = lib.mkForce false;
   };
 
   # ── Timezone ──────────────────────────────────────────────────────────
