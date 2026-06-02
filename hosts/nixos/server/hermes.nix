@@ -14,8 +14,6 @@
     inputs.sops-nix.nixosModules.sops
   ];
 
-  nixpkgs.config.allowUnfreePredicate = pkg: pkgs.lib.hasPrefix "open-webui" pkg.pname;
-
   # ── Static networking on the virtual ethernet (ve-+) ───────────────────
   networking.hostName = "hermes";
   networking.usePredictableInterfaceNames = false;
@@ -43,19 +41,6 @@
     owner = "hermes";
   };
 
-  sops.secrets."open-webui-api-key" = {
-    sopsFile = ../../../secrets/openclaw.yaml;
-    owner = "open-webui";
-  };
-
-  sops.templates."open-webui-env" = {
-    owner = "open-webui";
-    group = "open-webui";
-    content = ''
-      OPENAI_API_KEY=${config.sops.placeholder."open-webui-api-key"}
-    '';
-  };
-
   sops.templates."hermes-env" = {
     owner = "hermes";
     group = "hermes";
@@ -78,11 +63,6 @@
   # cfg.environmentFiles to ~/.hermes/.env (via load_hermes_dotenv at Python
   # startup). hermes-agent's own _HERMES_PROVIDER_ENV_BLOCKLIST scrubs
   # MINIMAX_API_KEY from tool subprocess environments.
-  #
-  # We use EnvironmentFile=/run/secrets/minimax-api-key — sops-nix decrypts
-  # the secret here at runtime (systemd tmpfiles.d), and systemd's
-  # EnvironmentFile= injects it into the service process env. The activation
-  # script also writes the same path to ~/.hermes/.env for load_hermes_dotenv.
   services.hermes-agent = {
     enable = true;
 
@@ -125,47 +105,20 @@
     uid = 970;
     group = "hermes";
     isSystemUser = true;
-
     home = "/var/lib/hermes";
     description = "Hermes Agent";
+    shell = pkgs.bash;
   };
 
   users.groups.hermes.gid = 970;
 
-  users.users.open-webui = {
-    uid = 969;
-    group = "open-webui";
-    isSystemUser = true;
-    description = "Open WebUI";
-  };
-
-  users.groups.open-webui.gid = 969;
-
-  # ── Open WebUI ──────────────────────────────────────────────────────
-  # Connects to hermes API server at 127.0.0.1:8642
-  services.open-webui = {
-    enable = true;
-    host = "0.0.0.0";
-    port = 8280;
-    environmentFile = config.sops.templates."open-webui-env".path;
-    environment = {
-      OPENAI_API_BASE_URL = "http://127.0.0.1:8642/v1";
-      WEBUI_AUTH = "False";
-    };
-  };
-
-  # ── Network ───────────────────────────────────────────────────────────
-  networking.firewall.allowedTCPPorts = [ 8280 ];
-
+  # ── CLI ───────────────────────────────────────────────────────────────
   environment.systemPackages = [
     inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
-  # Disable DynamicUser so the service runs as our static open-webui user (uid 969)
-  # which matches the sops secret file owner.
-  systemd.services."open-webui" = {
-    serviceConfig.DynamicUser = lib.mkForce false;
-  };
+  # ── Network ───────────────────────────────────────────────────────────
+  networking.firewall.allowedTCPPorts = [ 8642 ];
 
   # ── Timezone ──────────────────────────────────────────────────────────
   time.timeZone = "Europe/Warsaw";
