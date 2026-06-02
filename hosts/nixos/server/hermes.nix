@@ -32,6 +32,15 @@
 
   sops.secrets."minimax-api-key" = {
     sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "hermes";
+  };
+
+  sops.templates."hermes-env" = {
+    owner = "hermes";
+    group = "hermes";
+    content = ''
+      MINIMAX_API_KEY=${config.sops.placeholder."minimax-api-key"}
+    '';
   };
 
   # ── Hermes Agent service ──────────────────────────────────────────────
@@ -62,10 +71,12 @@
       providers.openai = null;
     };
 
-    # Point at the runtime-decrypted SOPS secret. sops-nix writes the
-    # decrypted content to /run/secrets/ at boot (before this service starts).
+    # Use the hermes module's own environmentFiles option — it writes the
+    # template to ~/.hermes/.env at activation, which hermes reads via
+    # load_hermes_dotenv() at startup. The blocklist scrub prevents
+    # MINIMAX_API_KEY from reaching tool subprocesses.
     environmentFiles = [
-      config.sops.secrets."minimax-api-key".path
+      config.sopsTemplates."hermes-env".path
     ];
   };
 
