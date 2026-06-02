@@ -4,6 +4,7 @@
   pkgs,
   config,
   inputs,
+  lib,
   ...
 }:
 
@@ -117,6 +118,7 @@
     KillSignal = "SIGINT";
     KillMode = "control-group";
     SendSIGKILL = true;
+    DefaultTimeoutStopSec = lib.mkForce "5s";
   };
 
   users.users.hermes = {
@@ -146,7 +148,6 @@
   # ── Network ───────────────────────────────────────────────────────────
   networking.firewall.allowedTCPPorts = [ 8280 ];
 
-  # ── Network ───────────────────────────────────────────────────────────
   environment.systemPackages = [
     inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
