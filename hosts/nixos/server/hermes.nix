@@ -50,6 +50,12 @@ in
     inputs.sops-nix.nixosModules.sops
   ];
 
+  systemd.settings = {
+    Manager = {
+      DefaultTimeoutStopSec = "2s";
+    };
+  };
+
   nixpkgs.config.allowUnfreePredicate = pkg: pkgs.lib.hasPrefix "open-webui" pkg.pname;
 
   # ── Static networking on the virtual ethernet (ve-+) ───────────────────
@@ -152,10 +158,9 @@ in
 
   systemd.services.hermes-agent.serviceConfig = {
     TimeoutStopSec = "2s";
-    KillSignal = "SIGINT";
+    KillSignal = lib.mkForce "SIGKILL";
     KillMode = "control-group";
     SendSIGKILL = true;
-    DefaultTimeoutStopSec = lib.mkForce "5s";
   };
 
   users.users.hermes = {
@@ -194,6 +199,11 @@ in
       WEBUI_AUTH = "False";
       OPENAI_API_BASE_URL = "http://192.168.100.12:8642/v1";
     };
+  };
+
+  systemd.services.open-webui.serviceConfig = {
+    TimeoutStopSec = lib.mkForce "2s";
+    KillSignal = "SIGKILL";
   };
 
   # ── CLI ───────────────────────────────────────────────────────────────
