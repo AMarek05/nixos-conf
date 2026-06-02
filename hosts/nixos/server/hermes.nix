@@ -195,7 +195,10 @@ in
   ];
 
   # ── Network ───────────────────────────────────────────────────────────
-  networking.firewall.allowedTCPPorts = [ 8642 ];
+  networking.firewall.allowedTCPPorts = [
+    8642
+    8080
+  ];
 
   # ── Timezone ──────────────────────────────────────────────────────────
   time.timeZone = "Europe/Warsaw";

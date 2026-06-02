@@ -110,13 +110,6 @@
     mode = "0444";
   };
 
-  sops.secrets."open-webui-api-key" = {
-    sopsFile = ../../../secrets/openclaw.yaml;
-    owner = "open-webui";
-    group = "open-webui";
-    mode = "0400";
-  };
-
   fileSystems."/media" = {
     device = "/dev/disk/by-uuid/6ec56f8e-689b-42fc-8a70-108d77fdeba3";
     fsType = "ext4";
