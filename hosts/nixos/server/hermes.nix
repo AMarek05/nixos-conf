@@ -7,10 +7,6 @@
   ...
 }:
 
-let
-  inherit (config.sops.secrets) "minimax-api-key";
-in
-
 {
   imports = [
     inputs.hermes-agent.nixosModules.default
@@ -39,16 +35,14 @@ in
   };
 
   # ── Hermes Agent service ──────────────────────────────────────────────
+  # hermes-agent's own _HERMES_PROVIDER_ENV_BLOCKLIST (tools/environments/local.py)
+  # scrubs MINIMAX_API_KEY from tool subprocess environments. So the key is
+  # available to the hermes-gateway process (which needs it for API calls) but
+  # blocked from reaching any tool subprocesses the agent spawns.
   services.hermes-agent = {
     enable = true;
 
-    # hermes-agent package provides the `hermes` CLI; runtime deps
-    # (Node.js, Python, uv) are provisioned by the entrypoint on first boot.
     package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default;
-
-    # Use the NixOS module's native systemd mode (NOT container mode).
-    # The nspawn container itself provides isolation; hermes runs as a
-    # systemd service inside the guest OS.
     container.enable = false;
 
     user = "hermes";
@@ -58,25 +52,21 @@ in
     stateDir = "/var/lib/hermes";
 
     settings = {
-      # Model: MiniMax M2.7 via global endpoint
-      # MINIMAX_API_KEY is sourced from ~/.hermes/.env (injected via environmentFile below)
       model = "minimax/MiniMax-M2.7";
-
-      # Gateway bind — LAN interface so host Caddy can reach it
       gateway.bind = "lan";
-
-      # Disable default OpenAI provider
       providers.openai = null;
     };
 
-    # Inject MINIMAX_API_KEY into ~/.hermes/.env so Hermes picks it up
+    # The module's activation script writes these to ~/.hermes/.env.
+    # hermes reads it at startup via load_hermes_dotenv() — no .env file
+    # ever appears in the store. The key is available to the gateway process
+    # and scrubbed from tool subprocesses by _HERMES_PROVIDER_ENV_BLOCKLIST.
     environment = {
-      MINIMAX_API_KEY = "@minimax-api-key@";
+      MINIMAX_API_KEY = config.sops.secrets."minimax-api-key".path;
     };
   };
 
   # ── Network ───────────────────────────────────────────────────────────
-  # Hermes gateway listens on port 8080 by default
   networking.firewall.allowedTCPPorts = [ 8080 ];
 
   # ── Timezone ──────────────────────────────────────────────────────────
