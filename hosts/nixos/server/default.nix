@@ -322,22 +322,4 @@
       '';
     };
   };
-
-  # ── OpenWebUI ─────────────────────────────────────────────────────────────
-  services.open-webui = {
-    enable = true;
-    package = pkgs.open-webui;
-    stateDir = "/var/lib/open-webui";
-    host = "0.0.0.0";
-    port = 8080;
-    openFirewall = false;
-    environment = {
-      SCARF_NO_ANALYTICS = "True";
-      DO_NOT_TRACK = "True";
-      ANONYMIZED_TELEMETRY = "False";
-      # Point to Hermes API server
-      OPENAI_API_BASE_URL = "http://192.168.100.12:8642/v1";
-      OPENAI_API_KEY = config.sops.secrets."open-webui-api-key".path;
-    };
-  };
 }

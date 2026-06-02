@@ -50,6 +50,8 @@ in
     inputs.sops-nix.nixosModules.sops
   ];
 
+  nixpkgs.config.allowUnfreePredicate = pkg: pkgs.lib.hasPrefix "open-webui" pkg.pname;
+
   # ── Static networking on the virtual ethernet (ve-+) ───────────────────
   networking.hostName = "hermes";
   networking.usePredictableInterfaceNames = false;
@@ -80,6 +82,11 @@ in
   sops.secrets."claw-ssh-key" = {
     sopsFile = ../../../secrets/openclaw.yaml;
     owner = "hermes";
+  };
+
+  sops.secrets."open-webui-api-key" = {
+    sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "open-webui";
   };
 
   sops.templates."hermes-env" = {
@@ -153,6 +160,34 @@ in
 
   users.groups.hermes.gid = 970;
 
+  users.users.open-webui = {
+    uid = 969;
+    group = "open-webui";
+    isSystemUser = true;
+    description = "Open WebUI";
+  };
+
+  users.groups.open-webui.gid = 969;
+
+  # ── OpenWebUI ─────────────────────────────────────────────────────────────
+  services.open-webui = {
+    enable = true;
+    package = pkgs.open-webui;
+    stateDir = "/var/lib/open-webui";
+    host = "0.0.0.0";
+    port = 8080;
+    openFirewall = false;
+    environment = {
+      SCARF_NO_ANALYTICS = "True";
+      DO_NOT_TRACK = "True";
+      ANONYMIZED_TELEMETRY = "False";
+      # Point to Hermes API server
+
+      OPENAI_API_BASE_URL = "http://192.168.100.12:8642/v1";
+      OPENAI_API_KEY = config.sops.secrets."open-webui-api-key".path;
+    };
+  };
+
   # ── CLI ───────────────────────────────────────────────────────────────
   environment.systemPackages = [
     inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.full
@@ -166,4 +201,3 @@ in
   time.timeZone = "Europe/Warsaw";
   system.stateVersion = "24.11";
 }
-
