@@ -39,6 +39,11 @@
 
   sops.secrets."hermes-api-key" = {
     sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "hermes";
+  };
+
+  sops.secrets."open-webui-api-key" = {
+    sopsFile = ../../../secrets/openclaw.yaml;
     owner = "open-webui";
   };
 
@@ -46,7 +51,7 @@
     owner = "open-webui";
     group = "open-webui";
     content = ''
-      OPENAI_API_KEY=${config.sops.placeholder."hermes-api-key"}
+      OPENAI_API_KEY=${config.sops.placeholder."open-webui-api-key"}
     '';
   };
 
