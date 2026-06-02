@@ -52,6 +52,13 @@
 
       ForwardAgent yes
 
+    Host proxmox
+      HostName proxmox
+      User root
+      ProxyJump admin
+
+      ForwardAgent yes
+
     Host admin
       HostName admin
       User root
