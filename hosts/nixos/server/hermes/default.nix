@@ -81,27 +81,27 @@ in
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
 
   sops.secrets."minimax-api-key" = {
-    sopsFile = ../../../secrets/openclaw.yaml;
+    sopsFile = ../../../../secrets/openclaw.yaml;
     owner = "hermes";
   };
 
   sops.secrets."hermes-bot-key" = {
-    sopsFile = ../../../secrets/openclaw.yaml;
+    sopsFile = ../../../../secrets/openclaw.yaml;
     owner = "hermes";
   };
 
   sops.secrets."hermes-api-key" = {
-    sopsFile = ../../../secrets/openclaw.yaml;
+    sopsFile = ../../../../secrets/openclaw.yaml;
     owner = "hermes";
   };
 
   sops.secrets."claw-ssh-key" = {
-    sopsFile = ../../../secrets/openclaw.yaml;
+    sopsFile = ../../../../secrets/openclaw.yaml;
     owner = "hermes";
   };
 
   sops.secrets."open-webui-api-key" = {
-    sopsFile = ../../../secrets/openclaw.yaml;
+    sopsFile = ../../../../secrets/openclaw.yaml;
     owner = "root";
     mode = "0444";
   };
