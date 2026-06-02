@@ -91,6 +91,8 @@
       providers.openai = null;
       apiServer = {
         enable = true;
+        host = "0.0.0.0";
+        port = 8080;
       };
     };
   };
