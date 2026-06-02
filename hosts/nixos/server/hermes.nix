@@ -152,6 +152,7 @@
       OPENAI_API_BASE_URL = "http://127.0.0.1:8642/v1";
       WEBUI_AUTH = "False";
     };
+    serviceConfig.DynamicUser = false;
   };
 
   # ── Network ───────────────────────────────────────────────────────────
