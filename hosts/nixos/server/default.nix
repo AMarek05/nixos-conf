@@ -127,7 +127,7 @@
     443
     2222
     18789
-    8080
+    8642
   ];
 
   networking.firewall.allowedUDPPorts = [
@@ -295,7 +295,7 @@
     virtualHosts."hermes.amarek.org" = {
       useACMEHost = "amarek.org";
       extraConfig = ''
-        reverse_proxy 192.168.100.12:8080
+        reverse_proxy 192.168.100.12:8642
       '';
     };
   };

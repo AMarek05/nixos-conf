@@ -89,10 +89,9 @@
       model = "minimax/MiniMax-M2.7";
       gateway.bind = "lan";
       providers.openai = null;
-      apiServer = {
+      api_server = {
         enable = true;
         host = "0.0.0.0";
-        port = 8080;
       };
     };
   };
@@ -116,7 +115,7 @@
   users.groups.hermes.gid = 970;
 
   # ── Network ───────────────────────────────────────────────────────────
-  networking.firewall.allowedTCPPorts = [ 8080 ];
+  networking.firewall.allowedTCPPorts = [ 8642 ];
 
   # ── Timezone ──────────────────────────────────────────────────────────
   time.timeZone = "Europe/Warsaw";
