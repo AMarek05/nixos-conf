@@ -8,6 +8,11 @@
   ...
 }:
 let
+  cfg = config.services.hermes-agent;
+
+  hermes-soul-file = pkgs.writeText "SOUL.md" (builtins.readFile ./SOUL.md);
+  hermes-user-file = pkgs.writeText "SOUL.md" (builtins.readFile ./USER.md.md);
+
   git-wrapper = pkgs.writeShellScriptBin "git" ''
     set -euo pipefail
 
@@ -163,16 +168,28 @@ in
       model = "minimax/MiniMax-M2.7";
       gateway.bind = "lan";
       providers.openai = null;
+
       discord = {
         enabled = true;
         token = lib.mkForce config.sops.placeholder."hermes-bot-key";
       };
+
       api_server = {
         enable = true;
         host = "0.0.0.0";
       };
+
+      memory.user_profile_enabled = true;
     };
   };
+
+  systemd.tmpfiles.rules = [
+    "d ${cfg.stateDir}/.hermes/memories 2770 ${cfg.user} ${cfg.group} - -"
+
+    "C ${cfg.stateDir}/.hermes/SOUL.md 0640 ${cfg.user} ${cfg.group} - ${hermes-soul-file}"
+
+    "C ${cfg.stateDir}/.hermes/memories/USER.md 0640 ${cfg.user} ${cfg.group} - ${hermes-user-file}"
+  ];
 
   systemd.services.hermes-agent.serviceConfig = {
     TimeoutStopSec = "2s";

@@ -52,7 +52,7 @@
         ...
       }:
       {
-        imports = [ ./hermes.nix ];
+        imports = [ ./hermes ];
       };
 
     bindMounts = {
