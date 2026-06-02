@@ -304,7 +304,7 @@
     virtualHosts."hermes.amarek.org" = {
       useACMEHost = "amarek.org";
       extraConfig = ''
-        reverse_proxy 192.168.100.12:8642
+        reverse_proxy 192.168.100.12:8280
       '';
     };
   };

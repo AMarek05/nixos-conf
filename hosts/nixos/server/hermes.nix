@@ -13,11 +13,6 @@
     inputs.sops-nix.nixosModules.sops
   ];
 
-  nix.experimental-features = [
-    "nix-command"
-    "flakes"
-  ];
-
   nixpkgs.config.allowUnfreePredicate = pkg: pkgs.lib.hasPrefix "open-webui" pkg.pname;
 
   # ── Static networking on the virtual ethernet (ve-+) ───────────────────
@@ -135,7 +130,7 @@
   };
 
   # ── Network ───────────────────────────────────────────────────────────
-  networking.firewall.allowedTCPPorts = [ 8642 8280 ];
+  networking.firewall.allowedTCPPorts = [ 8280 ];
 
   # ── Timezone ──────────────────────────────────────────────────────────
   time.timeZone = "Europe/Warsaw";
