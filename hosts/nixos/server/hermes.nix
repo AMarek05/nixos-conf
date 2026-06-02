@@ -183,6 +183,8 @@ in
       ANONYMIZED_TELEMETRY = "False";
       # Point to Hermes API server
 
+      WEBUI_AUTH = "False";
+
       OPENAI_API_BASE_URL = "http://192.168.100.12:8642/v1";
       OPENAI_API_KEY = config.sops.secrets."open-webui-api-key".path;
     };
