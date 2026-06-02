@@ -39,7 +39,15 @@
 
   sops.secrets."hermes-api-key" = {
     sopsFile = ../../../secrets/openclaw.yaml;
-    owner = "hermes";
+    owner = "open-webui";
+  };
+
+  sops.templates."open-webui-env" = {
+    owner = "open-webui";
+    group = "open-webui";
+    content = ''
+      OPENAI_API_KEY=${config.sops.placeholder."hermes-api-key"}
+    '';
   };
 
   sops.templates."hermes-env" = {
@@ -123,8 +131,9 @@
     enable = true;
     host = "0.0.0.0";
     port = 8280;
+    environmentFile = config.sops.templates."open-webui-env".path;
     environment = {
-      OLLAMA_API_BASE_URL = "http://127.0.0.1:8642/v1";
+      OPENAI_API_BASE_URL = "http://127.0.0.1:8642/v1";
       WEBUI_AUTH = "False";
     };
   };
