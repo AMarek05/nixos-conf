@@ -67,13 +67,15 @@
 - [ ] Add `hermes-agent` to `hosts/nixos/server/default.nix` container definitions
 
 ### Phase 2 — Container Guest Config
-- [ ] Create `hosts/nixos/server/hermes.nix` — NixOS guest config for hermes-agent container
+- [x] Create `hosts/nixos/server/hermes.nix` — NixOS guest config for hermes-agent container
   - Static IP: `192.168.100.12`
   - `hermes-agent` package available via `hermes` CLI
-  - Runtime dependencies (Node.js, Python, uv) bootstrapped by container entrypoint on first boot — no explicit systemPackages needed
-  - SOPS secrets: `hermes-api-key` (reuse or new), `minimax-api-key`
-  - Working directory: `/var/lib/hermes/workspace` (bind mounted from host)
+  - Runtime dependencies (Node.js, Python, uv) bootstrapped by container entrypoint on first boot
+  - SOPS secrets: reuse `minimax-api-key` from openclaw.yaml
+  - Working directory: `/var/lib/hermes` (bind mounted from host)
   - Hardened systemd service (same pattern as OpenClaw)
+  - Caddy routing: `hermes.amarek.org` → `localhost:18792`
+  - NixOS module handles user/group creation automatically
 
 ### Phase 3 — Host Container Definition
 - [ ] Add `containers.hermes-agent` to `hosts/nixos/server/default.nix`
@@ -107,22 +109,22 @@
 
 ### Remaining questions
 
-1. **Hermes default port** — What port does `hermes gateway` listen on? Need to verify or configure explicitly to avoid collision with OpenClaw's `18789`.
+~~1. **Hermes default port**~~ — Confirmed: port 8080.
 
-2. **Caddy routing** — Should `hermes.amarek.org` route to Hermes container via Caddy on host? Add virtual host entry or keep separate?
+~~2. **Caddy routing**~~ — Confirmed: `hermes.amarek.org` → `localhost:18792` (Caddy on host routes to container IP).
 
-3. **SOPS secret naming** — Create a new `hermes-api-key` in `secrets/openclaw.yaml`, or reuse `minimax-api-key`? Adam has `minimax-api-key` already. Should Hermes use the same or a dedicated one?
+~~3. **SOPS secret naming**~~ — Reuse `minimax-api-key` from openclaw.yaml (no new secret needed).
 
 ---
 
 ## Files to Create/Modify
 
 ```
-flake.nix                                    [modify — add hermes-agent input]
-hosts/nixos/server/default.nix               [modify — add containers.hermes-agent]
-hosts/nixos/server/hermes.nix                [create — new container guest config]
-secrets/openclaw.yaml                       [modify — add hermes-api-key]
-hosts/nixos/server/default.nix               [modify — Caddy route for hermes subdomain?]
+flake.nix                                    [x add hermes-agent input]
+hosts/nixos/server/default.nix               [  add containers.hermes-agent]
+hosts/nixos/server/hermes.nix                [x  created — container guest config]
+secrets/openclaw.yaml                       [x  reuse minimax-api-key — no change needed]
+hosts/nixos/server/default.nix               [  Caddy route for hermes.amarek.org]
 ```
 
 ---
