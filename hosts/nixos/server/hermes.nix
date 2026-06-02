@@ -35,11 +35,24 @@
     owner = "hermes";
   };
 
+  sops.secrets."hermes-api-key" = {
+    sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "hermes";
+  };
+
   sops.templates."hermes-env" = {
     owner = "hermes";
     group = "hermes";
     content = ''
       MINIMAX_API_KEY=${config.sops.placeholder."minimax-api-key"}
+    '';
+  };
+
+  sops.templates."hermes-api-key-env" = {
+    owner = "hermes";
+    group = "hermes";
+    content = ''
+      API_SERVER_KEY=${config.sops.placeholder."hermes-api-key"}
     '';
   };
 
@@ -65,19 +78,21 @@
 
     stateDir = "/var/lib/hermes";
 
+    # Both templates are concatenated into ~/.hermes/.env at activation.
+    # hermes reads them via load_hermes_dotenv() at startup.
+    environmentFiles = [
+      config.sops.templates."hermes-env".path
+      config.sops.templates."hermes-api-key-env".path
+    ];
+
     settings = {
       model = "minimax/MiniMax-M2.7";
       gateway.bind = "lan";
       providers.openai = null;
+      apiServer = {
+        enable = true;
+      };
     };
-
-    # Use the hermes module's own environmentFiles option — it writes the
-    # template to ~/.hermes/.env at activation, which hermes reads via
-    # load_hermes_dotenv() at startup. The blocklist scrub prevents
-    # MINIMAX_API_KEY from reaching tool subprocesses.
-    environmentFiles = [
-      config.sops.templates."hermes-env".path
-    ];
   };
 
   systemd.services.hermes-agent.serviceConfig = {
