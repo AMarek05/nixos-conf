@@ -70,11 +70,20 @@
   systemd.services."container@openclaw".serviceConfig = {
     TimeoutStopSec = lib.mkForce "5s";
     KillMode = lib.mkForce "mixed";
-    KillSignal = lib.mkForce "SIGKILL";
     ExecStopPost = lib.mkForce [
-      "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/openclaw"
-      "-${pkgs.coreutils}/bin/sleep 1"
+      "-${pkgs.coreutils}/bin/sleep 2"
       "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/openclaw"
+      "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/openclaw"
+    ];
+  };
+
+  systemd.services."container@hermes".serviceConfig = {
+    TimeoutStopSec = lib.mkForce "5s";
+    KillMode = lib.mkForce "mixed";
+    ExecStopPost = lib.mkForce [
+      "-${pkgs.coreutils}/bin/sleep 2"
+      "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/hermes"
+      "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/hermes"
     ];
   };
 
