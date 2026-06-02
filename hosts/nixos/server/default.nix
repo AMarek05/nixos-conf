@@ -64,10 +64,6 @@
         hostPath = "/var/lib/hermes";
         isReadOnly = false;
       };
-      "/var/lib/open-webui" = {
-        hostPath = "/var/lib/open-webui";
-        isReadOnly = false;
-      };
     };
   };
 
@@ -91,16 +87,6 @@
     ];
   };
 
-  systemd.services.hermes-open-webui-perms = {
-    description = "Set permissions on open-webui directory before container starts";
-    wantedBy = [ "container@hermes.service" ];
-    before = [ "container@hermes.service" ];
-    serviceConfig = {
-      Type = "oneshot";
-      ExecStart = "${pkgs.coreutils}/bin/chown -R 969:969 /var/lib/open-webui";
-    };
-  };
-
   networking.nat = {
     enable = true;
     internalInterfaces = [ "ve-+" ];
@@ -122,6 +108,13 @@
     owner = "adam";
     group = "adam";
     mode = "0444";
+  };
+
+  sops.secrets."open-webui-api-key" = {
+    sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "open-webui";
+    group = "open-webui";
+    mode = "0400";
   };
 
   fileSystems."/media" = {
@@ -318,8 +311,33 @@
     virtualHosts."hermes.amarek.org" = {
       useACMEHost = "amarek.org";
       extraConfig = ''
-        reverse_proxy 192.168.100.12:8280
+        reverse_proxy 192.168.100.12:8642
       '';
+    };
+
+    virtualHosts."webui.amarek.org" = {
+      useACMEHost = "amarek.org";
+      extraConfig = ''
+        reverse_proxy 192.168.100.12:8080
+      '';
+    };
+  };
+
+  # ── OpenWebUI ─────────────────────────────────────────────────────────────
+  services.open-webui = {
+    enable = true;
+    package = pkgs.open-webui;
+    stateDir = "/var/lib/open-webui";
+    host = "0.0.0.0";
+    port = 8080;
+    openFirewall = false;
+    environment = {
+      SCARF_NO_ANALYTICS = "True";
+      DO_NOT_TRACK = "True";
+      ANONYMIZED_TELEMETRY = "False";
+      # Point to Hermes API server
+      OPENAI_API_BASE_URL = "http://192.168.100.12:8642/v1";
+      OPENAI_API_KEY = config.sops.secrets."open-webui-api-key".path;
     };
   };
 }
