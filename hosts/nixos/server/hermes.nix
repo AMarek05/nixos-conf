@@ -152,7 +152,6 @@
       OPENAI_API_BASE_URL = "http://127.0.0.1:8642/v1";
       WEBUI_AUTH = "False";
     };
-    serviceConfig.DynamicUser = false;
   };
 
   # ── Network ───────────────────────────────────────────────────────────
@@ -161,6 +160,12 @@
   environment.systemPackages = [
     inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
+
+  # Disable DynamicUser so the service runs as our static open-webui user (uid 969)
+  # which matches the sops secret file owner.
+  systemd.services."open-webui" = {
+    serviceConfig.DynamicUser = false;
+  };
 
   # ── Timezone ──────────────────────────────────────────────────────────
   time.timeZone = "Europe/Warsaw";
