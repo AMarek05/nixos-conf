@@ -80,6 +80,11 @@ in
     owner = "hermes";
   };
 
+  sops.secrets."hermes-bot-key" = {
+    sopsFile = ../../../secrets/openclaw.yaml;
+    owner = "hermes";
+  };
+
   sops.secrets."hermes-api-key" = {
     sopsFile = ../../../secrets/openclaw.yaml;
     owner = "hermes";
@@ -112,6 +117,14 @@ in
     '';
   };
 
+  sops.templates."hermes-discord-env" = {
+    owner = "hermes";
+    group = "hermes";
+    content = ''
+      DISCORD_BOT_TOKEN=${config.sops.placeholder."hermes-bot-key"}
+    '';
+  };
+
   sops.templates."hermes-api-key-env" = {
     owner = "hermes";
     group = "hermes";
@@ -138,17 +151,22 @@ in
 
     stateDir = "/var/lib/hermes";
 
-    # Both templates are concatenated into ~/.hermes/.env at activation.
+    # All three templates are concatenated into ~/.hermes/.env at activation.
     # hermes reads them via load_hermes_dotenv() at startup.
     environmentFiles = [
       config.sops.templates."hermes-env".path
       config.sops.templates."hermes-api-key-env".path
+      config.sops.templates."hermes-discord-env".path
     ];
 
     settings = {
       model = "minimax/MiniMax-M2.7";
       gateway.bind = "lan";
       providers.openai = null;
+      discord = {
+        enabled = true;
+        token = lib.mkForce config.sops.placeholder."hermes-bot-key";
+      };
       api_server = {
         enable = true;
         host = "0.0.0.0";
