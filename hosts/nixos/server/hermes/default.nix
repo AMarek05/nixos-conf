@@ -192,10 +192,10 @@ in
   ];
 
   systemd.services.hermes-agent.serviceConfig = {
-    TimeoutStopSec = "2s";
-    KillSignal = lib.mkForce "SIGKILL";
-    KillMode = "control-group";
-    SendSIGKILL = true;
+    TimeoutStopSec = "5s";
+    KillSignal = lib.mkForce "SIGTERM";
+    KillMode = "process";
+    SendSIGKILL = false;
   };
 
   users.users.hermes = {
