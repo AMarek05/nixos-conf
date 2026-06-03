@@ -98,8 +98,6 @@ in
         read-sops = "SOPS_AGE_KEY=$(${lib.getExe pkgs.ssh-to-age} -private-key -i ~/.ssh/age) ${lib.getExe pkgs.sops}";
 
         serv-rebuild = "nixos-rebuild switch --flake ~/sys#nixos-server --target-host nixos-server --sudo --ask-sudo-password";
-
-        hermes = "ssh hermes \"hermes chat\"";
       };
     };
 
