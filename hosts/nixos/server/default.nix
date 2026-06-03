@@ -73,7 +73,7 @@
     ExecStopPost = lib.mkForce [
       "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/openclaw"
       "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/openclaw"
-
+      "-${pkgs.iproute2}/bin/ip link delete ve-openclaw"
       "-${pkgs.coreutils}/bin/rm -f /run/systemd/machines/openclaw"
     ];
   };
@@ -84,7 +84,7 @@
     ExecStopPost = lib.mkForce [
       "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/hermes"
       "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/hermes"
-
+      "-${pkgs.iproute2}/bin/ip link delete ve-hermes"
       "-${pkgs.coreutils}/bin/rm -f /run/systemd/machines/hermes"
     ];
   };
