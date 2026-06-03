@@ -14,6 +14,7 @@ modulesLib.mkHostHmModules {
         { name = "util"; }
         { name = "git"; }
         { name = "env"; }
+        
       ];
     }
     {
