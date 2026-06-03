@@ -39,14 +39,53 @@
     };
   };
 
+  containers.hermes = {
+    autoStart = true;
+    privateNetwork = true;
+    hostAddress = "192.168.100.10";
+    localAddress = "192.168.100.12";
+
+    specialArgs = { inherit inputs; };
+
+    config =
+      {
+        ...
+      }:
+      {
+        imports = [ ./hermes ];
+      };
+
+    bindMounts = {
+      "/var/lib/sops-nix/age_key" = {
+        hostPath = "/var/lib/sops-nix/age_key";
+        isReadOnly = true;
+      };
+      "/var/lib/hermes" = {
+        hostPath = "/var/lib/hermes";
+        isReadOnly = false;
+      };
+    };
+  };
+
   systemd.services."container@openclaw".serviceConfig = {
-    TimeoutStopSec = lib.mkForce "5s";
+    TimeoutStopSec = lib.mkForce "15s";
     KillMode = lib.mkForce "mixed";
-    KillSignal = lib.mkForce "SIGKILL";
     ExecStopPost = lib.mkForce [
-      "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/openclaw"
-      "-${pkgs.coreutils}/bin/sleep 1"
       "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/openclaw"
+      "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/openclaw"
+      "-${pkgs.iproute2}/bin/ip link delete ve-openclaw"
+      "-${pkgs.coreutils}/bin/rm -f /run/systemd/machines/openclaw"
+    ];
+  };
+
+  systemd.services."container@hermes".serviceConfig = {
+    TimeoutStopSec = lib.mkForce "15s";
+    KillMode = lib.mkForce "mixed";
+    ExecStopPost = lib.mkForce [
+      "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/hermes"
+      "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/hermes"
+      "-${pkgs.iproute2}/bin/ip link delete ve-hermes"
+      "-${pkgs.coreutils}/bin/rm -f /run/systemd/machines/hermes"
     ];
   };
 
@@ -99,6 +138,7 @@
     443
     2222
     18789
+    8642
   ];
 
   networking.firewall.allowedUDPPorts = [
@@ -260,6 +300,20 @@
       useACMEHost = "amarek.org";
       extraConfig = ''
         reverse_proxy 192.168.100.11:18789
+      '';
+    };
+
+    virtualHosts."hermes.amarek.org" = {
+      useACMEHost = "amarek.org";
+      extraConfig = ''
+        reverse_proxy 192.168.100.12:8642
+      '';
+    };
+
+    virtualHosts."webui.amarek.org" = {
+      useACMEHost = "amarek.org";
+      extraConfig = ''
+        reverse_proxy 192.168.100.12:8080
       '';
     };
   };

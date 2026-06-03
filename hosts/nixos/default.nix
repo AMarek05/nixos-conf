@@ -70,6 +70,12 @@
       Port 2222
 
       User root
+
+    Host hermes
+      HostName 192.168.100.12
+      Port 22
+      User hermes
+      ProxyJump nixos-server
   '';
 
   programs.nix-index-database = {

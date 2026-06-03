@@ -73,6 +73,12 @@
     };
 
     flake-parts.url = "github:hercules-ci/flake-parts";
+
+    hermes-agent = {
+      url = "github:NousResearch/hermes-agent";
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
+    };
   };
 
   outputs =

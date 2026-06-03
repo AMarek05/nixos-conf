@@ -4,6 +4,7 @@
   pkgs,
   config,
   inputs,
+  lib,
   ...
 }:
 
@@ -150,6 +151,7 @@ in
 
   systemd.services.openclaw = {
     serviceConfig = {
+      DefaultTimeoutStopSec = lib.mkForce "5s";
       TimeoutStopSpec = "2s";
       KillSignal = "SIGINT";
       KillMode = "control-group";
