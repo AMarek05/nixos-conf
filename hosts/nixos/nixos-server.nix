@@ -37,6 +37,8 @@
     };
   };
 
+  services.qemuGuest.enable = true;
+
   nixosModules.audio.enable = false;
   nixosModules.console.enable = false;
   nixosModules.fonts.enable = false;

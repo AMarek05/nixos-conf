@@ -262,7 +262,7 @@ in
   environment.systemPackages = [
     inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.full
     git-wrapper
-    pkgs.awk
+    pkgs.gawk
   ];
 
   # ── Network ───────────────────────────────────────────────────────────
