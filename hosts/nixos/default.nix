@@ -89,6 +89,9 @@
   environment.systemPackages = with pkgs; [
     nix-visualize
     nix-tree
+
+    tpm2-tools
+    tpm2-tss
   ];
 
   boot.kernelPackages = pkgs.linuxPackages_zen;
