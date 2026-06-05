@@ -20,7 +20,7 @@ in
       enable = true;
 
       signing = {
-        key = "/home/adam/.ssh/git";
+        key = "/home/adam/.ssh/git.pub";
         signByDefault = true;
         format = "ssh";
       };

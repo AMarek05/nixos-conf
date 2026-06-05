@@ -55,14 +55,21 @@ in
 
       initContent = lib.mkMerge [
         (lib.mkBefore ''
+          export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent"
+
+          if ! ssh-add -l | grep -q "tpm"; then
+            ssh-add -s /run/current-system/sw/lib/libtpm2_pkcs11.so
+          fi
+
           if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
-            source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
+              source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
           fi
         '')
 
         (lib.mkAfter ''
           [[ ! -f "$ZDOTDIR/.p10k.zsh" ]] || source "$ZDOTDIR/.p10k.zsh"
 
+          ZSH_THEME_TERM_TITLE_IDLE="%1 %m:%~"
 
           # Change Autosuggest Key
           bindkey '^ ' autosuggest-accept
