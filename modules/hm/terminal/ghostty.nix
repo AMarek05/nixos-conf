@@ -23,7 +23,7 @@ in
         font-family = "0xProto Nerd Font";
 
         app-notifications = false;
-        shell-integration-features = "ssh-env,cursor,sudo,title";
+        shell-integration-features = "ssh-env,ssh-terminfo,cursor,sudo,title";
 
         background-opacity = 0.92;
         background-blur = true;

@@ -6,34 +6,6 @@
     ./hardware/gpu/mesa.nix
   ];
 
-  nix = {
-    distributedBuilds = true;
-    settings = {
-      cores = lib.mkForce 8;
-    };
-
-    buildMachines = [
-      {
-        hostName = "nixos";
-        sshUser = "adam";
-        sshKey = "/root/.ssh/id_root";
-        system = "x86_64-linux";
-        maxJobs = 8;
-        speedFactor = 10;
-        supportedFeatures = [
-          "nixos-test"
-          "benchmark"
-          "big-parallel"
-          "kvm"
-        ];
-      }
-    ];
-
-    extraOptions = ''
-      builders-use-substitutes = true
-    '';
-  };
-
   nixosModules.tailscale.enable = lib.mkForce true;
 
   networking.hostName = lib.mkForce "nixos-laptop";

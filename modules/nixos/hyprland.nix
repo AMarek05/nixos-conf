@@ -1,6 +1,12 @@
 # Hyprland compositor configuration
 # Migrated from etc/hyprland.nix
-{ inputs, config, pkgs, lib, ... }:
+{
+  inputs,
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
   options.nixosModules.hyprland = {
@@ -17,12 +23,7 @@
       enable = true;
       settings = {
         default_session = {
-          command = "${pkgs.tuigreet}/bin/tuigreet
-            --time
-            --astrisks
-            --user-menu
-            --theme \"border=magenta;text=cyan;prompt=green;time=yellow;action=blue;button=magenta;container=black;input=yellow\"
-            --cmd 'start-hyprland'";
+          command = "${pkgs.tuigreet}/bin/tuigreet --time --asterisks --remember --theme 'border=cyan;text=magenta;prompt=magenta;time=yellow;action=cyan;button=cyan;container=black;input=yellow' --cmd 'start-hyprland'";
           user = "greeter";
         };
       };
