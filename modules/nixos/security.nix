@@ -59,6 +59,7 @@
     environment.sessionVariables = {
       TPM2_PKCS11_STORE = "/var/lib/tpm2-pkcs11";
       TPM2_PKCS11_BACKEND = "esysdb";
+      SSH_AUTH_SOCK = "$XDG_RUNTIME_DIR/ssh-agent";
     };
 
     systemd.tmpfiles.rules = [
