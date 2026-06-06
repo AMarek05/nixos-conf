@@ -20,7 +20,7 @@ in
       enable = true;
 
       signing = {
-        key = "/home/adam/.ssh/git.pub";
+        key = "/home/adam/.ssh/id_tpm.pub";
         signByDefault = true;
         format = "ssh";
       };
@@ -46,11 +46,11 @@ in
           email = "amarek.git@gmail.com";
           useConfigOnly = true;
         };
-      };
 
-      settings = {
         gpg.ssh.allowedSignersFile = "/home/adam/.ssh/allowed_signers";
         init.defaultBranch = "main";
+
+        push.setupAutoRemote = true;
       };
     };
   };
