@@ -26,7 +26,7 @@ in
       playerctl
       acpi
       jmtpfs
-      wine
+      wineWow64Packages.stableFull
       winetricks
 
       tldr

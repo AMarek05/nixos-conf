@@ -57,7 +57,7 @@ in
         (lib.mkBefore ''
           export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent"
 
-          if ! ssh-add -l | grep -q "tpm"; then
+          if ! ssh-add -l &> /dev/null ; then
             ssh-add -s /run/current-system/sw/lib/libtpm2_pkcs11.so
           fi
 
