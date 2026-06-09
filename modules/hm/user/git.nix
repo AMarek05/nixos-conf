@@ -50,7 +50,7 @@ in
         gpg.ssh.allowedSignersFile = "/home/adam/.ssh/allowed_signers";
         init.defaultBranch = "main";
 
-        push.setupAutoRemote = true;
+        push.autoSetupRemote = true;
       };
     };
   };
