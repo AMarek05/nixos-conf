@@ -165,7 +165,7 @@ in
     ];
 
     settings = {
-      model = "minimax/MiniMax-M2.7";
+      model = "minimax/MiniMax-M3";
       gateway.bind = "lan";
       providers.openai = null;
 
