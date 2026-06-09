@@ -162,7 +162,7 @@ in
     services.openclaw = {
       enable = true;
 
-      defaultModel = "minimax/MiniMax-M2.7";
+      defaultModel = "minimax/MiniMax-M3";
       defaultProvider = "minimax";
       modelAlias = "Minimax";
 
@@ -190,4 +190,3 @@ in
     ];
   };
 }
-
