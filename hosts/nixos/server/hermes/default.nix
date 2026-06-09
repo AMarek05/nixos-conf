@@ -265,6 +265,9 @@ in
     inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.full
     git-wrapper
     pkgs.gawk
+
+    pkgs.python3
+    pkgs.nodejs
   ];
 
   # ── Network ───────────────────────────────────────────────────────────

@@ -217,6 +217,11 @@
   users.users.radarr.extraGroups = [ "jellyfin" ];
   users.users.bazarr.extraGroups = [ "jellyfin" ];
 
+  users.users.adam.extraGroups = [
+    "jellyfin"
+    "sillytavern"
+  ];
+
   services.bazarr = {
     enable = true;
 
