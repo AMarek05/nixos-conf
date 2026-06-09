@@ -75,4 +75,15 @@
   services.udisks2.enable = true;
   services.gvfs.enable = true;
   services.tumbler.enable = true;
+
+  services.ollama = {
+    enable = true;
+    package = pkgs.ollama-cuda;
+
+    port = 11434;
+
+    models = "/mnt/Hard/models/";
+  };
+
+  environment.systemPackages = with pkgs; [ ollama-cuda ];
 }

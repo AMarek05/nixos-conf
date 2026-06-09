@@ -54,6 +54,7 @@
       ssh-to-age
       tpm2-tools
       pkcs11-provider
+      opensc
     ];
 
     environment.sessionVariables = {
