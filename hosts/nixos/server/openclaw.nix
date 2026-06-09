@@ -159,6 +159,8 @@ in
     };
   };
 
+  users.groups.openclaw.gid = 968;
+
   environment.systemPackages =
     (with pkgs; [
       neovim

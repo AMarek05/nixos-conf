@@ -220,7 +220,12 @@
   users.users.adam.extraGroups = [
     "jellyfin"
     "sillytavern"
+    "hermes"
+    "openclaw"
   ];
+
+  users.groups.hermes.gid = 970;
+  users.groups.openclaw.gid = 968;
 
   services.bazarr = {
     enable = true;
