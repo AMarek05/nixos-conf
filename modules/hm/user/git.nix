@@ -19,6 +19,8 @@ in
     programs.git = {
       enable = true;
 
+      lfs.enable = true;
+
       signing = {
         key = "/home/adam/.ssh/id_tpm.pub";
         signByDefault = true;
