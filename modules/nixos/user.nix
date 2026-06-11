@@ -32,5 +32,9 @@
         "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMVue17Ck5epd5LBWWWd9Es+XN+IFtdkMxy2NHkFbtghXH+1lujMQxTjv3ZUD0R2pt8jfycdNqNmiH4QnjYpSgI= id-nixos"
       ];
     };
+
+    environment.sessionVariables = {
+      NH_FLAKE = "/home/adam/sys";
+    };
   };
 }

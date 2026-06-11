@@ -15,7 +15,6 @@
 
     home.sessionVariables = {
       SHELL = "${pkgs.zsh}/bin/zsh";
-      NH_FLAKE = "/home/adam/sys";
 
       EDITOR = "nvim";
       VISUAL = "nvim";
