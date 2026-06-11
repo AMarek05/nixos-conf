@@ -92,6 +92,7 @@
           "nixos" = inputs.nixpkgs;
           "nixos-laptop" = inputs.nixpkgs;
           "nixos-server" = inputs.nixpkgs;
+          "nixos-wsl" = inputs.nixpkgs;
         };
 
         grimblastOverlay = final: prev: {

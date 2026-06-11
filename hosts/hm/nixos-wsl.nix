@@ -4,17 +4,19 @@
     ./common.nix
   ];
 
-  modules = {
-    hyprland.enable = lib.mkForce false;
-    apps.enable = lib.mkForce false;
-    apps.stylix.enable = lib.mkForce false;
+  hmModules = {
+    apps = {
+      stylix.enable = false;
+      dolphin.enable = false;
+
+      packages.enable = false;
+    };
+
+    caelestia.enable = false;
+    hyprland.enable = false;
+
+    terminal.ghostty.enable = false;
   };
 
-  programs = {
-    firefox.enable = lib.mkForce false;
-    zen-browser.enable = lib.mkForce false;
-    ghostty.enable = lib.mkForce false;
-  };
-
-  home.sessionVariables.TERM = "xterm-256color";
+  programs.git.signing.key = lib.mkForce "/home/adam/.ssh/git";
 }
