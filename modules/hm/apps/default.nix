@@ -11,8 +11,8 @@
     ./dolphin.nix
     ./nvf.nix
     ./stylix.nix
-    ./nvim
     ./forge.nix
+    ./packages.nix
   ];
 
   options.hmModules.apps = {
@@ -20,46 +20,6 @@
   };
 
   config = lib.mkIf config.hmModules.apps.enable {
-    home.packages = with pkgs; [
-      thunderbird
-
-      keepassxc
-
-      vlc
-      kdePackages.kdenlive
-
-      grim
-      slurp
-      grimblast
-
-      yazi
-
-      snx-rs
-
-      umu-launcher
-      flatpak
-      prismlauncher
-      ftb-app
-      heroic
-      ckan
-      qbittorrent
-
-      sillytavern
-
-      alacarte
-      evince
-
-      dbeaver-bin
-      onlyoffice-desktopeditors
-      libreoffice-fresh
-    ];
-
-    programs.firefox = {
-      enable = true;
-
-      configPath = "${config.xdg.configHome}/mozilla/firefox";
-    };
-
-    programs.zen-browser.enable = true;
+    home.packages = with pkgs; [ nh ];
   };
 }

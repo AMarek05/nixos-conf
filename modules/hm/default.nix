@@ -14,7 +14,7 @@ modulesLib.mkHostHmModules {
         { name = "util"; }
         { name = "git"; }
         { name = "env"; }
-        
+
       ];
     }
     {
@@ -24,6 +24,7 @@ modulesLib.mkHostHmModules {
         { name = "stylix"; }
         { name = "nvf"; }
         { name = "dolphin"; }
+        { name = "packages"; }
       ];
     }
     {
