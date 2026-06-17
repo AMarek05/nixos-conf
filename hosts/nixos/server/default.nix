@@ -11,33 +11,35 @@
   ];
 
   # ── Container host-side config ────────────────────────────────────────────────
-  containers.openclaw = {
-    autoStart = true;
-    privateNetwork = true;
-    hostAddress = "192.168.100.10";
-    localAddress = "192.168.100.11";
+  /*
+    containers.openclaw = {
+      autoStart = true;
+      privateNetwork = true;
+      hostAddress = "192.168.100.10";
+      localAddress = "192.168.100.11";
 
-    specialArgs = { inherit inputs; };
+      specialArgs = { inherit inputs; };
 
-    config =
-      {
-        ...
-      }:
-      {
-        imports = [ ./openclaw.nix ];
-      };
+      config =
+        {
+          ...
+        }:
+        {
+          imports = [ ./openclaw.nix ];
+        };
 
-    bindMounts = {
-      "/var/lib/sops-nix/age_key" = {
-        hostPath = "/var/lib/sops-nix/age_key";
-        isReadOnly = true;
-      };
-      "/var/lib/openclaw/workspace" = {
-        hostPath = "/var/lib/openclaw/workspace";
-        isReadOnly = false;
+      bindMounts = {
+        "/var/lib/sops-nix/age_key" = {
+          hostPath = "/var/lib/sops-nix/age_key";
+          isReadOnly = true;
+        };
+        "/var/lib/openclaw/workspace" = {
+          hostPath = "/var/lib/openclaw/workspace";
+          isReadOnly = false;
+        };
       };
     };
-  };
+  */
 
   containers.hermes = {
     autoStart = true;
