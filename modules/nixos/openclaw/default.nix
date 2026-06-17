@@ -2,7 +2,6 @@
   lib,
   config,
   pkgs,
-  modulesLib,
   ...
 }:
 
@@ -20,28 +19,6 @@ let
       nixFiles = lib.filter (f: lib.hasSuffix ".nix" f && f != "_template.nix") files;
     in
     map (f: dir + "/${f}") nixFiles;
-
-  # Recursively collect all tool .nix files
-  toolFiles =
-    let
-      toolsDir = basePath + "/tools";
-      files = builtins.attrNames (builtins.readDir toolsDir);
-      nixFiles = lib.filter (f: lib.hasSuffix ".nix" f && f != "_template.nix" && f != "TODO.md") files;
-    in
-    map (f: toolsDir + "/${f}") nixFiles;
-
-  # Load all tool definitions (used by tools-loader.nix)
-  loadedTools = map (
-    f:
-    import f {
-      inherit
-        config
-        lib
-        pkgs
-        cfg
-        ;
-    }
-  ) toolFiles;
 
 in
 {
