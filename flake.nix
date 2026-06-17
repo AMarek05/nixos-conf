@@ -129,7 +129,10 @@
             modules = [
               ./hosts/hm/${name}.nix
             ];
-            extraSpecialArgs = { inherit inputs; };
+            extraSpecialArgs = {
+              inherit inputs;
+              osConfig = nixosCfgs.${name}.config;
+            };
           };
 
         nixosCfgs = builtins.mapAttrs mkNixos hosts;

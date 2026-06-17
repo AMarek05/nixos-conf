@@ -2,6 +2,7 @@
 {
   pkgs,
   config,
+  osConfig,
   lib,
   ...
 }:
@@ -54,13 +55,17 @@ in
       };
 
       initContent = lib.mkMerge [
+        (lib.mkIf osConfig.nixosModules.security.enable (
+          lib.mkBefore ''
+            export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent"
+
+            if ! ssh-add -l &> /dev/null ; then
+              ssh-add -s /run/current-system/sw/lib/libtpm2_pkcs11.so
+            fi
+          ''
+        ))
+
         (lib.mkBefore ''
-          export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent"
-
-          if ! ssh-add -l &> /dev/null ; then
-            ssh-add -s /run/current-system/sw/lib/libtpm2_pkcs11.so
-          fi
-
           if [[ -r "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh" ]]; then
               source "''${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-''${(%):-%n}.zsh"
           fi
