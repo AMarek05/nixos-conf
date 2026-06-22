@@ -156,6 +156,10 @@ in
 
     stateDir = "/var/lib/hermes";
 
+    environment = {
+      DISCORD_HOME_CHANNEL = "1511502650338971758";
+    };
+
     # All three templates are concatenated into ~/.hermes/.env at activation.
     # hermes reads them via load_hermes_dotenv() at startup.
     environmentFiles = [
