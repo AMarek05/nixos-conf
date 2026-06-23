@@ -45,7 +45,7 @@ in
             scale = 1;
             clock = "Rubik";
             workspaces = "Rubik";
-            headline.family = "GoogleSansFlex";
+            headline.family = "Rubik";
             mono.family = "CaskaydiaCove NF";
             icon.family = "Material Symbols Rounded";
           };
