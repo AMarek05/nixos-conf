@@ -42,13 +42,12 @@ in
       settings = {
         appearance = {
           font = {
-            family = {
-              clock = "Rubik";
-              material = "Material Symbols Rounded";
-              mono = "CaskaydiaCove NF";
-              sans = "Rubik";
-            };
-            size.scale = 1;
+            scale = 1;
+            clock = "Rubik";
+            workspaces = "Rubik";
+            headline.family = "Rubik";
+            mono.family = "CaskaydiaCove NF";
+            icon.family = "Material Symbols Rounded";
           };
           padding.scale = 1;
           rounding.scale = 1;
