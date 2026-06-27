@@ -153,6 +153,11 @@
       sillytavern = prev.sillytavern.overrideAttrs (old: {
         postInstall = (old.postInstall or "") + ''
           mkdir -p $out/lib/node_modules/sillytavern/public/scripts/extensions/third-party
+          # Fix: add cache headers to express.static so browsers dont re-download
+          # hundreds of MB of JS/CSS/avatars on every reload. The express.static
+          # call had {} (max-age=0) while only the HTML entry point was cache-busted.
+          sed -i "s|app.use(express.static(path.join(serverDirectory, 'public'), {}));|app.use(express.static(path.join(serverDirectory, 'public'), { maxAge: '7d', etag: true }));|" \
+            $out/lib/node_modules/sillytavern/src/server-main.js
         '';
       });
     })
