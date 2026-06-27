@@ -158,10 +158,6 @@ in
 
     environment = {
       DISCORD_HOME_CHANNEL = "1511502650338971758";
-      # Exposed so ${MINIMAX_API_KEY} interpolation in mcpServers.env below
-      # can resolve at MCP-spawn time (hermes's mcp_tool._interpolate_env_vars
-      # only handles ${VAR} syntax, not <SOPS:...:PLACEHOLDER>).
-      MINIMAX_API_KEY=config...ey";
     };
 
     # Add uv to the gateway's PATH so stdio MCP servers can be launched
@@ -174,7 +170,7 @@ in
     mcpServers.minimax-coding-plan = {
       command = "uvx";
       args = [ "minimax-coding-plan-mcp" "-y" ];
-      env.MINIMAX_API_KEY = "\${MINIMAX_API_KEY}";
+      env.MINIMAX_API_KEY = config.sops.placeholder."minimax-api-key";
       env.MINIMAX_API_HOST = "https://api.minimax.io";
     };
 
