@@ -174,9 +174,13 @@ in
     # built at activation time from cfg.environmentFiles (the SOPS-rendered
     # "hermes-env" template). The key never appears in cfg.environment
     # (which would export it to every subprocess) nor in config.yaml.
+
     mcpServers.minimax-coding-plan = {
       command = "uvx";
-      args = [ "minimax-coding-plan-mcp" "-y" ];
+      args = [
+        "minimax-coding-plan-mcp"
+        "-y"
+      ];
       env.MINIMAX_API_KEY = "\${MINIMAX_API_KEY}";
       env.MINIMAX_API_HOST = "https://api.minimax.io";
     };
@@ -190,7 +194,7 @@ in
     ];
 
     settings = {
-      model = "minimax/MiniMax-M3";
+      model = "minimax/MiniMax-M2.7";
       gateway.bind = "lan";
       providers.openai = null;
 
