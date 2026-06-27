@@ -1,6 +1,7 @@
 {
   lib,
   config,
+  pkgs,
   ...
 }:
 {
@@ -14,6 +15,8 @@
     users.users.adam = {
       isNormalUser = true;
       group = "adam";
+      shell = pkgs.zsh;
+
       extraGroups = [
         "wheel"
         "video"
@@ -32,6 +35,8 @@
         "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMVue17Ck5epd5LBWWWd9Es+XN+IFtdkMxy2NHkFbtghXH+1lujMQxTjv3ZUD0R2pt8jfycdNqNmiH4QnjYpSgI= id-nixos"
       ];
     };
+
+    programs.zsh.enable = true;
 
     environment.sessionVariables = {
       NH_FLAKE = "/home/adam/sys";

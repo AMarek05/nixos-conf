@@ -65,7 +65,7 @@
 
       ForwardAgent yes
 
-    Host amarek
+    Host pangolin
       HostName 212.127.78.174
       Port 2222
 
@@ -76,6 +76,11 @@
       Port 22
       User hermes
       ProxyJump nixos-server
+
+    Host oracle
+      HostName 141.147.63.204
+      Port 2222
+      User ubuntu
   '';
 
   programs.nix-index-database = {
