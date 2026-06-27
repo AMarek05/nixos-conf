@@ -160,6 +160,20 @@ in
       DISCORD_HOME_CHANNEL = "1511502650338971758";
     };
 
+    # Add uv to the gateway's PATH so stdio MCP servers can be launched
+    # (the MiniMax coding-plan MCP server runs via `uvx`).
+    extraPackages = [ pkgs.uv ];
+
+    # MCP servers — see https://github.com/MiniMax-AI/MiniMax-Coding-Plan-MCP.
+    # web_search (POST /v1/coding_plan/search) and understand_image become
+    # available as MCP tools, replacing the unreliable DDGS fallback.
+    mcpServers.minimax-coding-plan = {
+      command = "uvx";
+      args = [ "minimax-coding-plan-mcp" "-y" ];
+      env.MINIMAX_API_KEY = config.sops.placeholder."minimax-api-key";
+      env.MINIMAX_API_HOST = "https://api.minimax.io";
+    };
+
     # All three templates are concatenated into ~/.hermes/.env at activation.
     # hermes reads them via load_hermes_dotenv() at startup.
     environmentFiles = [
