@@ -295,6 +295,10 @@
             keepalive 5s
             versions 2 1.1
           }
+          @thumbnail path /thumbnail*
+          handle_response @thumbnail {
+            header Cache-Control "public, max-age=3600"
+          }
         }
       '';
     };
