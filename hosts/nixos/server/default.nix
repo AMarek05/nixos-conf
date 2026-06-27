@@ -293,7 +293,7 @@
         reverse_proxy 127.0.0.1:8000 {
           transport http {
             keepalive 5s
-            versions 2 h1
+            versions 2 1.1
           }
         }
       '';
