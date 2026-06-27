@@ -290,7 +290,12 @@
     virtualHosts."st.amarek.pl" = {
       useACMEHost = "amarek.pl";
       extraConfig = ''
-        reverse_proxy 127.0.0.1:8000
+        reverse_proxy 127.0.0.1:8000 {
+          transport http {
+            keepalive 5s
+            versions h2 h1
+          }
+        }
       '';
     };
 
