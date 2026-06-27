@@ -160,13 +160,13 @@ in
       DISCORD_HOME_CHANNEL = "1511502650338971758";
     };
 
-    # Add uv to the gateway's PATH so stdio MCP servers can be launched
-    # (the MiniMax coding-plan MCP server runs via `uvx`).
-    extraPackages = [ pkgs.uv ];
-
     # MCP servers — see https://github.com/MiniMax-AI/MiniMax-Coding-Plan-MCP.
     # web_search (POST /v1/coding_plan/search) and understand_image become
     # available as MCP tools, replacing the unreliable DDGS fallback.
+    #
+    # pkgs.minimax-coding-plan-mcp brings its own Python interpreter and all
+    # deps (mcp, python-dotenv, requests, ...) — no uv/uvx needed and the
+    # binary is fully NixOS-compatible (the cpython uvx downloads is not).
     #
     # MINIMAX_API_KEY is interpolated at MCP-spawn time by hermes's
     # tools.mcp_tool._interpolate_env_vars from its own os.environ, which
@@ -176,11 +176,8 @@ in
     # (which would export it to every subprocess) nor in config.yaml.
 
     mcpServers.minimax-coding-plan = {
-      command = "uvx";
-      args = [
-        "minimax-coding-plan-mcp"
-        "-y"
-      ];
+      command = "${pkgs.minimax-coding-plan-mcp}/bin/minimax-coding-plan-mcp";
+      args = [];
       env.MINIMAX_API_KEY = "\${MINIMAX_API_KEY}";
       env.MINIMAX_API_HOST = "https://api.minimax.io";
     };
