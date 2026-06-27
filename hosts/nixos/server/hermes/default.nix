@@ -167,10 +167,17 @@ in
     # MCP servers — see https://github.com/MiniMax-AI/MiniMax-Coding-Plan-MCP.
     # web_search (POST /v1/coding_plan/search) and understand_image become
     # available as MCP tools, replacing the unreliable DDGS fallback.
+    #
+    # MINIMAX_API_KEY is interpolated at MCP-spawn time by hermes's
+    # tools.mcp_tool._interpolate_env_vars from its own os.environ, which
+    # is populated by load_hermes_dotenv() from ~/.hermes/.env — the file
+    # built at activation time from cfg.environmentFiles (the SOPS-rendered
+    # "hermes-env" template). The key never appears in cfg.environment
+    # (which would export it to every subprocess) nor in config.yaml.
     mcpServers.minimax-coding-plan = {
       command = "uvx";
       args = [ "minimax-coding-plan-mcp" "-y" ];
-      env.MINIMAX_API_KEY = config.sops.placeholder."minimax-api-key";
+      env.MINIMAX_API_KEY = "\${MINIMAX_API_KEY}";
       env.MINIMAX_API_HOST = "https://api.minimax.io";
     };
 
