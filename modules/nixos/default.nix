@@ -69,6 +69,10 @@ modulesLib.mkHostNixosModules {
       kind = "file";
       optional = true;
     }
+    {
+      name = "sunshine";
+      kind = "file";
+      optional = true;
+    }
   ];
 }
-

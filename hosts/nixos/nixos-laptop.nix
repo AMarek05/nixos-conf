@@ -6,7 +6,8 @@
     ./hardware/gpu/mesa.nix
   ];
 
-  nixosModules.tailscale.enable = lib.mkForce true;
+  nixosModules.tailscale.enable = true;
+  nixosModules.moonshine.enable = true;
 
   networking.hostName = lib.mkForce "nixos-laptop";
 
@@ -23,10 +24,5 @@
   services.udisks2.enable = true;
   services.gvfs.enable = true;
   services.tumbler.enable = true;
-
-  services.sunshine.enable = true;
-
-  environment.systemPackages = with pkgs; [ moonlight-qt ];
-
   zramSwap.enable = true;
 }

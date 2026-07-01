@@ -13,8 +13,9 @@
     inputs.aagl.nixosModules.default
   ];
 
-  nixosModules.sandbox.enable = lib.mkForce true;
-  nixosModules.tailscale.enable = lib.mkForce true;
+  nixosModules.sandbox.enable = true;
+  nixosModules.tailscale.enable = true;
+  nixosModules.sunshine.enable = true;
 
   programs.sleepy-launcher.enable = true;
 
@@ -87,8 +88,5 @@
 
   environment.systemPackages = with pkgs; [
     ollama-cuda
-    moonlight-qt
   ];
-
-  services.sunshine.enable = true;
 }
