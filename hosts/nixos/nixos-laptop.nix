@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 {
   imports = [
     ./default.nix
@@ -23,6 +23,10 @@
   services.udisks2.enable = true;
   services.gvfs.enable = true;
   services.tumbler.enable = true;
+
+  services.sunshine.enable = true;
+
+  environment.systemPackages = with pkgs; [ moonlight-qt ];
 
   zramSwap.enable = true;
 }
