@@ -85,5 +85,10 @@
     models = "/mnt/Hard/models/";
   };
 
-  environment.systemPackages = with pkgs; [ ollama-cuda ];
+  environment.systemPackages = with pkgs; [
+    ollama-cuda
+    moonlight-qt
+  ];
+
+  services.sunshine.enable = true;
 }
