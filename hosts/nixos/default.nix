@@ -65,20 +65,14 @@
 
       ForwardAgent yes
 
-    Host pangolin
-      HostName 212.127.78.174
-      Port 2222
-
-      User root
-
     Host hermes
       HostName 192.168.100.12
       Port 22
       User hermes
       ProxyJump nixos-server
 
-    Host oracle
-      HostName 141.147.63.204
+    Host pangolin
+      HostName amarek.org
       Port 2222
       User ubuntu
   '';
