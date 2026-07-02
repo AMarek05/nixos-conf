@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 {
   imports = [
     ./common.nix
@@ -15,6 +15,8 @@
       scroll_factor = 0.3;
     };
   };
+
+  home.packages = with pkgs; [ obs-studio ];
 
   programs.caelestia.settings.bar.status.showBattery = lib.mkForce true;
 }

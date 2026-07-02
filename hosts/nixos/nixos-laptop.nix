@@ -7,7 +7,7 @@
   ];
 
   nixosModules.tailscale.enable = true;
-  nixosModules.moonshine.enable = true;
+  nixosModules.sunshine.enable = true;
 
   networking.hostName = lib.mkForce "nixos-laptop";
 
