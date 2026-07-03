@@ -55,7 +55,7 @@ modulesLib.mkHostModules {
     }
     {
       name = "shell";
-      kind = "file";
+      kind = "dir";
     }
     {
       name = "user";
