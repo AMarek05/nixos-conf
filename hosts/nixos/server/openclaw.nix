@@ -139,7 +139,7 @@ in
         ];
 
         controlUi.allowedOrigins = [
-          "https://openclaw.amarek.org"
+          "https://openclaw.amarek.pl"
         ];
       };
 

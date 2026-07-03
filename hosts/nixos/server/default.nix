@@ -123,9 +123,9 @@
     acceptTerms = true;
     defaults.email = "amarek05@pm.me";
 
-    certs."amarek.org" = {
-      domain = "*.amarek.org";
-      extraDomainNames = [ "amarek.org" ];
+    certs."amarek.pl" = {
+      domain = "*.amarek.pl";
+      extraDomainNames = [ "amarek.pl" ];
       dnsProvider = "cloudflare";
 
       credentialFiles = {
@@ -261,15 +261,15 @@
     lfs.enable = true;
 
     settings.server = {
-      DOMAIN = "git.amarek.org";
-      ROOT_URL = "https://git.amarek.org/";
+      DOMAIN = "git.amarek.pl";
+      ROOT_URL = "https://git.amarek.pl/";
 
       START_SSH_SERVER = true;
 
       SSH_LISTEN_PORT = 2222;
 
       SSH_PORT = 22;
-      SSH_DOMAIN = "amarek.org";
+      SSH_DOMAIN = "amarek.pl";
     };
 
     settings.repository.ENABLE_PUSH_CREATE_USER = true;
@@ -287,48 +287,48 @@
   services.caddy = {
     enable = true;
 
-    virtualHosts."st.amarek.org" = {
-      useACMEHost = "amarek.org";
+    virtualHosts."st.amarek.pl" = {
+      useACMEHost = "amarek.pl";
       extraConfig = ''
         reverse_proxy 127.0.0.1:8000
       '';
     };
 
-    virtualHosts."jellyfin.amarek.org" = {
-      useACMEHost = "amarek.org";
+    virtualHosts."jellyfin.amarek.pl" = {
+      useACMEHost = "amarek.pl";
       extraConfig = ''
         reverse_proxy 127.0.0.1:8096
       '';
     };
 
-    virtualHosts."qbit.amarek.org" = {
-      useACMEHost = "amarek.org";
+    virtualHosts."qbit.amarek.pl" = {
+      useACMEHost = "amarek.pl";
       extraConfig = ''
         reverse_proxy 127.0.0.1:8080
       '';
     };
-    virtualHosts."git.amarek.org" = {
-      useACMEHost = "amarek.org";
+    virtualHosts."git.amarek.pl" = {
+      useACMEHost = "amarek.pl";
       extraConfig = ''
         reverse_proxy 127.0.0.1:3000
       '';
     };
-    virtualHosts."openclaw.amarek.org" = {
-      useACMEHost = "amarek.org";
+    virtualHosts."openclaw.amarek.pl" = {
+      useACMEHost = "amarek.pl";
       extraConfig = ''
         reverse_proxy 192.168.100.11:18789
       '';
     };
 
-    virtualHosts."hermes.amarek.org" = {
-      useACMEHost = "amarek.org";
+    virtualHosts."hermes.amarek.pl" = {
+      useACMEHost = "amarek.pl";
       extraConfig = ''
         reverse_proxy 192.168.100.12:8642
       '';
     };
 
-    virtualHosts."webui.amarek.org" = {
-      useACMEHost = "amarek.org";
+    virtualHosts."webui.amarek.pl" = {
+      useACMEHost = "amarek.pl";
       extraConfig = ''
         reverse_proxy 192.168.100.12:8080
       '';
