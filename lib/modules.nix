@@ -2,14 +2,16 @@
 # Shared module library for modules/nixos/ and modules/hm/.
 #
 # Each entry drives:
-#   1. The imports list (path to ./name.nix or ./name/)
-#   2. Default enable values for <namespace>.<name>[/<sub>].enable
+#   1. The `imports = [ ... ]` list (./name.nix or ./name/)
+#   2. The `options` declarations for <namespace>.<name>[/<sub>].enable
 #
-# optional = true  → enable = lib.mkDefault false  (off by default)
-# optional = false / absent → enable = lib.mkDefault true (on by default)
+# Enable semantics:
+#   optional = true       → enable = mkOption default false
+#   optional = false/absent → enable = mkOption default true
 #
-# When a dir entry has sub-entries, BOTH the parent and each sub get
-# their own independent enable default.
+# When a dir has sub-entries, each sub gets its own enable option whose
+# defaultText is "config.<ns>.<parent>.enable" — so setting the parent
+# to false cascades to all subs (and an explicit per-sub override still wins).
 #
 # Usage:
 #   let modulesLib = import ../../lib/modules.nix { inherit lib; };
@@ -21,7 +23,7 @@
 { lib }:
 
 let
-  # Build the `imports = [ ... ]` list from entries.
+  # `imports = [ ... ]` list from entries.
   mkImports =
     basePath: entries:
     map (
@@ -34,41 +36,64 @@ let
         basePath + "/${e.name}.nix"
     ) entries;
 
-  # An entry is enabled-by-default (true) unless explicitly marked optional.
-  # Resolves the optional field with a safe lookup.
+  # An entry is enabled-by-default unless explicitly marked optional.
   isEnabledByDefault =
     e:
     !(e.optional or false);
 
-  # Build a single entry's contribution to the config attrset.
-  # Returns { <name>.enable = ...; ...?sub-enables }
-  buildEntry =
-    e:
-    if e.kind == "dir" && e ? sub then
-      let
-        subAcc = lib.foldl' (
-          a: sub: a // { ${sub.name}.enable = lib.mkDefault (isEnabledByDefault sub); }
-        ) { } e.sub;
-      in
-      {
-        ${e.name} = {
-          enable = lib.mkDefault (isEnabledByDefault e);
-        } // subAcc;
-      }
-    else
-      { ${e.name}.enable = lib.mkDefault (isEnabledByDefault e); };
+  # One entry's contribution to options.<ns>.
+  buildEntryOptions =
+    ns: e:
+    let
+      parentPath = "${ns}.${e.name}";
+      parentEnable = {
+        enable = lib.mkOption {
+          type = lib.types.bool;
+          default = isEnabledByDefault e;
+          defaultText = lib.literalExpression "config.${parentPath}.enable";
+          description = "Enable ${e.name} module";
+        };
+      };
 
-  # Build { <namespace> = { ... enables ... }; }
-  mkConfig =
-    namespace: entries:
-    { ${namespace} = lib.foldl' (acc: e: acc // buildEntry e) { } entries; };
+      subEnables =
+        if e.kind == "dir" && e ? sub then
+          lib.foldl' (
+            acc: sub:
+            let
+              subDefault = isEnabledByDefault sub;
+            in
+            acc
+            // {
+              ${sub.name}.enable = lib.mkOption {
+                type = lib.types.bool;
+                default = subDefault;
+                defaultText = lib.literalExpression "config.${parentPath}.enable";
+                description = "Enable ${e.name}.${sub.name} (tracks parent unless overridden)";
+              };
+            }
+          ) { } e.sub
+        else
+          { };
+    in
+    {
+      ${e.name} = parentEnable // subEnables;
+    };
+
+  mkOptions =
+    ns: entries:
+    { ${ns} = lib.foldl' (acc: e: acc // buildEntryOptions ns e) { } entries; };
 in
 
 {
   mkHostModules =
-    { namespace, basePath, entries }:
+    {
+      namespace,
+      basePath,
+      entries,
+    }:
     {
       imports = mkImports basePath entries;
-      config = mkConfig namespace entries;
+
+      options = mkOptions namespace entries;
     };
 }
