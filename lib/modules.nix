@@ -1,31 +1,27 @@
 # lib/modules.nix
-# Shared module library — used by both the NixOS (modules/nixos/) and
-# Home Manager (modules/hm/) module trees to avoid duplicated aggregator
-# default.nix files.
+# Shared module library for modules/nixos/ and modules/hm/.
 #
 # Each entry drives:
-#   1. The imports list (path or ./name.nix / ./name/)
-#   2. Default enable values for nixosModules.<name> / hmModules.<name>
+#   1. The imports list (path to ./name.nix or ./name/)
+#   2. Default enable values for <namespace>.<name>[/<sub>].enable
 #
 # optional = true  → enable = lib.mkDefault false  (off by default)
 # optional = false / absent → enable = lib.mkDefault true (on by default)
 #
-# When a dir entry has sub-entries:
-#   - Parent dir gets hmModules.<name>.enable = lib.mkDefault true (unless optional)
-#   - Each sub gets hmModules.<name>.<sub>.enable with its own default
+# When a dir entry has sub-entries, BOTH the parent and each sub get
+# their own independent enable default.
 #
-# Usage in a default.nix:
-#
+# Usage:
 #   let modulesLib = import ../../lib/modules.nix { inherit lib; };
-#   in modulesLib.mkHostNixosModules {
-#     basePath = ../../modules/nixos;
-#     entries = [ ... ];
+#   in modulesLib.mkHostModules {
+#     namespace = "nixosModules";
+#     basePath  = ../../modules/nixos;
+#     entries   = [ ... ];
 #   }
-#
 { lib }:
 
 let
-  # Generate import paths from entries
+  # Build the `imports = [ ... ]` list from entries.
   mkImports =
     basePath: entries:
     map (
@@ -38,109 +34,41 @@ let
         basePath + "/${e.name}.nix"
     ) entries;
 
-  # Convert entries to nixosModules attribute set with defaults
-  mkNixosModulesConfig =
-    entries:
-    lib.foldl' (
-      acc: e:
+  # An entry is enabled-by-default (true) unless explicitly marked optional.
+  # Resolves the optional field with a safe lookup.
+  isEnabledByDefault =
+    e:
+    !(e.optional or false);
+
+  # Build a single entry's contribution to the config attrset.
+  # Returns { <name>.enable = ...; ...?sub-enables }
+  buildEntry =
+    e:
+    if e.kind == "dir" && e ? sub then
       let
-        defaultEnabled = !(e.optional or false);
+        subAcc = lib.foldl' (
+          a: sub: a // { ${sub.name}.enable = lib.mkDefault (isEnabledByDefault sub); }
+        ) { } e.sub;
       in
-      acc
-      // {
+      {
         ${e.name} = {
-          enable = lib.mkDefault defaultEnabled;
-        };
+          enable = lib.mkDefault (isEnabledByDefault e);
+        } // subAcc;
       }
-    ) { } entries;
+    else
+      { ${e.name}.enable = lib.mkDefault (isEnabledByDefault e); };
 
-  # Convert entries + sub-entries to hmModules attribute set with defaults
-  # When a dir has sub-entries: sets BOTH parent enable AND sub enables
-  mkHmModulesConfig =
-    entries:
-    lib.foldl' (
-      acc: e:
-      let
-        # Dir with sub: set parent AND all sub entries
-        mkDirWithSubConfig =
-          name: subs:
-          let
-            parentDefault = !(e.optional or false);
-
-            # 1. Build the nested set of sub-modules (e.g., { dolphin = { enable = true; }; nvim = { enable = true; }; })
-            subConfigs = lib.foldl' (
-              subAcc: sub:
-              let
-                subDefault = !(sub.optional or false);
-              in
-              subAcc
-              // {
-                ${sub.name} = {
-                  enable = lib.mkDefault subDefault;
-                };
-              }
-            ) { } subs;
-          in
-          acc
-          // {
-            ${name} = {
-              enable = lib.mkDefault parentDefault;
-            }
-            // subConfigs;
-          };
-        # Dir with no sub: just set parent enable
-        mkDirConfig =
-          name:
-          let
-            defaultEnabled = !(e.optional or false);
-          in
-          acc
-          // {
-            ${name} = {
-              enable = lib.mkDefault defaultEnabled;
-            };
-          };
-        # File entry: just set enable
-        mkFileConfig =
-          name:
-          let
-            defaultEnabled = !(e.optional or false);
-          in
-          acc
-          // {
-            ${name} = {
-              enable = lib.mkDefault defaultEnabled;
-            };
-          };
-      in
-      if e.kind == "dir" && e ? sub then
-        mkDirWithSubConfig e.name e.sub
-      else if e.kind == "dir" then
-        mkDirConfig e.name
-      else
-        mkFileConfig e.name
-    ) { } entries;
+  # Build { <namespace> = { ... enables ... }; }
+  mkConfig =
+    namespace: entries:
+    { ${namespace} = lib.foldl' (acc: e: acc // buildEntry e) { } entries; };
 in
 
 {
-  # For NixOS module trees (modules/nixos/default.nix)
-  mkHostNixosModules =
-    { basePath, entries }:
+  mkHostModules =
+    { namespace, basePath, entries }:
     {
       imports = mkImports basePath entries;
-      config = {
-        nixosModules = mkNixosModulesConfig entries;
-      };
-    };
-
-  # For Home Manager module trees (modules/hm/default.nix)
-  mkHostHmModules =
-    { basePath, entries }:
-    {
-      imports = mkImports basePath entries;
-      config = {
-        hmModules = mkHmModulesConfig entries;
-      };
+      config = mkConfig namespace entries;
     };
 }
-

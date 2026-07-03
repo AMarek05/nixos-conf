@@ -3,7 +3,8 @@
 let
   modulesLib = import ../../lib/modules.nix { inherit lib; };
 in
-modulesLib.mkHostNixosModules {
+modulesLib.mkHostModules {
+  namespace = "nixosModules";
   basePath = ../../modules/nixos;
   entries = [
     {
