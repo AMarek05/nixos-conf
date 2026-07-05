@@ -20,7 +20,7 @@ let
 in
 {
   options.hmModules.caelestia = {
-    enable = mkEnableOption "Enable caelestia shell module";
+    enable = mkEnableOption "Enable caelestia shell module" // { default = true; };
 
     # Direct passthrough to programs.caelestia.settings
     settings = mkOption {
