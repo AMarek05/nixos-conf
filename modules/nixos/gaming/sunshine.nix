@@ -7,11 +7,11 @@
 }:
 
 {
-  options.nixosModules.sunshine = {
+  options.nixosModules.gaming.sunshine = {
     enable = lib.mkEnableOption "Sunshine wayland screen sharing";
   };
 
-  config = lib.mkIf config.nixosModules.sunshine.enable {
+  config = lib.mkIf config.nixosModules.gaming.sunshine.enable {
     services.sunshine = {
       enable = true;
 

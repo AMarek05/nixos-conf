@@ -5,7 +5,7 @@
   ...
 }:
 let
-  cfg = config.nixosModules.tailscale;
+  cfg = config.nixosModules.network.tailscale;
 in
 {
   config = lib.mkIf cfg.enable {

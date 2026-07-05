@@ -9,7 +9,7 @@
 }:
 
 {
-  config = lib.mkIf config.nixosModules.hyprland.enable {
+  config = lib.mkIf config.nixosModules.desktop.hyprland.enable {
     hardware.graphics = {
       enable = true;
       enable32Bit = true;

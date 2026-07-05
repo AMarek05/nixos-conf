@@ -14,8 +14,8 @@
   ];
 
   nixosModules.sandbox.enable = true;
-  nixosModules.tailscale.enable = true;
-  nixosModules.sunshine.enable = true;
+  nixosModules.network.tailscale.enable = true;
+  nixosModules.gaming.sunshine.enable = true;
 
   programs.sleepy-launcher.enable = true;
 

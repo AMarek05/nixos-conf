@@ -5,7 +5,7 @@
   ...
 }:
 {
-  config = lib.mkIf config.nixosModules.console.enable {
+  config = lib.mkIf config.nixosModules.desktop.console.enable {
     console = {
       enable = true;
       packages = with pkgs; [ terminus_font ];

@@ -8,24 +8,22 @@ modulesLib.mkHostModules {
   basePath = ../../modules/nixos;
   entries = [
     {
-      name = "audio";
-      kind = "file";
+      name = "desktop";
+      kind = "dir";
+      sub = [
+        { name = "audio"; }
+        { name = "console"; }
+        { name = "fonts"; }
+        { name = "hyprland"; }
+      ];
     }
     {
-      name = "console";
-      kind = "file";
-    }
-    {
-      name = "fonts";
-      kind = "file";
-    }
-    {
-      name = "gamemode";
-      kind = "file";
-    }
-    {
-      name = "hyprland";
-      kind = "file";
+      name = "gaming";
+      kind = "dir";
+      sub = [
+        { name = "gamemode"; }
+        { name = "sunshine"; createOption = false; }
+      ];
     }
     {
       name = "networking";
@@ -36,6 +34,14 @@ modulesLib.mkHostModules {
         { name = "syncthing"; }
         { name = "ssh"; }
         { name = "tools"; }
+      ];
+    }
+    {
+      name = "network";
+      kind = "dir";
+      sub = [
+        { name = "vpn"; }
+        { name = "tailscale"; optional = true; }
       ];
     }
     {
@@ -77,21 +83,6 @@ modulesLib.mkHostModules {
     {
       name = "user";
       kind = "file";
-    }
-    {
-      name = "vpn";
-      kind = "file";
-    }
-    {
-      name = "tailscale";
-      kind = "file";
-      optional = true;
-    }
-    {
-      name = "sunshine";
-      kind = "file";
-      optional = true;
-      createOption = false;
     }
   ];
 }

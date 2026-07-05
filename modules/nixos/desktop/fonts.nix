@@ -5,7 +5,7 @@
   ...
 }:
 {
-  config = lib.mkIf config.nixosModules.fonts.enable {
+  config = lib.mkIf config.nixosModules.desktop.fonts.enable {
     fonts.packages = with pkgs; [
       nerd-fonts.jetbrains-mono
       nerd-fonts._0xproto

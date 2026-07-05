@@ -79,17 +79,17 @@ let
 
         subEnables =
           if e.kind == "dir" && e ? sub then
-            lib.foldl' (
-              acc: sub:
+            lib.foldl' (acc: sub:
               let
                 subDefault = isEnabledByDefault sub;
+                subCreateOption = sub.createOption or true;
+                subEnableOpt = if subCreateOption then {
+                  ${sub.name}.enable = lib.mkEnableOption "${e.name}.${sub.name}" // {
+                    default = subDefault;
+                  };
+                } else {};
               in
-              acc
-              // {
-                ${sub.name}.enable = lib.mkEnableOption "${e.name}.${sub.name} (tracks parent unless overridden)" // {
-                  default = subDefault;
-                };
-              }
+              acc // subEnableOpt
             ) { } e.sub
           else
             { };
