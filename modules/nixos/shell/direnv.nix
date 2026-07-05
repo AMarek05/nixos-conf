@@ -1,12 +1,6 @@
 # modules/nixos/shell/direnv.nix — direnv with nix-direnv integration.
+{ config, lib, ... }:
 {
-  config,
-  lib,
-  ...
-}:
-{
-  options.nixosModules.shell.direnv.enable = lib.mkEnableOption "direnv with nix-direnv";
-
   config = lib.mkIf (
     config.nixosModules.shell.enable &&
     config.nixosModules.shell.direnv.enable
