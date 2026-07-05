@@ -55,7 +55,10 @@ modulesLib.mkHostModules {
       sub = [
         { name = "gnupg"; }
         { name = "keyring"; }
-        { name = "sandbox"; }
+        {
+          name = "sandbox";
+          optional = true;
+        }
         { name = "tpm2"; }
       ];
     }
