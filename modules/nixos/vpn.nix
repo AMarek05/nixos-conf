@@ -5,10 +5,6 @@
   ...
 }:
 {
-  options.nixosModules.vpn = {
-    enable = lib.mkEnableOption "VPN clients (Mullvad, ProtonVPN)";
-  };
-
   config = lib.mkIf config.nixosModules.vpn.enable {
     environment.systemPackages = with pkgs; [
       proton-vpn-cli

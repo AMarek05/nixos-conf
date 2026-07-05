@@ -5,10 +5,6 @@
   ...
 }:
 {
-  options.nixosModules.console = {
-    enable = lib.mkEnableOption "console (fonts, keymap)";
-  };
-
   config = lib.mkIf config.nixosModules.console.enable {
     console = {
       enable = true;

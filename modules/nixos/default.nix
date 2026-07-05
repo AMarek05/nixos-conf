@@ -56,7 +56,6 @@ modulesLib.mkHostModules {
     {
       name = "shell";
       kind = "dir";
-      defineOptions = true;
       sub = [
         { name = "zsh"; }
         { name = "direnv"; }

@@ -5,10 +5,6 @@
   ...
 }:
 {
-  options.nixosModules.user = {
-    enable = lib.mkEnableOption "user configuration";
-  };
-
   config = lib.mkIf config.nixosModules.user.enable {
     users.groups.adam = { };
 

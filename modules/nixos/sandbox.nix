@@ -5,10 +5,6 @@
   ...
 }:
 {
-  options.nixosModules.sandbox = {
-    enable = lib.mkEnableOption "Sandboxing";
-  };
-
   config = lib.mkIf config.nixosModules.sandbox.enable {
     services.flatpak.enable = true;
 

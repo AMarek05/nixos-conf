@@ -3,14 +3,14 @@
 #
 # Each entry drives:
 #   1. The `imports = [ ... ]` list (./name.nix or ./name/)
-#   2. (Optional) `options` declarations for <namespace>.<name>[/<sub>].enable
+#   2. The `options` declarations for <namespace>.<name>[/<sub>].enable
 #
 # For dir entries with sub-entries, the catalog auto-imports each sibling
 # alongside default.nix — so the directory's default.nix has zero import
 # bookkeeping if it wants. Third-party inputs (e.g. inputs.X.homeModules)
 # the directory still needs can be added with the `extraImports` field.
 #
-# Enable semantics (when defineOptions = true):
+# Enable semantics:
 #   optional = true         → enable default false
 #   optional = false/absent → enable default true
 #
@@ -54,39 +54,36 @@ let
     !(e.optional or false);
 
   # One entry's contribution to options.<ns>.
-  # Skipped entirely when defineOptions = false (caller manages options).
+  # Always emits: parent enable + per-sub enable for dir-with-sub.
   buildEntryOptions =
     e:
-    if e.defineOptions or false then
-      let
-        parentEnable = {
-          enable = lib.mkEnableOption "${e.name} module" // {
-            default = isEnabledByDefault e;
-          };
+    let
+      parentEnable = {
+        enable = lib.mkEnableOption "${e.name} module" // {
+          default = isEnabledByDefault e;
         };
+      };
 
-        subEnables =
-          if e.kind == "dir" && e ? sub then
-            lib.foldl' (
-              acc: sub:
-              let
-                subDefault = isEnabledByDefault sub;
-              in
-              acc
-              // {
-                ${sub.name}.enable = lib.mkEnableOption "${e.name}.${sub.name} (tracks parent unless overridden)" // {
-                  default = subDefault;
-                };
-              }
-            ) { } e.sub
-          else
-            { };
-      in
-      {
-        ${e.name} = parentEnable // subEnables;
-      }
-    else
-      { };
+      subEnables =
+        if e.kind == "dir" && e ? sub then
+          lib.foldl' (
+            acc: sub:
+            let
+              subDefault = isEnabledByDefault sub;
+            in
+            acc
+            // {
+              ${sub.name}.enable = lib.mkEnableOption "${e.name}.${sub.name} (tracks parent unless overridden)" // {
+                default = subDefault;
+              };
+            }
+          ) { } e.sub
+        else
+          { };
+    in
+    {
+      ${e.name} = parentEnable // subEnables;
+    };
 
   mkOptions =
     ns: entries:
@@ -95,23 +92,9 @@ in
 
 {
   mkHostModules =
-    {
-      namespace,
-      basePath,
-      entries,
-    }:
-    let
-      generatedOptions = mkOptions namespace entries;
-    in
+    { namespace, basePath, entries }:
     {
       imports = mkImports basePath entries;
-
-      options =
-        # Skip option declarations if all entries opt out.
-        # (Useful when caller files already declare their own enables.)
-        if lib.all (e: !(e.defineOptions or false)) entries then
-          { }
-        else
-          generatedOptions;
+      options = mkOptions namespace entries;
     };
 }

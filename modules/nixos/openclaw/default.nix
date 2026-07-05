@@ -22,9 +22,6 @@ let
 
 in
 {
-  # Enable/disable via nixosModules.openclaw.enable
-  options.nixosModules.openclaw.enable = lib.mkEnableOption "OpenClaw AI assistant";
-
   # Auto-source all sub-modules in modules/
   imports = autoImportDir (basePath + "/modules");
 

@@ -9,10 +9,6 @@
 }:
 
 {
-  options.nixosModules.hyprland = {
-    enable = lib.mkEnableOption "Hyprland compositor";
-  };
-
   config = lib.mkIf config.nixosModules.hyprland.enable {
     hardware.graphics = {
       enable = true;

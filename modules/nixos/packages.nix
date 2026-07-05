@@ -5,10 +5,6 @@
   ...
 }:
 {
-  options.nixosModules.packages = {
-    enable = lib.mkEnableOption "core system packages";
-  };
-
   config = lib.mkIf config.nixosModules.packages.enable {
     environment.systemPackages = with pkgs; [
       vim
