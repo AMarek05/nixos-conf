@@ -46,7 +46,7 @@
   nixosModules.desktop.hyprland.enable = false;
   nixosModules.security.sandbox.enable = false;
   nixosModules.system.nix-ld.enable = false;
-  nixosModules.vpn.vpn.enable = false;
+  nixosModules.vpn.enable = false;
 
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
 

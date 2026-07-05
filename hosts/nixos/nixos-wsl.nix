@@ -19,7 +19,7 @@
   nixosModules.security.sandbox.enable = false;
   nixosModules.system.nix-ld.enable = false;
   nixosModules.system.user.enable = false;
-  nixosModules.vpn.vpn.enable = false;
+  nixosModules.vpn.enable = false;
 
   boot.loader.grub.enable = lib.mkForce false;
   boot.loader.systemd-boot.enable = lib.mkForce false;

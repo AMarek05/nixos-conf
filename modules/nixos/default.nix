@@ -41,7 +41,6 @@ modulesLib.mkHostModules {
       kind = "dir";
       sub = [
         { name = "tailscale"; optional = true; }
-        { name = "vpn"; }
       ];
     }
     {

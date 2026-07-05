@@ -5,7 +5,7 @@
   ...
 }:
 {
-  config = lib.mkIf config.nixosModules.vpn.vpn.enable {
+  config = lib.mkIf config.nixosModules.vpn.enable {
     environment.systemPackages = with pkgs; [
       proton-vpn-cli
       proton-vpn
