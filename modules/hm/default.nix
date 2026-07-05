@@ -25,7 +25,10 @@ modulesLib.mkHostModules {
         { name = "stylix"; }
         { name = "nvf"; }
         { name = "dolphin"; }
-        { name = "packages"; }
+        { name = "packages"; sub = [
+          { name = "browsers"; }
+          { name = "packages"; }
+        ]; }
       ];
     }
     {

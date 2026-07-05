@@ -4,12 +4,8 @@
   config,
   ...
 }:
-
-let
-  cfg = config.hmModules.apps.packages;
-in
 {
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf config.hmModules.apps.packages.enable {
     home.packages = with pkgs; [
       thunderbird
 
@@ -37,13 +33,5 @@ in
       onlyoffice-desktopeditors
       libreoffice-fresh
     ];
-
-    programs.firefox = {
-      enable = true;
-
-      configPath = "${config.xdg.configHome}/mozilla/firefox";
-    };
-
-    programs.zen-browser.enable = true;
   };
 }

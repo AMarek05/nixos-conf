@@ -7,8 +7,8 @@
 #
 # For dir entries with sub-entries, the catalog auto-imports each sibling
 # alongside default.nix — so the directory's default.nix has zero import
-# bookkeeping if it wants. Third-party inputs (e.g. inputs.X.homeModules)
-# the directory still needs can be added with the `extraImports` field.
+# Third-party inputs the directory needs are imported directly in the
+# directory's own file(s) (e.g. inputs.X.homeModules in someFile.nix).
 #
 # Enable semantics:
 #   optional = true         → enable default false
@@ -52,7 +52,7 @@ let
         else
           [ (basePath + "/${e.name}.nix") ];
     in
-    baseImports ++ (e.extraImports or [ ]);
+    baseImports;
 
   mkImports =
     basePath: entries:
