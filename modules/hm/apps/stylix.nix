@@ -5,14 +5,11 @@
   config,
   ...
 }:
+
 {
   imports = [
     inputs.stylix.homeModules.stylix
   ];
-
-  options.hmModules.apps.stylix = {
-    enable = lib.mkEnableOption "stylix";
-  };
 
   config = lib.mkIf config.hmModules.apps.stylix.enable {
     gtk.gtk4.theme = lib.mkForce null;

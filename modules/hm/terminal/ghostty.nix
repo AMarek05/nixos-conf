@@ -3,10 +3,6 @@ let
   cfg = config.hmModules.terminal.ghostty;
 in
 {
-  options.hmModules.terminal.ghostty = {
-    enable = lib.mkEnableOption "Add ghostty installation and configuration";
-  };
-
   config = lib.mkIf cfg.enable {
     programs.ghostty = {
       enable = true;

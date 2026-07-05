@@ -8,16 +8,9 @@
 {
   imports = [
     inputs.zen-browser.homeModules.beta
-    ./dolphin.nix
-    ./nvf.nix
-    ./stylix.nix
-    ./forge.nix
-    ./packages.nix
+    # ./dolphin.nix ./nvf.nix ./stylix.nix ./forge.nix ./packages.nix
+    # These are auto-imported by the catalog via the `sub` entries.
   ];
-
-  options.hmModules.apps = {
-    enable = lib.mkEnableOption "apps";
-  };
 
   config = lib.mkIf config.hmModules.apps.enable {
     home.packages = with pkgs; [ nh ];

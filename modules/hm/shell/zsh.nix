@@ -11,10 +11,6 @@ let
   cfg = config.hmModules.shell.zsh;
 in
 {
-  options.hmModules.shell.zsh = {
-    enable = lib.mkEnableOption "zsh shell";
-  };
-
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       eza

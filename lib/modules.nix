@@ -54,36 +54,42 @@ let
     !(e.optional or false);
 
   # One entry's contribution to options.<ns>.
-  # Always emits: parent enable + per-sub enable for dir-with-sub.
+  # When optionsOwnedByFile = true, the file declares its own options
+  # (escape hatch for entries like caelestia that have a richer option
+  # surface than enable alone). Otherwise: emit parent enable + per-sub
+  # enable for dir-with-sub.
   buildEntryOptions =
     e:
-    let
-      parentEnable = {
-        enable = lib.mkEnableOption "${e.name} module" // {
-          default = isEnabledByDefault e;
+    if e.optionsOwnedByFile or false then
+      { }
+    else
+      let
+        parentEnable = {
+          enable = lib.mkEnableOption "${e.name} module" // {
+            default = isEnabledByDefault e;
+          };
         };
-      };
 
-      subEnables =
-        if e.kind == "dir" && e ? sub then
-          lib.foldl' (
-            acc: sub:
-            let
-              subDefault = isEnabledByDefault sub;
-            in
-            acc
-            // {
-              ${sub.name}.enable = lib.mkEnableOption "${e.name}.${sub.name} (tracks parent unless overridden)" // {
-                default = subDefault;
-              };
-            }
-          ) { } e.sub
-        else
-          { };
-    in
-    {
-      ${e.name} = parentEnable // subEnables;
-    };
+        subEnables =
+          if e.kind == "dir" && e ? sub then
+            lib.foldl' (
+              acc: sub:
+              let
+                subDefault = isEnabledByDefault sub;
+              in
+              acc
+              // {
+                ${sub.name}.enable = lib.mkEnableOption "${e.name}.${sub.name} (tracks parent unless overridden)" // {
+                  default = subDefault;
+                };
+              }
+            ) { } e.sub
+          else
+            { };
+      in
+      {
+        ${e.name} = parentEnable // subEnables;
+      };
 
   mkOptions =
     ns: entries:

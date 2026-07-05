@@ -1,14 +1,5 @@
-# terminal module — aggregates all terminal submodules
-{ lib, ... }:
-
-{
-  imports = [
-    ./man.nix
-    ./tmux.nix
-    ./ghostty.nix
-  ];
-
-  options.hmModules.terminal = {
-    enable = lib.mkEnableOption "terminal configuration";
-  };
-}
+# terminal module — submodules are auto-imported by the catalog.
+# No cross-cutting config at this level; the parent enable option
+# is declared by the lib.
+_:
+{ }

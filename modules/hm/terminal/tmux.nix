@@ -6,10 +6,6 @@
   ...
 }:
 {
-  options.hmModules.terminal.tmux = {
-    enable = lib.mkEnableOption "tmux";
-  };
-
   config = lib.mkIf config.hmModules.terminal.tmux.enable {
     home.packages = [ pkgs.gitmux ];
 

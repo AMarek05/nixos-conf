@@ -9,8 +9,6 @@ let
   cfg = config.hmModules.apps.packages;
 in
 {
-  options.hmModules.apps.packages.enable = lib.mkEnableOption "Assorted apps";
-
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       thunderbird
