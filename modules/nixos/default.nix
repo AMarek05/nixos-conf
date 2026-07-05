@@ -29,18 +29,19 @@ modulesLib.mkHostModules {
       name = "networking";
       kind = "dir";
       sub = [
-        { name = "nm"; }
         { name = "firewall"; }
         { name = "ssh"; }
         { name = "syncthing"; }
-        { name = "tools"; }
       ];
     }
     {
       name = "vpn";
       kind = "dir";
       sub = [
-        { name = "tailscale"; optional = true; }
+        {
+          name = "tailscale";
+          optional = true;
+        }
       ];
     }
     {
