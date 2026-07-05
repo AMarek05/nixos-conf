@@ -13,8 +13,8 @@
     inputs.aagl.nixosModules.default
   ];
 
-  nixosModules.sandbox.enable = true;
-  nixosModules.network.tailscale.enable = true;
+  nixosModules.security.sandbox.enable = true;
+  nixosModules.vpn.tailscale.enable = true;
   nixosModules.gaming.sunshine.enable = true;
 
   programs.sleepy-launcher.enable = true;

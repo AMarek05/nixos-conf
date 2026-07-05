@@ -31,35 +31,22 @@ modulesLib.mkHostModules {
       sub = [
         { name = "nm"; }
         { name = "firewall"; }
-        { name = "syncthing"; }
         { name = "ssh"; }
+        { name = "syncthing"; }
         { name = "tools"; }
       ];
     }
     {
-      name = "network";
+      name = "vpn";
       kind = "dir";
       sub = [
-        { name = "vpn"; }
         { name = "tailscale"; optional = true; }
+        { name = "vpn"; }
       ];
-    }
-    {
-      name = "nix-ld";
-      kind = "file";
     }
     {
       name = "openclaw";
       kind = "dir";
-      optional = true;
-    }
-    {
-      name = "packages";
-      kind = "file";
-    }
-    {
-      name = "sandbox";
-      kind = "file";
       optional = true;
     }
     {
@@ -68,6 +55,7 @@ modulesLib.mkHostModules {
       sub = [
         { name = "gnupg"; }
         { name = "keyring"; }
+        { name = "sandbox"; }
         { name = "tpm2"; }
       ];
     }
@@ -81,8 +69,13 @@ modulesLib.mkHostModules {
       ];
     }
     {
-      name = "user";
-      kind = "file";
+      name = "system";
+      kind = "dir";
+      sub = [
+        { name = "nix-ld"; }
+        { name = "packages"; }
+        { name = "user"; }
+      ];
     }
   ];
 }

@@ -5,7 +5,7 @@
   ...
 }:
 {
-  config = lib.mkIf config.nixosModules.sandbox.enable {
+  config = lib.mkIf config.nixosModules.security.sandbox.enable {
     services.flatpak.enable = true;
 
     virtualisation.podman = {

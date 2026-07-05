@@ -5,7 +5,7 @@
   ...
 }:
 {
-  config = lib.mkIf config.nixosModules.user.enable {
+  config = lib.mkIf config.nixosModules.system.user.enable {
     users.groups.adam = { };
 
     users.users.adam = {

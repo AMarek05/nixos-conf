@@ -5,7 +5,7 @@
   ...
 }:
 {
-  config = lib.mkIf config.nixosModules.packages.enable {
+  config = lib.mkIf config.nixosModules.system.packages.enable {
     environment.systemPackages = with pkgs; [
       vim
       git

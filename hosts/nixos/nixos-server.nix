@@ -44,11 +44,9 @@
   nixosModules.desktop.fonts.enable = false;
   nixosModules.gaming.gamemode.enable = false;
   nixosModules.desktop.hyprland.enable = false;
-  nixosModules.networking.enable = false;
-  nixosModules.nix-ld.enable = false;
-  nixosModules.security.enable = false;
-  nixosModules.shell.enable = false;
-  nixosModules.network.vpn.enable = false;
+  nixosModules.security.sandbox.enable = false;
+  nixosModules.system.nix-ld.enable = false;
+  nixosModules.vpn.vpn.enable = false;
 
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
 

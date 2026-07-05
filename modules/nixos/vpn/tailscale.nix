@@ -5,7 +5,7 @@
   ...
 }:
 let
-  cfg = config.nixosModules.network.tailscale;
+  cfg = config.nixosModules.vpn.tailscale;
 in
 {
   config = lib.mkIf cfg.enable {

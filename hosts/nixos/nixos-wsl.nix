@@ -16,12 +16,10 @@
   nixosModules.desktop.fonts.enable = false;
   nixosModules.gaming.gamemode.enable = false;
   nixosModules.desktop.hyprland.enable = false;
-  nixosModules.networking.enable = false;
-  nixosModules.nix-ld.enable = false;
-  nixosModules.security.enable = false;
-  nixosModules.shell.enable = false;
-  nixosModules.user.enable = false;
-  nixosModules.network.vpn.enable = false;
+  nixosModules.security.sandbox.enable = false;
+  nixosModules.system.nix-ld.enable = false;
+  nixosModules.system.user.enable = false;
+  nixosModules.vpn.vpn.enable = false;
 
   boot.loader.grub.enable = lib.mkForce false;
   boot.loader.systemd-boot.enable = lib.mkForce false;
