@@ -22,7 +22,7 @@ modulesLib.mkHostModules {
       kind = "dir";
       sub = [
         { name = "gamemode"; }
-        { name = "sunshine"; createOption = false; }
+        { name = "sunshine"; }
       ];
     }
     {
