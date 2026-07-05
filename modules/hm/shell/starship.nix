@@ -4,7 +4,7 @@ let
   dotsPath = ../../../store;
 in
 {
-  config = lib.mkIf config.hmModules.shell.starship.enable {
+  config = lib.mkIf (config.hmModules.shell.enable && config.hmModules.shell.starship.enable) {
     programs.starship = {
       enable = true;
       enableZshIntegration = true;

@@ -3,7 +3,7 @@ let
   cfg = config.hmModules.terminal.ghostty;
 in
 {
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (config.hmModules.terminal.enable && config.hmModules.terminal.ghostty.enable) {
     programs.ghostty = {
       enable = true;
       settings = {

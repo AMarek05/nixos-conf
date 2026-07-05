@@ -11,7 +11,7 @@ let
   cfg = config.hmModules.shell.zsh;
 in
 {
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf (config.hmModules.shell.enable && cfg.enable) {
     home.packages = with pkgs; [
       eza
       rsync

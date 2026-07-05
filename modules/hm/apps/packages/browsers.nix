@@ -9,7 +9,7 @@
     inputs.zen-browser.homeModules.beta
   ];
 
-  config = lib.mkIf config.hmModules.apps.packages.enable {
+  config = lib.mkIf (config.hmModules.apps.enable && config.hmModules.apps.packages.enable) {
     programs.firefox = {
       enable = true;
       configPath = "${config.xdg.configHome}/mozilla/firefox";
