@@ -92,6 +92,7 @@ modulesLib.mkHostModules {
       name = "sunshine";
       kind = "file";
       optional = true;
+      createOption = false;
     }
   ];
 }
