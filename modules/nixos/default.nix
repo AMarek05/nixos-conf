@@ -50,7 +50,6 @@ modulesLib.mkHostModules {
     {
       name = "packages";
       kind = "file";
-      createOption = false;
     }
     {
       name = "sandbox";
