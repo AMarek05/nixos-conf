@@ -58,7 +58,12 @@ modulesLib.mkHostModules {
     }
     {
       name = "security";
-      kind = "file";
+      kind = "dir";
+      sub = [
+        { name = "gnupg"; }
+        { name = "keyring"; }
+        { name = "tpm2"; }
+      ];
     }
     {
       name = "shell";
