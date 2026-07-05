@@ -47,7 +47,11 @@ let
            then [ (dirPath + "/default.nix") ]
            else [ ])
           ++ (lib.optionals (e ? sub) (
-            map (sub: dirPath + "/${sub.name}.nix") e.sub
+            map (sub:
+              if sub ? sub
+              then dirPath + "/${sub.name}/default.nix"
+              else dirPath + "/${sub.name}.nix"
+            ) e.sub
           ))
         else
           [ (basePath + "/${e.name}.nix") ];
