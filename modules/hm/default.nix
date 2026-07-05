@@ -31,7 +31,7 @@ modulesLib.mkHostModules {
     {
       name = "caelestia";
       kind = "dir";
-      optionsOwnedByFile = true;
+      createOption = false;
     }
     {
       name = "hyprland";

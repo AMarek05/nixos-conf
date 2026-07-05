@@ -29,7 +29,14 @@ modulesLib.mkHostModules {
     }
     {
       name = "networking";
-      kind = "file";
+      kind = "dir";
+      sub = [
+        { name = "nm"; }
+        { name = "firewall"; }
+        { name = "syncthing"; }
+        { name = "ssh"; }
+        { name = "tools"; }
+      ];
     }
     {
       name = "nix-ld";

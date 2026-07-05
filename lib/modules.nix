@@ -14,6 +14,11 @@
 #   optional = true         → enable default false
 #   optional = false/absent → enable default true
 #
+# createOption (default: true): lib emits typed enable options for the
+# entry. Set to false when the entry has a richer option surface than
+# enable alone (e.g. caelestia with settings); the file then declares
+# its own options.
+#
 # Atomicity (parent-off cascades to subs) is enforced at consumer sites
 # via lib.mkIf (config.<ns>.<parent>.enable && config.<ns>.<parent>.<sub>.enable).
 #
@@ -35,7 +40,12 @@ let
       dirPath = basePath + "/${e.name}";
       baseImports =
         if e.kind == "dir" then
-          [ (dirPath + "/default.nix") ]
+          # Only import default.nix if it actually exists on disk.
+          # An empty/default.nix that does nothing is a no-op placeholder
+          # and should be deleted rather than kept around.
+          (if builtins.pathExists (dirPath + "/default.nix")
+           then [ (dirPath + "/default.nix") ]
+           else [ ])
           ++ (lib.optionals (e ? sub) (
             map (sub: dirPath + "/${sub.name}.nix") e.sub
           ))
@@ -54,15 +64,12 @@ let
     !(e.optional or false);
 
   # One entry's contribution to options.<ns>.
-  # When optionsOwnedByFile = true, the file declares its own options
-  # (escape hatch for entries like caelestia that have a richer option
-  # surface than enable alone). Otherwise: emit parent enable + per-sub
-  # enable for dir-with-sub.
+  # createOption = true (default): lib emits typed enable option + per-sub.
+  # createOption = false: caller file declares its own options (escape
+  # hatch for entries like caelestia with a richer option surface).
   buildEntryOptions =
     e:
-    if e.optionsOwnedByFile or false then
-      { }
-    else
+    if e.createOption or true then
       let
         parentEnable = {
           enable = lib.mkEnableOption "${e.name} module" // {
@@ -87,9 +94,9 @@ let
           else
             { };
       in
-      {
-        ${e.name} = parentEnable // subEnables;
-      };
+      { ${e.name} = parentEnable // subEnables; }
+    else
+      { };
 
   mkOptions =
     ns: entries:

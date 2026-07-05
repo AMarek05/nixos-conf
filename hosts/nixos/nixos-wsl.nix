@@ -20,6 +20,7 @@
   nixosModules.nix-ld.enable = false;
   nixosModules.security.enable = false;
   nixosModules.shell.enable = false;
+  nixosModules.user.enable = false;
   nixosModules.vpn.enable = false;
 
   boot.loader.grub.enable = lib.mkForce false;
