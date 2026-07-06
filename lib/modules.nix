@@ -46,13 +46,25 @@ let
           (if builtins.pathExists (dirPath + "/default.nix")
            then [ (dirPath + "/default.nix") ]
            else [ ])
-          ++ (lib.optionals (e ? sub) (
-            map (sub:
-              if sub ? sub
-              then dirPath + "/${sub.name}/default.nix"
-              else dirPath + "/${sub.name}.nix"
-            ) e.sub
-          ))
+          ++ lib.optionals (e ? sub) (
+            # Build a flat list of imports for one entry: own default.nix
+            # + each sub (or each sub's children if the sub is itself a
+            # nested grouping).
+            let
+              perSub = sub:
+                if sub ? sub then
+                  # A sub-entry with its own sub is a grouping label.
+                  # Import its directory's default.nix + each sibling.
+                  [
+                    (dirPath + "/${sub.name}/default.nix")
+                  ] ++ map (ss:
+                    dirPath + "/${sub.name}/${ss.name}.nix"
+                  ) sub.sub
+                else
+                  [ (dirPath + "/${sub.name}.nix") ];
+            in
+            lib.concatMap perSub e.sub
+          )
         else
           [ (basePath + "/${e.name}.nix") ];
     in
@@ -60,7 +72,7 @@ let
 
   mkImports =
     basePath: entries:
-    lib.concatMap (mkEntryImports basePath) entries;
+    lib.concatLists (map (mkEntryImports basePath) entries);
 
   # An entry is enabled-by-default unless explicitly marked optional.
   isEnabledByDefault =
@@ -81,20 +93,26 @@ let
           };
         };
 
+        buildSubEnable =
+          sub:
+          let
+            subDefault = isEnabledByDefault sub;
+            subCreateOption = sub.createOption or true;
+            childEnable = if subCreateOption then {
+              enable = lib.mkEnableOption "${e.name}.${sub.name}" // {
+                default = subDefault;
+              };
+            } else { };
+            grandchildren =
+              if sub ? sub then
+                lib.foldl' (acc: ss: acc // { ${ss.name}.enable = lib.mkEnableOption "${e.name}.${sub.name}.${ss.name}" // { default = isEnabledByDefault ss; }; }) { } sub.sub
+              else { };
+          in
+          { ${sub.name} = childEnable // grandchildren; };
+
         subEnables =
           if e.kind == "dir" && e ? sub then
-            lib.foldl' (acc: sub:
-              let
-                subDefault = isEnabledByDefault sub;
-                subCreateOption = sub.createOption or true;
-                subEnableOpt = if subCreateOption then {
-                  ${sub.name}.enable = lib.mkEnableOption "${e.name}.${sub.name}" // {
-                    default = subDefault;
-                  };
-                } else {};
-              in
-              acc // subEnableOpt
-            ) { } e.sub
+            lib.foldl' (acc: sub: acc // buildSubEnable sub) { } e.sub
           else
             { };
       in
