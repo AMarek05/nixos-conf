@@ -28,6 +28,10 @@ modulesLib.mkHostModules {
         { name = "packages"; sub = [
           { name = "browsers"; }
           { name = "packages"; }
+          { name = "media"; }
+          { name = "productivity"; }
+          { name = "gaming"; }
+          { name = "system"; }
         ]; }
       ];
     }
