@@ -7,6 +7,8 @@
       grimblast
 
       snx-rs
+
+      nh
     ];
   };
 }

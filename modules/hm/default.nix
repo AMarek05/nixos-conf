@@ -27,7 +27,6 @@ modulesLib.mkHostModules {
         { name = "dolphin"; }
         { name = "packages"; sub = [
           { name = "browsers"; }
-          { name = "packages"; }
           { name = "media"; }
           { name = "productivity"; }
           { name = "gaming"; }
