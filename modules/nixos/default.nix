@@ -59,7 +59,10 @@ modulesLib.mkHostModules {
           name = "sandbox";
           optional = true;
         }
-        { name = "tpm2"; }
+        {
+          name = "tpm2";
+          optional = true;
+        }
       ];
     }
     {

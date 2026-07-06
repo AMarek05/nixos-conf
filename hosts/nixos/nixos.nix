@@ -14,6 +14,8 @@
   ];
 
   nixosModules.security.sandbox.enable = true;
+  nixosModules.security.tpm2.enable = true;
+
   nixosModules.vpn.tailscale.enable = true;
   nixosModules.gaming.sunshine.enable = true;
 
