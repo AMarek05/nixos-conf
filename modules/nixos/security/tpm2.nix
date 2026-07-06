@@ -1,30 +1,6 @@
+{ lib, config, pkgs, ... }:
 {
-  lib,
-  config,
-  pkgs,
-  ...
-}:
-{
-  options.nixosModules.security = {
-    enable = lib.mkEnableOption "security (gnupg, pam, dconf, gnome-keyring)";
-  };
-
-  config = lib.mkIf config.nixosModules.security.enable {
-
-    programs.gnupg.agent = {
-      enable = true;
-      enableSSHSupport = false;
-    };
-
-    security.pam.services.hyprlock = { };
-
-    security.polkit.enable = true;
-
-    services.udev.packages = with pkgs; [
-      avrdude
-      avrdudess
-    ];
-
+  config = lib.mkIf (config.nixosModules.security.enable && config.nixosModules.security.tpm2.enable) {
     security.tpm2 = {
       enable = true;
       abrmd.enable = true;
@@ -67,9 +43,5 @@
       # Type  Path                  Mode  User  Group  Age  Argument
       "d      /var/lib/tpm2-pkcs11  0700  adam  tss    -    -"
     ];
-
-    services.gnome.gcr-ssh-agent.enable = lib.mkForce false;
-    services.gnome.gnome-keyring.enable = true;
-    security.pam.services.login.enableGnomeKeyring = true;
   };
 }

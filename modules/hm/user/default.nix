@@ -1,16 +1,7 @@
 { lib, config, ... }:
 
 {
-  imports = [
-    ./env.nix
-    ./git.nix
-    ./util.nix
-  ];
-
-  options.hmModules.user = {
-    enable = lib.mkEnableOption "user environment (env, git, util)";
-  };
-
+  # Sub-modules (util, git, env) are auto-imported by the catalog.
   config = lib.mkIf config.hmModules.user.enable { };
 }
 

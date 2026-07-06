@@ -5,9 +5,7 @@
   ...
 }:
 {
-  options.hmModules.apps.dolphin.enable = lib.mkEnableOption "Enable the dolphin file explorer";
-
-  config = lib.mkIf config.hmModules.apps.dolphin.enable {
+  config = lib.mkIf (config.hmModules.apps.enable && config.hmModules.apps.dolphin.enable) {
     home.packages = with pkgs; [
       (symlinkJoin {
         name = "dolphin-xcb";

@@ -3,36 +3,46 @@
 let
   modulesLib = import ../../lib/modules.nix { inherit lib; };
 in
-modulesLib.mkHostNixosModules {
+modulesLib.mkHostModules {
+  namespace = "nixosModules";
   basePath = ../../modules/nixos;
   entries = [
     {
-      name = "audio";
-      kind = "file";
+      name = "desktop";
+      kind = "dir";
+      sub = [
+        { name = "audio"; }
+        { name = "console"; }
+        { name = "fonts"; }
+        { name = "hyprland"; }
+      ];
     }
     {
-      name = "console";
-      kind = "file";
-    }
-    {
-      name = "fonts";
-      kind = "file";
-    }
-    {
-      name = "gamemode";
-      kind = "file";
-    }
-    {
-      name = "hyprland";
-      kind = "file";
+      name = "gaming";
+      kind = "dir";
+      sub = [
+        { name = "gamemode"; }
+        { name = "sunshine"; }
+      ];
     }
     {
       name = "networking";
-      kind = "file";
+      kind = "dir";
+      sub = [
+        { name = "firewall"; }
+        { name = "ssh"; }
+        { name = "syncthing"; }
+      ];
     }
     {
-      name = "nix-ld";
-      kind = "file";
+      name = "vpn";
+      kind = "dir";
+      sub = [
+        {
+          name = "tailscale";
+          optional = true;
+        }
+      ];
     }
     {
       name = "openclaw";
@@ -40,39 +50,35 @@ modulesLib.mkHostNixosModules {
       optional = true;
     }
     {
-      name = "packages";
-      kind = "file";
-    }
-    {
-      name = "sandbox";
-      kind = "file";
-      optional = true;
-    }
-    {
       name = "security";
-      kind = "file";
+      kind = "dir";
+      sub = [
+        { name = "gnupg"; }
+        { name = "keyring"; }
+        {
+          name = "sandbox";
+          optional = true;
+        }
+        { name = "tpm2"; }
+      ];
     }
     {
       name = "shell";
-      kind = "file";
+      kind = "dir";
+      sub = [
+        { name = "zsh"; }
+        { name = "direnv"; }
+        { name = "dconf"; }
+      ];
     }
     {
-      name = "user";
-      kind = "file";
-    }
-    {
-      name = "vpn";
-      kind = "file";
-    }
-    {
-      name = "tailscale";
-      kind = "file";
-      optional = true;
-    }
-    {
-      name = "sunshine";
-      kind = "file";
-      optional = true;
+      name = "system";
+      kind = "dir";
+      sub = [
+        { name = "nix-ld"; }
+        { name = "packages"; }
+        { name = "user"; }
+      ];
     }
   ];
 }

@@ -9,10 +9,6 @@ let
   cfg = config.hmModules.hyprland;
 in
 {
-  options.hmModules.hyprland = {
-    enable = lib.mkEnableOption "Enable the hyprland module";
-  };
-
   imports = [
     ./binds.nix
 

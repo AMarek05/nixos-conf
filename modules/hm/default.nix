@@ -3,7 +3,8 @@
 let
   modulesLib = import ../../lib/modules.nix { inherit lib; };
 in
-modulesLib.mkHostHmModules {
+modulesLib.mkHostModules {
+  namespace = "hmModules";
   basePath = ../../modules/hm;
   entries = [
     # dirs with nested options
@@ -24,12 +25,19 @@ modulesLib.mkHostHmModules {
         { name = "stylix"; }
         { name = "nvf"; }
         { name = "dolphin"; }
-        { name = "packages"; }
+        { name = "packages"; sub = [
+          { name = "browsers"; }
+          { name = "media"; }
+          { name = "productivity"; }
+          { name = "gaming"; }
+          { name = "system"; }
+        ]; }
       ];
     }
     {
       name = "caelestia";
       kind = "dir";
+      createOption = false;
     }
     {
       name = "hyprland";

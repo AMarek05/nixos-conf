@@ -6,8 +6,8 @@
     ./hardware/gpu/mesa.nix
   ];
 
-  nixosModules.tailscale.enable = true;
-  nixosModules.sunshine.enable = true;
+  nixosModules.vpn.tailscale.enable = true;
+  nixosModules.gaming.sunshine.enable = true;
 
   networking.hostName = lib.mkForce "nixos-laptop";
 

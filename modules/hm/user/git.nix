@@ -10,10 +10,6 @@ let
 
 in
 {
-  options.hmModules.user.git = {
-    enable = lib.mkEnableOption "git";
-  };
-
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [ git-lfs ];
     programs.git = {

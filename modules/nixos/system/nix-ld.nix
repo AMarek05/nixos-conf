@@ -5,11 +5,7 @@
   ...
 }:
 {
-  options.nixosModules.nix-ld = {
-    enable = lib.mkEnableOption "nix-ld runtime loader";
-  };
-
-  config = lib.mkIf config.nixosModules.nix-ld.enable {
+  config = lib.mkIf config.nixosModules.system.nix-ld.enable {
     programs.nix-ld.enable = true;
     programs.nix-ld.libraries = with pkgs; [
       stdenv.cc.cc.lib

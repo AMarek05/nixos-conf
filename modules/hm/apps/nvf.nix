@@ -12,11 +12,7 @@
     ./nvim
   ];
 
-  options.hmModules.apps.nvf = {
-    enable = lib.mkEnableOption "nvf";
-  };
-
-  config = lib.mkIf config.hmModules.apps.nvf.enable {
+  config = lib.mkIf (config.hmModules.apps.enable && config.hmModules.apps.nvf.enable) {
 
     programs.nvf = {
       enable = true;

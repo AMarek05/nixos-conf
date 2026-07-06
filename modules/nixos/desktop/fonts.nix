@@ -5,11 +5,7 @@
   ...
 }:
 {
-  options.nixosModules.fonts = {
-    enable = lib.mkEnableOption "fonts and i18n";
-  };
-
-  config = lib.mkIf config.nixosModules.fonts.enable {
+  config = lib.mkIf config.nixosModules.desktop.fonts.enable {
     fonts.packages = with pkgs; [
       nerd-fonts.jetbrains-mono
       nerd-fonts._0xproto

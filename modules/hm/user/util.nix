@@ -9,10 +9,6 @@ let
   cfg = config.hmModules.user.util;
 in
 {
-  options.hmModules.user.util = {
-    enable = lib.mkEnableOption "util";
-  };
-
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       zip
