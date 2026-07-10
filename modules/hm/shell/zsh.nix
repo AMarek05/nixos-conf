@@ -53,10 +53,12 @@ in
       initContent = lib.mkMerge [
         (lib.mkIf osConfig.nixosModules.security.enable (
           lib.mkBefore ''
-            export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent"
+            if [[ -z "$SSH_CONNECTION" ]]; then
+              export SSH_AUTH_SOCK="$XDG_RUNTIME_DIR/ssh-agent"
 
-            if ! ssh-add -l &> /dev/null ; then
-              ssh-add -s /run/current-system/sw/lib/libtpm2_pkcs11.so
+              if ! ssh-add -l &> /dev/null ; then
+                ssh-add -s /run/current-system/sw/lib/libtpm2_pkcs11.so
+              fi
             fi
           ''
         ))
