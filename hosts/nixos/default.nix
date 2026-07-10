@@ -72,7 +72,7 @@
       ProxyJump nixos-server
 
     Host pangolin
-      HostName amarek.org
+      HostName amarek.pl
       Port 2222
       User ubuntu
   '';
