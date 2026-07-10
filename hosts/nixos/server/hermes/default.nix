@@ -177,7 +177,7 @@ in
 
     mcpServers.minimax-coding-plan = {
       command = "${pkgs.minimax-coding-plan-mcp}/bin/minimax-coding-plan-mcp";
-      args = [];
+      args = [ ];
       env.MINIMAX_API_KEY = "\${MINIMAX_API_KEY}";
       env.MINIMAX_API_HOST = "https://api.minimax.io";
     };
@@ -266,12 +266,24 @@ in
   # ── OpenWebUI ─────────────────────────────────────────────────────────────
   services.open-webui = {
     enable = true;
-    package = pkgs.open-webui;
+
+    package =
+      let
+        stablePkgs = import inputs.nixpkgs-stable {
+          system = pkgs.stdenv.hostPlatform.system;
+          config.allowUnfree = true;
+        };
+      in
+      stablePkgs.open-webui;
+
     stateDir = "/var/lib/open-webui";
     host = "0.0.0.0";
     port = 8080;
+
     openFirewall = false;
+
     environmentFile = config.sops.templates."open-webui-env".path;
+
     environment = {
       SCARF_NO_ANALYTICS = "True";
       DO_NOT_TRACK = "True";
