@@ -11,13 +11,9 @@
   wsl.enable = true;
   wsl.defaultUser = "adam";
 
-  nixosModules.desktop.audio.enable = false;
-  nixosModules.desktop.console.enable = false;
-  nixosModules.desktop.fonts.enable = false;
-  nixosModules.gaming.gamemode.enable = false;
-  nixosModules.desktop.hyprland.enable = false;
-  nixosModules.security.sandbox.enable = false;
-  nixosModules.system.nix-ld.enable = false;
+  nixosModules.desktop.enable = false;
+  nixosModules.gaming.enable = false;
+  nixosModules.security.enable = false;
   nixosModules.system.user.enable = false;
   nixosModules.vpn.enable = false;
 

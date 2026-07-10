@@ -17,7 +17,7 @@
   nixosModules.security.tpm2.enable = true;
 
   nixosModules.vpn.tailscale.enable = true;
-  nixosModules.gaming.sunshine.enable = true;
+  nixosModules.gaming.enable = true;
 
   programs.sleepy-launcher.enable = true;
 

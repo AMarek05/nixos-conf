@@ -7,19 +7,21 @@
 }:
 
 {
-  config = lib.mkIf config.nixosModules.gaming.sunshine.enable {
-    services.sunshine = {
-      enable = true;
+  config =
+    lib.mkIf (config.nixosModules.gaming.enable && config.nixosModules.gaming.sunshine.enable)
+      {
+        services.sunshine = {
+          enable = true;
 
-      openFirewall = true;
-      autoStart = false;
-    };
+          openFirewall = true;
+          autoStart = false;
+        };
 
-    environment.systemPackages = with pkgs; [ moonlight-qt ];
+        environment.systemPackages = with pkgs; [ moonlight-qt ];
 
-    users.users.adam.extraGroups = [
-      "input"
-      "video"
-    ];
-  };
+        users.users.adam.extraGroups = [
+          "input"
+          "video"
+        ];
+      };
 }

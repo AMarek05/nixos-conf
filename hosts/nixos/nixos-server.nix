@@ -39,16 +39,16 @@
 
   services.qemuGuest.enable = true;
 
-  nixosModules.desktop.audio.enable = false;
-  nixosModules.desktop.console.enable = false;
-  nixosModules.desktop.fonts.enable = false;
-  nixosModules.gaming.gamemode.enable = false;
-  nixosModules.desktop.hyprland.enable = false;
-  nixosModules.security.sandbox.enable = false;
-  nixosModules.system.nix-ld.enable = false;
+  nixosModules.desktop.enable = false;
+  nixosModules.gaming.enable = false;
+  nixosModules.security.enable = false;
   nixosModules.vpn.enable = false;
 
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
+  boot.kernelParams = [
+    "console=tty1"
+    "console=ttyS0,115200"
+  ];
 
   system.stateVersion = lib.mkForce "25.11";
 }

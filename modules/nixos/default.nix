@@ -20,6 +20,7 @@ modulesLib.mkHostModules {
     {
       name = "gaming";
       kind = "dir";
+      optional = true;
       sub = [
         { name = "gamemode"; }
         { name = "sunshine"; }

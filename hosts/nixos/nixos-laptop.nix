@@ -7,7 +7,7 @@
   ];
 
   nixosModules.vpn.tailscale.enable = true;
-  nixosModules.gaming.sunshine.enable = true;
+  nixosModules.gaming.enable = true;
   nixosModules.security.tpm2.enable = true;
 
   networking.hostName = lib.mkForce "nixos-laptop";
