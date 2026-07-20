@@ -268,13 +268,13 @@ in
     enable = true;
 
     package =
-      let
-        stablePkgs = import inputs.nixpkgs-stable {
-          system = pkgs.stdenv.hostPlatform.system;
-          config.allowUnfree = true;
-        };
-      in
-      stablePkgs.open-webui;
+      # let
+      #   stablePkgs = import inputs.nixpkgs-stable {
+      #     system = pkgs.stdenv.hostPlatform.system;
+      #     config.allowUnfree = true;
+      #   };
+      # in
+      pkgs.open-webui;
 
     stateDir = "/var/lib/open-webui";
     host = "0.0.0.0";
