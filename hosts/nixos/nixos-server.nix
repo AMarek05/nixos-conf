@@ -44,6 +44,8 @@
   nixosModules.security.enable = false;
   nixosModules.vpn.enable = false;
 
+  nixosModules.networking.syncthing.enable = false;
+
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
   boot.kernelParams = [
     "console=tty1"
