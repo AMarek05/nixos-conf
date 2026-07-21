@@ -14,14 +14,15 @@
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   };
 
-  sops.secrets."gh-token" = {
+  sops.secrets."gh-token-nix" = {
     owner = "root";
+    key = "gh-token";
   };
 
   sops.templates."nix-access-token" = {
     owner = "root";
     content = ''
-      access-tokens = github.com=${config.sops.placeholder."gh-token"}
+      access-tokens = github.com=${config.sops.placeholder."gh-token-nix"}
     '';
   };
 
