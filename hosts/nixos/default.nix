@@ -1,6 +1,7 @@
 {
   pkgs,
   lib,
+  config,
   ...
 }:
 {
@@ -13,6 +14,18 @@
     age.sshKeyPaths = [ "/etc/ssh/ssh_host_ed25519_key" ];
   };
 
+  sops.secrets."gh-token-nix" = {
+    owner = "root";
+    key = "gh-token";
+  };
+
+  sops.templates."nix-access-token" = {
+    owner = "root";
+    content = ''
+      access-tokens = github.com=${config.sops.placeholder."gh-token-nix"}
+    '';
+  };
+
   nix.package = pkgs.lix;
 
   nixpkgs.config.allowUnfree = true;
@@ -22,12 +35,16 @@
       "https://cache.nixos.org/"
       "https://hyprland.cachix.org"
       "https://ezkea.cachix.org"
+      "https://cache.amarek.pl/nixos-cache"
+      "https://mic92.cachix.org"
     ];
 
     trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
       "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI="
+      "nixos-cache:NYH7cc9sD0f2oKbN42Oo7Bw7TkDyfvjrS2Isa5CY4GM="
+      "mic92.cachix.org-1:a7mH/Y6n6pS611g2a4Y+7GjC8f6F7hY3K3mBq7M="
     ];
 
     trusted-users = [
@@ -43,6 +60,10 @@
       "flakes"
     ];
   };
+
+  nix.extraOptions = ''
+    !include ${config.sops.templates."nix-access-token".path}
+  '';
 
   programs.ssh.extraConfig = ''
     Host nixos-server
