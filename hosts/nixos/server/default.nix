@@ -8,6 +8,7 @@
 {
   imports = [
     ./graphics.nix
+    ./attic.nix
   ];
 
   # ── Container host-side config ────────────────────────────────────────────────
