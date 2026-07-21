@@ -22,12 +22,14 @@
       "https://cache.nixos.org/"
       "https://hyprland.cachix.org"
       "https://ezkea.cachix.org"
+      "https://cache.amarek.pl/nixos-cache"
     ];
 
     trusted-public-keys = [
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
       "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI="
+      "nixos-cache:NYH7cc9sD0f2oKbN42Oo7Bw7TkDyfvjrS2Isa5CY4GM="
     ];
 
     trusted-users = [
