@@ -79,6 +79,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-parts.follows = "flake-parts";
     };
+
+    attic = {
+      url = "github:zhaofengli/attic";
+
+      inputs.nixpkgs.follows = "nixpkgs";
+      inputs.nixpkgs-stable.follows = "nixpkgs-stable";
+      inputs.flake-parts.follows = "flake-parts";
+    };
   };
 
   outputs =
