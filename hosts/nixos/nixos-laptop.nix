@@ -6,6 +6,8 @@
     ./hardware/gpu/mesa.nix
   ];
 
+  sops.age.sshKeyPaths = [ "/home/adam/.ssh/age" ];
+
   nixosModules.vpn.tailscale.enable = true;
   nixosModules.gaming.enable = true;
   nixosModules.security.tpm2.enable = true;
