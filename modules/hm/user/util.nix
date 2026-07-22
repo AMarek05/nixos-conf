@@ -21,7 +21,6 @@ in
       brightnessctl
       playerctl
       acpi
-      jmtpfs
       wineWow64Packages.stableFull
       winetricks
 

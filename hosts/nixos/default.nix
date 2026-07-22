@@ -44,7 +44,7 @@
       "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
       "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI="
       "nixos-cache:NYH7cc9sD0f2oKbN42Oo7Bw7TkDyfvjrS2Isa5CY4GM="
-      "mic92.cachix.org-1:a7mH/Y6n6pS611g2a4Y+7GjC8f6F7hY3K3mBq7M="
+      "mic92.cachix.org-1:gi8IhgiT3CYZnJsaW7fxznzTkMUOn1RY4GmXdT/nXYQ="
     ];
 
     trusted-users = [
