@@ -37,7 +37,7 @@ in
   environment.systemPackages = with pkgs; [ attic-client ];
 
   sops.secrets."attic_token" = {
-    sopsFile = ../../../secrets/serv.yaml;
+    sopsFile = inputs.self + "/secrets/serv.yaml";
     owner = "atticd";
     group = "atticd";
   };
@@ -58,12 +58,12 @@ in
 
   sops.secrets."claw-ssh-key" = {
     sopsFile = inputs.self + "/secrets/openclaw.yaml";
-    owner = "atticd";
+    owner = "root";
   };
 
   sops.secrets."gh-token" = {
     sopsFile = inputs.self + "/secrets/openclaw.yaml";
-    owner = "atticd";
+    owner = "root";
   };
 
   sops.secrets."attic_key" = {
@@ -71,7 +71,7 @@ in
     owner = "atticd";
   };
 
-  systemd.services.flake-updater = {
+  systemd.services.update-attic = {
     description = "Update flake.lock, build hosts, and push to git/attic";
 
     requires = [ "atticd.service" ];
@@ -86,12 +86,13 @@ in
         attic-client
         coreutils
         openssh
+        nh
       ]
       ++ [ git-wrapper ];
 
     serviceConfig = {
       Type = "oneshot";
-      User = "atticd";
+      User = "root";
 
       NoNewPrivileges = true;
       PrivateTmp = true;
@@ -126,7 +127,10 @@ in
       nix build -L \
         .#nixosConfigurations.nixos.config.system.build.toplevel \
         .#nixosConfigurations.nixos-laptop.config.system.build.toplevel \
-        .#nixosConfigurations.nixos-server.config.system.build.toplevel
+        .#nixosConfigurations.nixos-server.config.system.build.toplevel \
+        .#homeConfigurations."adam@nixos".activationPackage \
+        .#homeConfigurations."adam@nixos-laptop".activationPackage \
+        .#homeConfigurations."adam@nixos-server".activationPackage 
 
       # 4. Push the resulting closures to your Attic cache
       echo "Pushing closures to attic..."
@@ -142,10 +146,19 @@ in
       else
         echo "No updates available for flake.lock."
       fi
+
+      # Clean up
+      echo "Starting the cleanup..."
+
+      rm -f ./result*
+
+      cd /tmp
+
+      nh clean all --keep 1 --optimise
     '';
   };
 
-  systemd.timers.flake-updater = {
+  systemd.timers.update-attic = {
     description = "Timer to run flake-updater every 5 days";
     wantedBy = [ "timers.target" ];
     timerConfig = {
