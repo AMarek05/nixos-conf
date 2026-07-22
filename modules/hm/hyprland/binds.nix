@@ -5,7 +5,7 @@
   ...
 }:
 let
-  mod = "Super";
+  mod = "SUPER";
   cfg = config.hmModules.hyprland.binds;
 
   inherit (myLib) toLua;
@@ -13,9 +13,13 @@ let
   renderBind =
     b:
     let
+      keyParts = b.mods ++ [ b.key ];
+
+      keyCombo = lib.concatStringsSep " + " keyParts;
+
       flagsStr = if b.flags == { } then "" else ", ${toLua b.flags}";
     in
-    "hl.bind(${toLua b.mods}, ${toLua b.key}, ${b.action}${flagsStr})";
+    "hl.bind(${toLua keyCombo}, ${b.action}${flagsStr})";
 in
 {
   options.hmModules.hyprland.binds = lib.mkOption {
@@ -23,8 +27,8 @@ in
       lib.types.submodule {
         options = {
           mods = lib.mkOption {
-            type = lib.types.str;
-            default = "";
+            type = lib.types.listOf lib.types.str;
+            default = [ ];
           };
 
           key = lib.mkOption { type = lib.types.str; };
@@ -44,105 +48,128 @@ in
     hmModules.hyprland.binds = [
       # main
       {
-        mods = mod;
+        mods = [ mod ];
         key = "Escape";
         action = "hl.dsp.exit()";
       }
       {
-        mods = mod;
+        mods = [ mod ];
         key = "Q";
         action = "hl.dsp.window.close()";
+      }
+      {
+        mods = [
+          mod
+          "SHIFT"
+        ];
+        key = "Q";
+        action = "hl.dsp.window.kill()";
       }
 
       # caelestia
       {
-        mods = mod;
+        mods = [ mod ];
         key = "Escape";
         action = "hl.dsp.global(\"caelestia:powermenu\")";
       }
       {
-        mods = mod;
+        mods = [ mod ];
         key = "L";
         action = "hl.dsp.global(\"caelestia:lock\")";
       }
       {
-        mods = mod;
+        mods = [ mod ];
         key = "Space";
         action = "hl.dsp.global(\"caelestia:launcher\")";
       }
 
       # session
       {
-        mods = "${mod} Shift";
+        mods = [
+          mod
+          "SHIFT"
+        ];
         key = "L";
         action = "hl.dsp.exec_cmd(\"systemctl suspend\")";
       }
 
       # window
       {
-        mods = mod;
+        mods = [ mod ];
         key = "M";
-        action = "hl.dsp.fullscreen(1)";
+        action = "hl.dsp.window.fullscreen_state({internal = 1, client = -1})";
       }
       {
-        mods = mod;
+        mods = [ mod ];
         key = "F";
-        action = "hl.dsp.fullscreen(0)";
+        action = "hl.dsp.window.fullscreen_state({internal = 2, client = -1})";
       }
       {
-        mods = "${mod} Shift";
+        mods = [
+          mod
+          "SHIFT"
+        ];
+        key = "F";
+        # reset fullscreen state
+        action = "hl.dsp.window.fullscreen_state({internal = 0, client = -1})";
+      }
+      {
+        mods = [
+          mod
+          "SHIFT"
+        ];
         key = "Space";
         action = "hl.dsp.window.float({ action = \"toggle\" })";
       }
 
       # apps
       {
-        mods = mod;
+        mods = [ mod ];
         key = "Return";
         action = "hl.dsp.exec_cmd(\"ghostty -e tmux new-session -A -s main\")";
       }
       {
-        mods = mod;
+        mods = [ mod ];
         key = "B";
         action = "hl.dsp.exec_cmd(\"zen-beta\")";
       }
 
       # screenshot
       {
-        mods = "Ctrl";
+        mods = [ "CTRL" ];
         key = "Print";
         action = "hl.dsp.exec_cmd(\"grimblast copy active\")";
       }
       {
-        key = "Print";
+        key = "PRINT";
         action = "hl.dsp.exec_cmd(\"grimblast --freeze copy area\")";
       }
 
       # move focus
       {
-        mods = mod;
+        mods = [ mod ];
         key = "H";
-        action = "hl.dsp.movefocus(\"l\")";
+        action = "hl.dsp.focus({ direction = \"l\" })";
       }
       {
-        mods = mod;
+        mods = [ mod ];
         key = "J";
-        action = "hl.dsp.movefocus(\"d\")";
+        action = "hl.dsp.focus({ direction = \"d\" })";
       }
       {
-        mods = mod;
+        mods = [ mod ];
         key = "K";
-        action = "hl.dsp.movefocus(\"u\")";
+        action = "hl.dsp.focus({ direction = \"u\" })";
       }
       {
-        mods = mod;
+        mods = [ mod ];
         key = "L";
-        action = "hl.dsp.movefocus(\"r\")";
+        action = "hl.dsp.focus({ direction = \"r\" })";
       }
 
       # mouse binds
       {
-        mods = mod;
+        mods = [ mod ];
         key = "mouse:272";
         action = "hl.dsp.window.drag()";
         flags = {
@@ -150,7 +177,7 @@ in
         };
       }
       {
-        mods = mod;
+        mods = [ mod ];
         key = "mouse:273";
         action = "hl.dsp.window.resize()";
         flags = {
@@ -186,19 +213,25 @@ in
           in
           [
             {
-              mods = mod;
+              mods = [ mod ];
               key = key;
-              action = "hl.dsp.workspace(\"${ws}\")";
+              action = "hl.dsp.focus({ workspace = \"${ws}\" })";
             }
             {
-              mods = "${mod} Shift";
+              mods = [
+                mod
+                "SHIFT"
+              ];
               key = key;
-              action = "hl.dsp.movetoworkspace(\"${ws}\")";
+              action = "hl.dsp.window.move({ workspace = \"${ws}\" })";
             }
           ]
         ) 10
       ));
 
-    wayland.windowManager.hyprland.extraLuaFiles."binds" = lib.concatMapStringsSep "\n" renderBind cfg;
+    wayland.windowManager.hyprland.extraConfig = ''
+      -- Binds
+      ${lib.concatMapStringsSep "\n" renderBind cfg}
+    '';
   };
 }
