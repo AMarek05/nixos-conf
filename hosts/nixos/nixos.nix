@@ -85,7 +85,7 @@
 
     port = 11434;
 
-    models = "/mnt/Hard/models/";
+    modelsDir = "/mnt/Hard/models/";
   };
 
   environment.systemPackages = with pkgs; [
