@@ -95,6 +95,9 @@
       let
         lib = inputs.nixpkgs.lib;
         hmLib = inputs.home-manager.lib;
+        myLib = {
+          toLua = import ./lib/toLua.nix { inherit lib; };
+        };
 
         hosts = {
           "nixos" = inputs.nixpkgs;
@@ -118,7 +121,7 @@
           name: pkgsInput:
           pkgsInput.lib.nixosSystem {
             system = "x86_64-linux";
-            specialArgs = { inherit inputs; };
+            specialArgs = { inherit inputs myLib; };
             modules = [
               ./modules/nixos/default.nix
               ./hosts/nixos/${name}.nix
@@ -138,7 +141,7 @@
               ./hosts/hm/${name}.nix
             ];
             extraSpecialArgs = {
-              inherit inputs;
+              inherit inputs myLib;
               osConfig = nixosCfgs.${name}.config;
             };
           };
