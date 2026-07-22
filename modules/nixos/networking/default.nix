@@ -4,10 +4,17 @@
   # Sub-modules (nm, firewall, syncthing, ssh, tools) are auto-imported.
   config = lib.mkIf config.nixosModules.networking.enable {
 
+    services.resolved.enable = true;
+
     networking = {
       hostName = lib.mkDefault "nixos";
 
       networkmanager.enable = true;
+
+      nameservers = [
+        "1.1.1.1"
+        "8.8.8.8"
+      ];
 
       extraHosts = ''
         20.100.176.55 azure
