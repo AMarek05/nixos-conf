@@ -1,98 +1,204 @@
-{ lib, ... }:
+{
+  lib,
+  config,
+  myLib,
+  ...
+}:
 let
   mod = "Super";
+  cfg = config.hmModules.hyprland.binds;
+
+  inherit (myLib) toLua;
+
+  renderBind =
+    b:
+    let
+      flagsStr = if b.flags == { } then "" else ", ${toLua b.flags}";
+    in
+    "hl.bind(${toLua b.mods}, ${toLua b.key}, ${b.action}${flagsStr})";
 in
 {
-  wayland.windowManager.hyprland = {
-    settings = {
-      bind = [
-        # main
-        "${mod}, Escape, exit,"
-        "${mod}, Q, killactive,"
+  options.hmModules.hyprland.binds = lib.mkOption {
+    type = lib.types.listOf (
+      lib.types.submodule {
+        options = {
+          mods = lib.mkOption {
+            type = lib.types.str;
+            default = "";
+          };
 
-        # caelestia
-        "${mod}, Escape, global, caelestia:powermenu"
-        "${mod}, L, global, caelestia:lock"
-        "${mod}, Space, global, caelestia:launcher"
+          key = lib.mkOption { type = lib.types.str; };
+          action = lib.mkOption { type = lib.types.str; };
 
-        # session
-        "${mod} Shift, L, exec, systemctl suspend"
+          flags = lib.mkOption {
+            type = lib.types.attrs;
+            default = { };
+          };
+        };
+      }
+    );
+    default = [ ];
+  };
 
-        # window
-        "${mod}, M, fullscreen, 1"
-        "${mod}, F, fullscreen, 0"
-        "${mod} Shift, Space, togglefloating,"
+  config = {
+    hmModules.hyprland.binds = [
+      # main
+      {
+        mods = mod;
+        key = "Escape";
+        action = "hl.dsp.exit()";
+      }
+      {
+        mods = mod;
+        key = "Q";
+        action = "hl.dsp.window.close()";
+      }
 
-        # focus
-        "Alt, Tab, cyclenext,"
-        "Alt, Tab, bringactivetotop,"
-        "Alt Shift, Tab, cyclenext, prev"
-        "Alt Shift, Tab, bringactivetotop,"
+      # caelestia
+      {
+        mods = mod;
+        key = "Escape";
+        action = "hl.dsp.global(\"caelestia:powermenu\")";
+      }
+      {
+        mods = mod;
+        key = "L";
+        action = "hl.dsp.global(\"caelestia:lock\")";
+      }
+      {
+        mods = mod;
+        key = "Space";
+        action = "hl.dsp.global(\"caelestia:launcher\")";
+      }
 
-        # keyboard
-        "Alt, Space, exec, hyprctl switchxkblayout all next"
+      # session
+      {
+        mods = "${mod} Shift";
+        key = "L";
+        action = "hl.dsp.exec_cmd(\"systemctl suspend\")";
+      }
 
-        # apps
-        "${mod}, Return, exec, ghostty -e tmux new-session -A -s main"
-        "${mod}, B, exec, zen-beta"
-        "${mod} Shift, B, exec, firefox"
+      # window
+      {
+        mods = mod;
+        key = "M";
+        action = "hl.dsp.fullscreen(1)";
+      }
+      {
+        mods = mod;
+        key = "F";
+        action = "hl.dsp.fullscreen(0)";
+      }
+      {
+        mods = "${mod} Shift";
+        key = "Space";
+        action = "hl.dsp.window.float({ action = \"toggle\" })";
+      }
 
-        # screenshot
-        "Ctrl, Print, exec, grimblast copy active"
-        ", Print, exec, grimblast --freeze copy area"
+      # apps
+      {
+        mods = mod;
+        key = "Return";
+        action = "hl.dsp.exec_cmd(\"ghostty -e tmux new-session -A -s main\")";
+      }
+      {
+        mods = mod;
+        key = "B";
+        action = "hl.dsp.exec_cmd(\"zen-beta\")";
+      }
 
-        # move focus
-        "${mod}, H, movefocus, l"
-        "${mod}, J, movefocus, d"
-        "${mod}, K, movefocus, u"
-        "${mod}, L, movefocus, r"
+      # screenshot
+      {
+        mods = "Ctrl";
+        key = "Print";
+        action = "hl.dsp.exec_cmd(\"grimblast copy active\")";
+      }
+      {
+        key = "Print";
+        action = "hl.dsp.exec_cmd(\"grimblast --freeze copy area\")";
+      }
 
-        # swtich workspace
-        "${mod}, 1, workspace, 1"
-        "${mod}, 2, workspace, 2"
-        "${mod}, 3, workspace, 3"
-        "${mod}, 4, workspace, 4"
-        "${mod}, 5, workspace, 5"
-        "${mod}, 6, workspace, 6"
-        "${mod}, 7, workspace, 7"
-        "${mod}, 8, workspace, 8"
-        "${mod}, 9, workspace, 9"
-        "${mod}, 0, workspace, 10"
-
-        # move window to workspace
-        "${mod} Shift, 1, movetoworkspace, 1"
-        "${mod} Shift, 2, movetoworkspace, 2"
-        "${mod} Shift, 3, movetoworkspace, 3"
-        "${mod} Shift, 4, movetoworkspace, 4"
-        "${mod} Shift, 5, movetoworkspace, 5"
-        "${mod} Shift, 6, movetoworkspace, 6"
-        "${mod} Shift, 7, movetoworkspace, 7"
-        "${mod} Shift, 8, movetoworkspace, 8"
-        "${mod} Shift, 9, movetoworkspace, 9"
-        "${mod} Shift, 0, movetoworkspace, 10"
-      ];
+      # move focus
+      {
+        mods = mod;
+        key = "H";
+        action = "hl.dsp.movefocus(\"l\")";
+      }
+      {
+        mods = mod;
+        key = "J";
+        action = "hl.dsp.movefocus(\"d\")";
+      }
+      {
+        mods = mod;
+        key = "K";
+        action = "hl.dsp.movefocus(\"u\")";
+      }
+      {
+        mods = mod;
+        key = "L";
+        action = "hl.dsp.movefocus(\"r\")";
+      }
 
       # mouse binds
-      bindm = [
-        "${mod}, mouse:272, movewindow"
-        "${mod}, mouse:273, resizewindow"
-      ];
+      {
+        mods = mod;
+        key = "mouse:272";
+        action = "hl.dsp.window.drag()";
+        flags = {
+          mouse = true;
+        };
+      }
+      {
+        mods = mod;
+        key = "mouse:273";
+        action = "hl.dsp.window.resize()";
+        flags = {
+          mouse = true;
+        };
+      }
 
-      bindl = [
-        ",XF86AudioMute, exec, wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle"
+      # media / binds locked
+      {
+        key = "XF86AudioMute";
+        action = "hl.dsp.exec_cmd(\"wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle\")";
+        flags = {
+          locked = true;
+        };
+      }
+      {
+        key = "XF86AudioRaiseVolume";
+        action = "hl.dsp.exec_cmd(\"wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+\")";
+        flags = {
+          locked = true;
+          repeating = true;
+        };
+      }
+    ]
+    ++
+      # Generate workspace bindings programmatically
+      (builtins.concatLists (
+        builtins.genList (
+          i:
+          let
+            ws = if i == 9 then "10" else toString (i + 1);
+            key = if i == 9 then "0" else toString (i + 1);
+          in
+          [
+            {
+              mods = mod;
+              key = key;
+              action = "hl.dsp.workspace(\"${ws}\")";
+            }
+            {
+              mods = "${mod} Shift";
+              key = key;
+              action = "hl.dsp.movetoworkspace(\"${ws}\")";
+            }
+          ]
+        ) 10
+      ));
 
-        ",XF86AudioPlay, exec, playerctl play-pause"
-        ",XF86AudioNext, exec, playerctl next"
-        ",XF86AudioPrev, exec, playerctl previous"
-      ];
-
-      bindel = [
-        ",XF86AudioRaiseVolume, exec, wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+"
-        ",XF86AudioLowerVolume, exec, wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%-"
-
-        ",XF86MonBrightnessUp ,exec, brightnessctl -e4 -n2 set 5%+"
-        ",XF86MonBrightnessDown ,exec, brightnessctl -e4 -n2 set 5%-"
-      ];
-    };
+    wayland.windowManager.hyprland.extraLuaFiles."binds" = lib.concatMapStringsSep "\n" renderBind cfg;
   };
 }
