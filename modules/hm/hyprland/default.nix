@@ -15,15 +15,14 @@ let
     types
     mapAttrsToList
     concatStringsSep
-    mkForce
     ;
 in
 {
   imports = [
-    # ./binds.nix
+    ./binds.nix
 
     ./display.nix
-    # ./windowrules.nix
+    ./windowrules.nix
     ./animations.nix
 
     inputs.walker.homeManagerModules.default
