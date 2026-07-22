@@ -20,10 +20,10 @@ let
 in
 {
   imports = [
-    ./binds.nix
+    # ./binds.nix
 
     ./display.nix
-    ./windowrules.nix
+    # ./windowrules.nix
     ./animations.nix
 
     inputs.walker.homeManagerModules.default
@@ -38,7 +38,7 @@ in
     };
 
     settings = mkOption {
-      type = types.typesOf types.attrs;
+      type = types.attrsOf types.attrs;
       default = { };
       description = "Hyprland config passed to hl.config()";
     };
@@ -60,7 +60,7 @@ in
           force_default_wallpaper = 0;
           disable_hyprland_logo = true;
           disable_splash_rendering = true;
-          background_color = lib.mkForce "rgb(1a1a1a)";
+          background_color = "rgb(1a1a1a)";
         };
       };
 
@@ -85,7 +85,7 @@ in
 
       extraConfig = ''
         -- Core settings
-        hl.config(${toLua cfg.setting})
+        hl.config(${toLua cfg.settings})
 
         -- Environment variables
         ${concatStringsSep "\n" (
