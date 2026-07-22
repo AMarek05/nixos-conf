@@ -23,7 +23,7 @@ in
     };
 
     curves = lib.mkOption {
-      type = lib.types.attrsOf (lib.types.listOf lib.types.float);
+      type = lib.types.attrsOf (lib.types.listOf (lib.types.listOf lib.types.float));
       default = { };
     };
 
@@ -38,10 +38,14 @@ in
     hmModules.hyprland.animations = {
       curves = {
         easeInOut = [
-          0.4
-          0.0
-          0.2
-          1.0
+          [
+            0.4
+            0.0
+          ]
+          [
+            0.2
+            1.0
+          ]
         ];
       };
       settings = [
