@@ -1,15 +1,18 @@
 { ... }:
 {
-  wayland.windowManager.hyprland.settings = {
-    windowrule = [
-      "match:class walker, float on"
-      "match:class walker, center on"
-      "match:class walker, move 0 10%"
+  wayland.windowManager.hyprland.extraLuaFiles."windowrules" = ''
+    hl.window_rule({
+      match = { class = "walker" },
+      float = true,
+      center = true,
+      move = "0 10%",
+      stay_focused = true
+    })
 
-      "match:class walker, stay_focused on"
-
-      "match:title OpenGL, float on"
-      "match:title OpenGL, center on"
-    ];
-  };
+    hl.window_rule({
+      match = { title = "OpenGL" },
+      float = true,
+      center = true
+    })
+  '';
 }
