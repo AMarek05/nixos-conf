@@ -46,6 +46,9 @@ modulesLib.mkHostModules {
     {
       name = "hyprland";
       kind = "dir";
+      sub = [
+        { name = "onStart"; }
+      ];
     }
     {
       name = "shell";
