@@ -7,6 +7,11 @@
     ./hardware/server-hardware.nix
   ];
 
+  nix.settings = {
+    max-jobs = lib.mkForce 4;
+    cores = lib.mkForce 4;
+  };
+
   networking = {
     hostName = "nixos-server";
 
