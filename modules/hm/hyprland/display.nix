@@ -1,10 +1,11 @@
-{ ... }:
-{
-  wayland.windowManager.hyprland.settings = {
+{ myLib, ... }:
+let
+  inherit (myLib) toLua;
+
+  displaySettings = {
     general = {
       gaps_in = 5;
       gaps_out = 15;
-
       border_size = 2;
     };
 
@@ -19,4 +20,9 @@
       rounding_power = 3;
     };
   };
+in
+{
+  wayland.windowManager.hyprland.extraLuaFiles."display" = ''
+    hl.config(${toLua displaySettings})
+  '';
 }
