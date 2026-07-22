@@ -5,19 +5,22 @@
   ...
 }:
 let
-  # import lua parser
-  inherit (myLib) toLua;
-
   cfg = config.hmModules.hyprland.animations;
+
+  inherit (myLib) toLua;
 
   renderCurve =
     name: points: "hl.curve(${toLua name}, { type = \"bezier\", points = ${toLua points} })";
 
-  renderAnim = anim: "hl.animation(${toLua anim})";
+  renderAnim =
+    anim:
+    "hl.animation({ leaf = ${toLua anim.leaf}, enabled = ${toLua anim.enabled}, speed = ${toLua anim.speed}, bezier = ${toLua anim.curve} })";
 in
 {
   options.hmModules.hyprland.animations = {
-    enable = lib.mkEnableOption "animations";
+    enable = lib.mkEnableOption "animations" // {
+      default = true;
+    };
 
     curves = lib.mkOption {
       type = lib.types.attrsOf (lib.types.listOf lib.types.float);
@@ -31,7 +34,7 @@ in
   };
 
   config = lib.mkIf cfg.enable {
-    # Declarative definition:
+    # Declarative definition matching your exact snappy speeds
     hmModules.hyprland.animations = {
       curves = {
         easeInOut = [
@@ -75,11 +78,14 @@ in
       ];
     };
 
-    wayland.windowManager.hyprland.extraLuaFiles."animations" = ''
-      -- onStart: curves
+    wayland.windowManager.hyprland.extraConfig = ''
+      -- Enable animation engine globally
+      hl.config({ animations = { enabled = true } })
+
+      -- Define curves
       ${lib.concatStringsSep "\n" (lib.mapAttrsToList renderCurve cfg.curves)}
 
-      -- onStart: animations
+      -- Apply animations
       ${lib.concatMapStringsSep "\n" renderAnim cfg.settings}
     '';
   };
