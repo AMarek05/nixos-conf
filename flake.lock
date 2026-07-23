@@ -421,17 +421,17 @@
         "nixpkgs-mozilla": "nixpkgs-mozilla"
       },
       "locked": {
-        "lastModified": 1778278103,
-        "narHash": "sha256-VzC10pCJ5YQXdSoN8xHmTRTrOkICOP/BFXe4CHKOJk8=",
-        "owner": "AMarek05",
-        "repo": "forge",
-        "rev": "a55f28a7bbc5c86585f89b91027af2f4dfd1820b",
-        "type": "github"
+        "lastModified": 1784817571,
+        "narHash": "sha256-tXQWJOzHXwqpOBKQ3fiKNZB4vdi84ut0We4bHdQUasQ=",
+        "ref": "refs/heads/main",
+        "rev": "e6ee2458c561f951458b0106fc4143e1fe4c0b7e",
+        "revCount": 185,
+        "type": "git",
+        "url": "https://git.amarek.pl/amarek/forge.git"
       },
       "original": {
-        "owner": "AMarek05",
-        "repo": "forge",
-        "type": "github"
+        "type": "git",
+        "url": "https://git.amarek.pl/amarek/forge.git"
       }
     },
     "fromYaml": {
