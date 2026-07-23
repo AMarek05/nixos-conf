@@ -133,6 +133,14 @@ in
         key = "B";
         action = "hl.dsp.exec_cmd(\"zen-beta\")";
       }
+      {
+        mods = [
+          mod
+          "SHIFT"
+        ];
+        key = "B";
+        action = "hl.dsp.exec_cmd(\"firefox\")";
+      }
 
       # screenshot
       {
