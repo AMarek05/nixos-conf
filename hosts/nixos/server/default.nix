@@ -5,11 +5,58 @@
   pkgs,
   ...
 }:
+let
+  commonAssign = lib.mapAttrs (
+    name: specificConfig:
+    specificConfig
+    // {
+      group = name;
+      isSystemUser = true;
+    }
+  );
+in
 {
   imports = [
     ./graphics.nix
     ./attic.nix
+    "${inputs.self}/lib/containers.nix"
+
+    # static container guest user declaration module
+    {
+      users = {
+        users = commonAssign {
+          test = {
+            uid = 971;
+          };
+
+          hermes = {
+            uid = 970;
+          };
+
+          openclaw = {
+            uid = 968;
+          };
+        };
+
+        groups = {
+          openclaw.gid = 968;
+          test.gid = 969;
+          hermes.gid = 970;
+        };
+      };
+    }
   ];
+
+  nixosModules.containers = {
+    enable = true;
+    basePath = ./containers;
+
+    sharedModules = [ ./containers/common.nix ];
+
+    instances = {
+      "test" = { };
+    };
+  };
 
   # ── Container host-side config ────────────────────────────────────────────────
   /*
@@ -55,7 +102,7 @@
         ...
       }:
       {
-        imports = [ ./hermes ];
+        imports = [ ./containers/hermes ];
       };
 
     bindMounts = {
@@ -231,9 +278,6 @@
     "hermes"
     "openclaw"
   ];
-
-  users.groups.hermes.gid = 970;
-  users.groups.openclaw.gid = 968;
 
   services.bazarr = {
     enable = true;
