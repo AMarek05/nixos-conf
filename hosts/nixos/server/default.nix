@@ -26,10 +26,6 @@ in
     {
       users = {
         users = commonAssign {
-          test = {
-            uid = 971;
-          };
-
           hermes = {
             uid = 970;
           };
@@ -41,7 +37,6 @@ in
 
         groups = {
           openclaw.gid = 968;
-          test.gid = 969;
           hermes.gid = 970;
         };
       };
@@ -55,8 +50,6 @@ in
     sharedModules = [ ./containers/common.nix ];
 
     instances = {
-      "test" = { };
-
       "hermes" = {
         configFile = "hermes/default.nix";
 
