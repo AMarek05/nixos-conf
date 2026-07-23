@@ -26,28 +26,11 @@ in
 
   systemd.settings = {
     Manager = {
-      DefaultTimeoutStopSec = "2s";
+      DefaultTimeoutStopSec = lib.mkForce "2s";
     };
   };
 
   nixpkgs.config.allowUnfreePredicate = pkg: pkgs.lib.hasPrefix "open-webui" pkg.pname;
-
-  # ── Static networking on the virtual ethernet (ve-+) ───────────────────
-  networking.hostName = "hermes";
-  networking.usePredictableInterfaceNames = false;
-
-  networking.interfaces.eth.ipv4.addresses = [
-    {
-      address = "192.168.100.12";
-      prefixLength = 24;
-    }
-  ];
-
-  networking.defaultGateway = "192.168.100.10";
-  networking.nameservers = lib.mkForce [ "10.20.20.5" ];
-
-  services.resolved.enable = true;
-  networking.useHostResolvConf = lib.mkForce false;
 
   # ── SOPS ────────────────────────────────────────────────────────────────
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
@@ -203,20 +186,6 @@ in
     SendSIGKILL = false;
   };
 
-  users.users.hermes = {
-    uid = 970;
-    group = "hermes";
-    isSystemUser = true;
-    home = "/var/lib/hermes";
-    description = "Hermes Agent";
-    shell = pkgs.bash;
-    openssh.authorizedKeys.keys = [
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJD19KUXlKFCM0ZD57Qgj6A+JyE2kHTj/AM14fm1VYPa 118975111+AMarek05@users.noreply.github.com"
-      "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBHSrgBs2fy3oRYtbmbXNEkJ8JpqS2L8U/RPqVEojiOAu6OWzT8EXaMHwHhxMjXIXp2fzCaXrbZCV9is9rckuLuQ="
-      "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMVue17Ck5epd5LBWWWd9Es+XN+IFtdkMxy2NHkFbtghXH+1lujMQxTjv3ZUD0R2pt8jfycdNqNmiH4QnjYpSgI= id-nixos"
-    ];
-  };
-
   services.openssh = {
     enable = true;
     settings = {
@@ -224,8 +193,6 @@ in
       PermitRootLogin = "no";
     };
   };
-
-  users.groups.hermes.gid = 970;
 
   users.users.open-webui = {
     uid = 969;

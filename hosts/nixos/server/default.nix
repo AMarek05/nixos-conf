@@ -3,6 +3,7 @@
   lib,
   inputs,
   pkgs,
+  myLib,
   ...
 }:
 let
@@ -55,94 +56,18 @@ in
 
     instances = {
       "test" = { };
-    };
-  };
 
-  # ── Container host-side config ────────────────────────────────────────────────
-  /*
-    containers.openclaw = {
-      autoStart = true;
-      privateNetwork = true;
-      hostAddress = "192.168.100.10";
-      localAddress = "192.168.100.11";
+      "hermes" = {
+        configFile = "hermes/default.nix";
 
-      specialArgs = { inherit inputs; };
-
-      config =
-        {
-          ...
-        }:
-        {
-          imports = [ ./openclaw.nix ];
-        };
-
-      bindMounts = {
-        "/var/lib/sops-nix/age_key" = {
-          hostPath = "/var/lib/sops-nix/age_key";
-          isReadOnly = true;
-        };
-        "/var/lib/openclaw/workspace" = {
-          hostPath = "/var/lib/openclaw/workspace";
-          isReadOnly = false;
+        bindMounts = {
+          "/var/lib/sops-nix/age_key" = {
+            hostPath = "/var/lib/sops-nix/age_key";
+            isReadOnly = true;
+          };
         };
       };
     };
-  */
-
-  containers.hermes = {
-    autoStart = true;
-    privateNetwork = true;
-    hostAddress = "192.168.100.10";
-    localAddress = "192.168.100.12";
-
-    specialArgs = { inherit inputs; };
-
-    config =
-      {
-        ...
-      }:
-      {
-        imports = [ ./containers/hermes ];
-      };
-
-    bindMounts = {
-      "/var/lib/sops-nix/age_key" = {
-        hostPath = "/var/lib/sops-nix/age_key";
-        isReadOnly = true;
-      };
-      "/var/lib/hermes" = {
-        hostPath = "/var/lib/hermes";
-        isReadOnly = false;
-      };
-    };
-  };
-
-  systemd.services."container@openclaw".serviceConfig = {
-    TimeoutStopSec = lib.mkForce "15s";
-    KillMode = lib.mkForce "mixed";
-    ExecStopPost = lib.mkForce [
-      "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/openclaw"
-      "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/openclaw"
-      "-${pkgs.iproute2}/bin/ip link delete ve-openclaw"
-      "-${pkgs.coreutils}/bin/rm -f /run/systemd/machines/openclaw"
-    ];
-  };
-
-  systemd.services."container@hermes".serviceConfig = {
-    TimeoutStopSec = lib.mkForce "15s";
-    KillMode = lib.mkForce "mixed";
-    ExecStopPost = lib.mkForce [
-      "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/hermes"
-      "-${pkgs.coreutils}/bin/rm -rf /run/systemd/nspawn/unix-export/hermes"
-      "-${pkgs.iproute2}/bin/ip link delete ve-hermes"
-      "-${pkgs.coreutils}/bin/rm -f /run/systemd/machines/hermes"
-    ];
-  };
-
-  networking.nat = {
-    enable = true;
-    internalInterfaces = [ "ve-+" ];
-    externalInterface = "ens18";
   };
 
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
