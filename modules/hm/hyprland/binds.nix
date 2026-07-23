@@ -194,8 +194,57 @@ in
         };
       }
       {
+        key = "XF86AudioPlay";
+        action = "hl.dsp.exec_cmd(\"playerctl play-pause\")";
+        flags = {
+          locked = true;
+        };
+      }
+      {
+        key = "XF86AudioNext";
+        action = "hl.dsp.exec_cmd(\"playerctl next\")";
+        flags = {
+          locked = true;
+        };
+      }
+      {
+        key = "XF86AudioPrev";
+        action = "hl.dsp.exec_cmd(\"previous\")";
+        flags = {
+          locked = true;
+        };
+      }
+
+      # Audio
+      {
         key = "XF86AudioRaiseVolume";
         action = "hl.dsp.exec_cmd(\"wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%+\")";
+        flags = {
+          locked = true;
+          repeating = true;
+        };
+      }
+      {
+        key = "XF86AudioLowerVolume";
+        action = "hl.dsp.exec_cmd(\"wpctl set-volume -l 1.5 @DEFAULT_AUDIO_SINK@ 5%-\")";
+        flags = {
+          locked = true;
+          repeating = true;
+        };
+      }
+
+      # Brightness
+      {
+        key = "XF86MonBrightnessUp";
+        action = "hl.dsp.exec_cmd(\"brightnessctl -e4 -n2 set 5%+\")";
+        flags = {
+          locked = true;
+          repeating = true;
+        };
+      }
+      {
+        key = "XF86MonBrightnessDown";
+        action = "hl.dsp.exec_cmd(\"brightnessctl -e4 -n2 set 5%-\")";
         flags = {
           locked = true;
           repeating = true;
