@@ -75,7 +75,10 @@ in
   ];
 
   networking.defaultGateway = "192.168.100.10";
-  networking.nameservers = [ "10.20.20.5" ];
+  networking.nameservers = lib.mkForce [ "10.20.20.5" ];
+
+  services.resolved.enable = true;
+  networking.useHostResolvConf = lib.mkForce false;
 
   # ── SOPS ────────────────────────────────────────────────────────────────
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
@@ -311,6 +314,7 @@ in
 
     pkgs.python3
     pkgs.nodejs
+    pkgs.dig
   ];
 
   # ── Network ───────────────────────────────────────────────────────────
