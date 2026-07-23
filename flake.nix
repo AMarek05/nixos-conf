@@ -1,6 +1,16 @@
 {
   description = "My NixOS Flake Configuration";
 
+  nixConfig = {
+    extra-substituters = [
+      "https://cache.amarek.pl/nixos-cache"
+    ];
+
+    extra-trusted-public-keys = [
+      "nixos-cache:NYH7cc9sD0f2oKbN42Oo7Bw7TkDyfvjrS2Isa5CY4GM="
+    ];
+  };
+
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
     nixpkgs-stable.url = "github:Nixos/nixpkgs/nixos-25.11";
