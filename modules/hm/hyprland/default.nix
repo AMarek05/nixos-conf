@@ -3,10 +3,19 @@
   lib,
   config,
   pkgs,
+  myLib,
   ...
 }:
 let
   cfg = config.hmModules.hyprland;
+
+  inherit (myLib) toLua;
+  inherit (lib)
+    mkOption
+    types
+    mapAttrsToList
+    concatStringsSep
+    ;
 in
 {
   imports = [
@@ -20,14 +29,46 @@ in
     inputs.caelestia-shell.homeManagerModules.default
   ];
 
+  options.hmModules.hyprland = {
+    env = mkOption {
+      type = types.attrsOf (types.either types.str types.int);
+      default = { };
+      description = "Environment variables to pass to hl.env()";
+    };
+
+    settings = mkOption {
+      type = types.attrsOf types.attrs;
+      default = { };
+      description = "Hyprland config passed to hl.config()";
+    };
+  };
+
   config = lib.mkIf cfg.enable {
     home.file."Pictures/Wallpapers" = {
       source = ../../../store/wallpapers;
       recursive = true;
     };
 
-    hmModules.hyprland.onStart = {
-      commands = [
+    hmModules.hyprland = {
+      settings = {
+        input = {
+          kb_layout = "pl,us";
+        };
+
+        misc = {
+          force_default_wallpaper = 0;
+          disable_hyprland_logo = true;
+          disable_splash_rendering = true;
+          background_color = "rgb(1a1a1a)";
+        };
+      };
+
+      env = {
+        XCURSOR_THEME = "Bibata-Modern-Classic";
+        XCURSOR_SIZE = 24;
+      };
+
+      onStart.commands = [
         "${pkgs.polkit_gnome}/libexec/polkit-gnome-authentication-agent-1"
       ];
     };
@@ -41,23 +82,15 @@ in
       package = null;
       portalPackage = null;
 
-      settings = {
-        env = [
-          "XCURSOR_THEME,Bibata-Modern-Classic"
-          "XCURSOR_SIZE,24"
-        ];
+      extraConfig = ''
+        -- Core settings
+        hl.config(${toLua cfg.settings})
 
-        input = {
-          kb_layout = "pl,us";
-        };
-
-        misc = {
-          force_default_wallpaper = 0;
-          disable_hyprland_logo = true;
-          disable_splash_rendering = true;
-          background_color = lib.mkForce "rgb(1a1a1a)";
-        };
-      };
+        -- Environment variables
+        ${concatStringsSep "\n" (
+          mapAttrsToList (k: v: "hl.env(${toLua k}, ${toLua (toString v)})") cfg.env
+        )}
+      '';
     };
   };
 }
