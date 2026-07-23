@@ -122,7 +122,6 @@ in
     group = "hermes";
     content = ''
       MINIMAX_API_KEY=${config.sops.placeholder."minimax-api-key"}
-      MINIMAX_V1_API_KEY=${config.sops.placeholder."minimax-api-key"}
     '';
   };
 
@@ -195,17 +194,14 @@ in
     ];
 
     settings = {
-      model = "minimax_v1/MiniMax-M2.7";
+      model = "minimax/MiniMax-M2.7";
       gateway.bind = "lan";
 
-      providers.minimax_v1 = {
-        type = "openai";
-        base_url = "https://api.minimax.io/v1";
-      };
+      providers.openai = null;
 
       discord = {
         enabled = true;
-        token = lib.mkForce config.sops.placeholder."hermes-bot-key";
+        token = "\${DISCORD_BOT_TOKEN}";
       };
 
       api_server = {
