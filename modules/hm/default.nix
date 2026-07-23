@@ -1,11 +1,11 @@
-{ lib, ... }:
+{ lib, inputs, ... }:
 
 let
   modulesLib = import ../../lib/modules.nix { inherit lib; };
 in
 modulesLib.mkHostModules {
   namespace = "hmModules";
-  basePath = ../../modules/hm;
+  basePath = "${inputs.self}/modules/hm";
   entries = [
     # dirs with nested options
     {
@@ -14,6 +14,7 @@ modulesLib.mkHostModules {
       sub = [
         { name = "util"; }
         { name = "git"; }
+        { name = "ssh"; }
         { name = "env"; }
 
       ];

@@ -65,39 +65,6 @@
     !include ${config.sops.templates."nix-access-token".path}
   '';
 
-  programs.ssh.extraConfig = ''
-    Host nixos-server
-      HostName nixos-server
-      User adam
-      ProxyJump admin
-
-      ForwardAgent yes
-
-    Host proxmox
-      HostName proxmox
-      User root
-      ProxyJump admin
-
-      ForwardAgent yes
-
-    Host admin
-      HostName admin
-      User root
-
-      ForwardAgent yes
-
-    Host hermes
-      HostName 192.168.100.12
-      Port 22
-      User hermes
-      ProxyJump nixos-server
-
-    Host pangolin
-      HostName amarek.pl
-      Port 2222
-      User ubuntu
-  '';
-
   programs.nix-index-database = {
     enable = true;
     comma.enable = true;

@@ -144,6 +144,8 @@
             extraSpecialArgs = {
               inherit inputs myLib;
               osConfig = nixosCfgs.${name}.config;
+
+              osConfigs = nixosCfgs;
             };
           };
 
