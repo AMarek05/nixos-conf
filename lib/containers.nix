@@ -3,6 +3,7 @@
   lib,
   pkgs,
   inputs,
+  myLib,
   ...
 }:
 
@@ -62,6 +63,12 @@ in
         lib.types.submodule (
           { name, ... }: {
             options = {
+              stateDir = lib.mkOption {
+                type = lib.types.nullOr lib.types.str;
+                default = "/var/lib/${name}";
+                description = "Bind-mounted state directory";
+              };
+
               bindMounts = lib.mkOption {
                 type = lib.types.attrs;
                 default = { };
@@ -69,7 +76,7 @@ in
 
               configFile = lib.mkOption {
                 type = lib.types.str;
-                default = name; # Defaults to assuming the file/folder shares the container's name
+                default = "${name}.nix"; # Defaults to assuming the file/folder shares the container's name
                 description = "Name of the file or directory containing the internal config (e.g., 'hermes' or 'openclaw.nix')";
               };
             };
@@ -80,6 +87,11 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    systemd.tmpfiles.rules = lib.mapAttrsToList (
+      name: instanceCfg:
+      if instanceCfg.stateDir != null then "d ${instanceCfg.stateDir} 0770 ${name} ${name} - -" else ""
+    ) cfg.instances;
+
     # Generate the standard NixOS container definitions
     containers = lib.mapAttrs (name: instanceCfg: {
       autoStart = true;
@@ -87,8 +99,15 @@ in
       hostAddress = "${cfg.subnetPrefix}.${toString cfg.hostIpSuffix}";
       localAddress = ipMap.${name};
 
-      specialArgs = { inherit inputs; };
-      bindMounts = instanceCfg.bindMounts;
+      specialArgs = { inherit inputs myLib; };
+      bindMounts =
+        instanceCfg.bindMounts
+        // (lib.optionalAttrs (instanceCfg.stateDir != null)) {
+          "${instanceCfg.stateDir}" = {
+            hostPath = instanceCfg.stateDir;
+            isReadOnly = false;
+          };
+        };
 
       config = { ... }: {
         imports = cfg.sharedModules ++ [ (cfg.basePath + "/${instanceCfg.configFile}") ];
@@ -107,6 +126,9 @@ in
 
         services.resolved.enable = true;
         networking.useHostResolvConf = lib.mkForce false;
+
+        users.users."${name}".uid = config.users.users."${name}".uid;
+        users.groups."${name}".gid = config.users.groups."${name}".gid;
 
         # Standard baseline inherited from the host structure
         time.timeZone = lib.mkDefault "Europe/Warsaw";
