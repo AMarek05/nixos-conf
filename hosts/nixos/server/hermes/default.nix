@@ -119,7 +119,7 @@ in
     group = "hermes";
     content = ''
       MINIMAX_API_KEY=${config.sops.placeholder."minimax-api-key"}
-      OPENAI_API_KEY=${config.sops.placeholder."minimax-api-key"}
+      MINIMAX_V1_API_KEY=${config.sops.placeholder."minimax-api-key"}
     '';
   };
 
@@ -192,10 +192,11 @@ in
     ];
 
     settings = {
-      model = "openai/MiniMax-M2.7";
+      model = "minimax_v1/MiniMax-M2.7";
       gateway.bind = "lan";
 
-      providers.openai = {
+      providers.minimax_v1 = {
+        type = "openai";
         base_url = "https://api.minimax.io/v1";
       };
 
