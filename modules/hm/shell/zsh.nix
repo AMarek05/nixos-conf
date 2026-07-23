@@ -17,6 +17,7 @@ in
       rsync
       snx-rs
       nh
+      devenv
     ];
 
     xdg.configFile."zsh/.p10k.zsh".source = ../../../store/starship/.p10k.zsh;
@@ -73,6 +74,8 @@ in
           [[ ! -f "$ZDOTDIR/.p10k.zsh" ]] || source "$ZDOTDIR/.p10k.zsh"
 
           ZSH_THEME_TERM_TITLE_IDLE="%1 %m:%~"
+
+          eval "$(${lib.getExe pkgs.devenv} hook zsh)"
 
           # Change Autosuggest Key
           bindkey '^ ' autosuggest-accept
