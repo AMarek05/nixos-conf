@@ -18,6 +18,7 @@ in
       snx-rs
       nh
       devenv
+      forgejo-cli
     ];
 
     xdg.configFile."zsh/.p10k.zsh".source = ../../../store/starship/.p10k.zsh;
@@ -115,6 +116,8 @@ in
         hermes = "ssh hermes@192.168.100.12 -t hermes chat -c main";
 
         update-attic = "sudo systemctl start update-attic.service";
+
+        fj = "${lib.getExe pkgs.forgejo-cli} --host https://git.amarek.pl";
       };
     };
 
