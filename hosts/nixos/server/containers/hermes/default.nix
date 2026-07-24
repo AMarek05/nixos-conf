@@ -15,8 +15,10 @@ let
   hermes-user-file = pkgs.writeText "USER.md" (builtins.readFile ./USER.md);
 
   git-wrapper = myLib.git-wrapper { inherit config pkgs; };
+  fj-wrapper = myLib.fj-wrapper { inherit config pkgs; };
 
   openclaw-secrets = "${inputs.self}/secrets/openclaw.yaml";
+  serv-secrets = "${inputs.self}/secrets/serv.yaml";
 in
 {
   imports = [
@@ -59,6 +61,11 @@ in
     sopsFile = openclaw-secrets;
     owner = "root";
     mode = "0444";
+  };
+
+  sops.secrets."fj-auth" = {
+    sopsFile = serv-secrets;
+    owner = "hermes";
   };
 
   sops.templates."open-webui-env" = {
@@ -242,6 +249,8 @@ in
   environment.systemPackages = [
     inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.full
     git-wrapper
+    fj-wrapper
+
     pkgs.gawk
 
     pkgs.python3
