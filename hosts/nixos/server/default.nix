@@ -246,6 +246,18 @@ in
     };
 
     settings.repository.ENABLE_PUSH_CREATE_USER = true;
+
+    settings."repository.signing" = {
+      FORMAT = "ssh";
+      SIGNING_KEY = "/var/lib/forgejo/ssh-signing-key.pub";
+      SIGNING_NAME = "Forgejo";
+      SIGNING_EMAIL = "noreply@amarek.pl";
+
+      INITIAL_COMMIT = "always";
+      WIKI = "always";
+      CRUD_ACTIONS = "always";
+      MERGES = "always";
+    };
   };
 
   users.users.git = {

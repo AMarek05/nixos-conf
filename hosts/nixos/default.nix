@@ -74,6 +74,8 @@
   programs.nix-index.enableBashIntegration = lib.mkForce false;
 
   environment.systemPackages = with pkgs; [
+    gnupg
+
     nix-visualize
     nix-tree
 
