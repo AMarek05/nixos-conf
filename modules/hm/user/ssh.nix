@@ -20,45 +20,45 @@ in
 
       enableDefaultConfig = false;
 
-      matchBlocks = mkMerge [
+      settings = mkMerge [
         {
           "admin" = {
-            hostname = "admin";
-            user = "root";
+            HostName = "admin";
+            User = "root";
 
-            forwardAgent = true;
+            ForwardAgent = true;
           };
 
           "proxmox" = {
-            hostname = "proxmox";
-            user = "root";
+            HostName = "proxmox";
+            User = "root";
 
-            proxyJump = "admin";
+            ProxyJump = "admin";
           };
 
           "nixos-server" = {
-            hostname = "nixos-server";
-            user = "adam";
+            HostName = "nixos-server";
+            User = "adam";
 
-            proxyJump = "admin";
-            forwardAgent = true;
+            ProxyJump = "admin";
+            ForwardAgent = true;
           };
 
-          "hermes".forwardAgent = true;
+          "hermes".ForwardAgent = true;
 
           "pangolin" = {
-            hostname = "amarek.pl";
-            port = 2222;
+            HostName = "amarek.pl";
+            Port = 2222;
 
-            user = "ubuntu";
+            User = "ubuntu";
           };
         }
 
         (mapAttrs (containerName: containerData: {
-          hostname = containerData.localAddress;
-          user = containerName;
+          HostName = containerData.localAddress;
+          User = containerName;
 
-          proxyJump = lib.mkIf (!isServer) "nixos-server";
+          ProxyJump = lib.mkIf (!isServer) "nixos-server";
         }) serverConfig.containers)
       ];
     };
