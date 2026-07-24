@@ -48,6 +48,7 @@
         bash
         gitMinimal
         nh
+        attic-client
 
         gawk
         gnused
