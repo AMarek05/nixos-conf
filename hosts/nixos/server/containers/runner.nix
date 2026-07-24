@@ -14,7 +14,14 @@
     mode = "0400";
   };
 
-  nix.settings.sandbox = false;
+  nix.settings = {
+    sandbox = false;
+
+    experimental-features = [
+      "nix-command"
+      "flakes"
+    ];
+  };
 
   services.gitea-actions-runner = {
     package = pkgs.forgejo-runner;
@@ -34,12 +41,17 @@
       # Explicitly provide the path dependencies for your jobs
       hostPackages = with pkgs; [
         coreutils
+
         curl
         wget
+
         bash
-        gawk
         gitMinimal
+        nh
+
+        gawk
         gnused
+
         nodejs
         nix
         cargo
