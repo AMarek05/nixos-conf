@@ -58,7 +58,7 @@
     };
 
     forge = {
-      url = "git+https://git.amarek.pl/amarek/forge.git";
+      url = "git+https://git.amarek.pl/amarek-inc/forge.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
