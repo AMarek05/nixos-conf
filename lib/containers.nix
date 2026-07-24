@@ -113,15 +113,8 @@ in
         imports = cfg.sharedModules ++ [ (cfg.basePath + "/${instanceCfg.configFile}") ];
 
         networking.hostName = name;
-        networking.usePredictableInterfaceNames = false;
-        networking.interfaces.eth.ipv4.addresses = [
-          {
-            address = ipMap.${name};
-            prefixLength = 24;
-          }
-        ];
 
-        networking.defaultGateway = "${cfg.subnetPrefix}.${toString cfg.hostIpSuffix}";
+        networking.usePredictableInterfaceNames = false;
         networking.nameservers = lib.mkForce cfg.nameservers;
 
         services.resolved.enable = true;
@@ -141,6 +134,8 @@ in
       internalInterfaces = [ "ve-+" ];
       externalInterface = "ens18";
     };
+
+    networking.firewall.trustedInterfaces = [ "ve-+" ];
 
     # Generate the systemd service workarounds for each container
     systemd.services = lib.mkMerge (
