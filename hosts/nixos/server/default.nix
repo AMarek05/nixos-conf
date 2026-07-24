@@ -26,18 +26,15 @@ in
     {
       users = {
         users = commonAssign {
-          hermes = {
-            uid = 970;
-          };
-
-          openclaw = {
-            uid = 968;
-          };
+          hermes.uid = 970;
+          openclaw.uid = 968;
+          runner.uid = 971;
         };
 
         groups = {
           openclaw.gid = 968;
           hermes.gid = 970;
+          runner.gid = 971;
         };
       };
     }
@@ -47,12 +44,25 @@ in
     enable = true;
     basePath = ./containers;
 
-    sharedModules = [ ./containers/common.nix ];
+    sharedModules = [
+      ./containers/common.nix
+
+      inputs.sops-nix.nixosModules.sops
+    ];
 
     instances = {
       "hermes" = {
         configFile = "hermes/default.nix";
 
+        bindMounts = {
+          "/var/lib/sops-nix/age_key" = {
+            hostPath = "/var/lib/sops-nix/age_key";
+            isReadOnly = true;
+          };
+        };
+      };
+
+      "runner" = {
         bindMounts = {
           "/var/lib/sops-nix/age_key" = {
             hostPath = "/var/lib/sops-nix/age_key";
