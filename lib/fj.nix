@@ -4,7 +4,7 @@ let
   fj-wrapper = pkgs.writeShellScriptBin "fj" ''
     set -euo pipefail
 
-    FJ_AUTH_PATH = ${config.sops.secrets."fj-auth".path}
+    FJ_AUTH_PATH=${config.sops.secrets."fj-auth".path}
 
     if [[ -f "$FJ_AUTH_PATH" ]]; then
       # Read the raw token from the decrypted SOPS file
