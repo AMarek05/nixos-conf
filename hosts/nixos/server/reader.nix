@@ -1,5 +1,13 @@
-{ ... }:
+{ config, inputs, ... }:
 {
+  sops.secrets."kavita-token" = {
+    sopsFile = inputs.self + "/secrets/serv.yaml";
+    owner = "kavita";
+    group = "manga";
+
+    mode = "440";
+  };
+
   # ── 1. Users, Groups, & Permissions ─────────────────────────────────────
   users.groups.manga.gid = 972;
 
@@ -8,6 +16,8 @@
     group = "manga";
     uid = 972;
   };
+
+  users.users.adam.extraGroups = [ "manga" ];
 
   # Kavita runs under its own 'kavita' user automatically.
   # We just add it to our shared 'manga' group so it can read what Kapowarr downloads.
@@ -25,18 +35,22 @@
   services.kavita = {
     enable = true;
 
+    tokenKeyFile = config.sops.secrets."kavita-token".path;
+
     settings = {
       Port = 5000;
       IpAddresses = "127.0.0.1";
     };
   };
 
+  virtualisation.podman.enable = true;
+
   # ── 3. Kapowarr (The Downloader) ────────────────────────────────────────
   virtualisation.oci-containers = {
     backend = "podman";
 
     containers.kapowarr = {
-      image = "mrcas/kapowarr:latest";
+      image = "docker.io/mrcas/kapowarr:latest";
       ports = [ "127.0.0.1:5656:5656" ];
       volumes = [
         "/var/lib/kapowarr/db:/app/db"
