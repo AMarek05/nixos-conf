@@ -80,8 +80,10 @@ in
     script = ''
       set -euo pipefail
 
-      # 1. Setup temporary workspace
-      WORKDIR=$(mktemp -d)
+      WORKDIR=$(mktemp -d -p /var/tmp)
+
+      # Ensure cleanup happens even if the script fails midway
+      trap 'rm -rf "$WORKDIR"' EXIT
 
       export HOME="$WORKDIR"
       cd "$WORKDIR"
@@ -94,31 +96,32 @@ in
       cd repo
       git switch -c pulls/flake-update
 
-      # 2. Update the lockfile
       echo "Updating flake.lock..."
-
       export NIX_CONFIG="access-tokens = github.com=$(cat ${config.sops.secrets."gh-token".path})"
-
       nix flake update
 
-      # 3. Build only the desired hosts
-      echo "Building hosts..."
-      nix build -L \
-        .#nixosConfigurations.nixos.config.system.build.toplevel \
-        .#nixosConfigurations.nixos-laptop.config.system.build.toplevel \
-        .#nixosConfigurations.nixos-server.config.system.build.toplevel \
-        .#homeConfigurations."adam@nixos".activationPackage \
-        .#homeConfigurations."adam@nixos-laptop".activationPackage \
-        .#homeConfigurations."adam@nixos-server".activationPackage 
+      TARGETS=(
+        ".#nixosConfigurations.nixos.config.system.build.toplevel"
+        ".#nixosConfigurations.nixos-laptop.config.system.build.toplevel"
+        ".#nixosConfigurations.nixos-server.config.system.build.toplevel"
+        ".#homeConfigurations.\"adam@nixos\".activationPackage"
+        ".#homeConfigurations.\"adam@nixos-laptop\".activationPackage"
+        ".#homeConfigurations.\"adam@nixos-server\".activationPackage"
+      )
 
-      # 4. Push the resulting closures to your Attic cache
-      echo "Pushing closures to attic..."
-      attic push local-attic:nixos-cache ./result*
+      for TARGET in "''${TARGETS[@]}"; do
+        echo "Building $TARGET..."
+        nix build -L "$TARGET"
 
-      # 5. Commit and push back to Git if the lockfile changed
+        echo "Pushing closure to attic..."
+        attic push local-attic:nixos-cache ./result
+
+        echo "Cleaning up local symlink..."
+        rm -f ./result
+      done
+
       if ! git diff --quiet flake.lock; then
         echo "Changes detected in flake.lock, committing..."
-
         git add flake.lock
         git commit -m "chore(flake): update lockfile and cache closures"
         git push --force origin pulls/flake-update
@@ -126,13 +129,7 @@ in
         echo "No updates available for flake.lock."
       fi
 
-      # Clean up
       echo "Starting the cleanup..."
-
-      rm -f ./result*
-
-      cd /tmp
-
       nh clean all --keep 1 --optimise
     '';
   };
