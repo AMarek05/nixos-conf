@@ -199,8 +199,8 @@ in
   services.qbittorrent = {
     enable = true;
 
-    webuiPort = 8080;
-
+    webuiPort = 8181;
+    openFirewall = true;
   };
 
   users.users.jellyfin.extraGroups = [
@@ -319,7 +319,7 @@ in
     virtualHosts."qbit.amarek.pl" = {
       useACMEHost = "amarek.pl";
       extraConfig = ''
-        reverse_proxy 127.0.0.1:8080
+        reverse_proxy 127.0.0.1:${toString config.services.qbittorrent.webuiPort}
       '';
     };
 
