@@ -22,6 +22,7 @@ in
   imports = [
     ./graphics.nix
     ./attic.nix
+    ./vaultwarden.nix
     "${inputs.self}/lib/containers.nix"
 
     # static container guest user declaration module
@@ -250,6 +251,12 @@ in
 
       SSH_PORT = 22;
       SSH_DOMAIN = "amarek.pl";
+    };
+
+    services.forgejo.database = {
+      type = "postgres";
+      createDatabase = true;
+      socket = "/run/postgresql";
     };
 
     settings.repository.ENABLE_PUSH_CREATE_USER = true;
