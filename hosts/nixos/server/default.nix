@@ -97,6 +97,11 @@ in
     fsType = "ext4";
   };
 
+  fileSystems."/nix" = {
+    device = "/dev/disk/by-uuid/7993d92d-68b8-4b31-8397-c3ed230c1715";
+    fsType = "ext4";
+  };
+
   security.acme = {
     acceptTerms = true;
     defaults.email = "amarek05@pm.me";
