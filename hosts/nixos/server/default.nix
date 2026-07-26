@@ -15,6 +15,8 @@ let
       isSystemUser = true;
     }
   );
+
+  hermes-address = config.containers.hermes.localAddress;
 in
 {
   imports = [
@@ -316,14 +318,14 @@ in
     virtualHosts."hermes.amarek.pl" = {
       useACMEHost = "amarek.pl";
       extraConfig = ''
-        reverse_proxy 192.168.100.12:8642
+        reverse_proxy ${hermes-address}:8642
       '';
     };
 
     virtualHosts."webui.amarek.pl" = {
       useACMEHost = "amarek.pl";
       extraConfig = ''
-        reverse_proxy 192.168.100.12:8080
+        reverse_proxy ${hermes-address}:8080
       '';
     };
   };

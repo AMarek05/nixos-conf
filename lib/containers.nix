@@ -79,6 +79,12 @@ in
                 default = "${name}.nix"; # Defaults to assuming the file/folder shares the container's name
                 description = "Name of the file or directory containing the internal config (e.g., 'hermes' or 'openclaw.nix')";
               };
+
+              ports = lib.mkOption {
+                type = lib.types.listOf lib.types.port;
+                default = [ ];
+                description = "List of ports to open in both firewalls.";
+              };
             };
           }
         )
@@ -120,6 +126,8 @@ in
         services.resolved.enable = true;
         networking.useHostResolvConf = lib.mkForce false;
 
+        networking.firewall.allowedTCPPorts = instanceCfg.ports;
+
         users.users."${name}".uid = config.users.users."${name}".uid;
         users.groups."${name}".gid = config.users.groups."${name}".gid;
 
@@ -136,6 +144,9 @@ in
     };
 
     networking.firewall.trustedInterfaces = [ "ve-+" ];
+    networking.firewall.allowedTCPPorts = lib.flatten (
+      lib.mapAttrsToList (name: instanceCfg: instanceCfg.ports) cfg.instances
+    );
 
     # Generate the systemd service workarounds for each container
     systemd.services = lib.mkMerge (
