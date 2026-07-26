@@ -25,6 +25,8 @@ in
     ./graphics.nix
     ./attic.nix
     ./vaultwarden.nix
+    ./reader.nix
+
     "${inputs.self}/lib/containers.nix"
 
     # static container guest user declaration module
