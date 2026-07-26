@@ -79,6 +79,17 @@
   services.gvfs.enable = true;
   services.tumbler.enable = true;
 
+  nixpkgs.overlays = [
+    (final: prev: {
+      ollama-cuda = prev.ollama-cuda.overrideAttrs (old: {
+        preBuild = ''
+          unset CUDAToolkit_ROOT
+        ''
+        + (old.preBuild or "");
+      });
+    })
+  ];
+
   services.ollama = {
     enable = true;
     package = pkgs.ollama-cuda;
