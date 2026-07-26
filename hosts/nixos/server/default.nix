@@ -17,6 +17,8 @@ let
   );
 
   hermes-address = config.containers.hermes.localAddress;
+
+  vwcfg = config.services.vaultwarden.config;
 in
 {
   imports = [
@@ -241,6 +243,16 @@ in
 
     lfs.enable = true;
 
+    database = {
+      type = "postgres";
+      createDatabase = true;
+
+      user = "git";
+      name = "git";
+
+      socket = "/run/postgresql";
+    };
+
     settings.server = {
       DOMAIN = "git.amarek.pl";
       ROOT_URL = "https://git.amarek.pl/";
@@ -251,12 +263,6 @@ in
 
       SSH_PORT = 22;
       SSH_DOMAIN = "amarek.pl";
-    };
-
-    services.forgejo.database = {
-      type = "postgres";
-      createDatabase = true;
-      socket = "/run/postgresql";
     };
 
     settings.repository.ENABLE_PUSH_CREATE_USER = true;
@@ -314,16 +320,11 @@ in
         reverse_proxy 127.0.0.1:8080
       '';
     };
+
     virtualHosts."git.amarek.pl" = {
       useACMEHost = "amarek.pl";
       extraConfig = ''
         reverse_proxy 127.0.0.1:3000
-      '';
-    };
-    virtualHosts."openclaw.amarek.pl" = {
-      useACMEHost = "amarek.pl";
-      extraConfig = ''
-        reverse_proxy 192.168.100.11:18789
       '';
     };
 
@@ -338,6 +339,13 @@ in
       useACMEHost = "amarek.pl";
       extraConfig = ''
         reverse_proxy ${hermes-address}:8080
+      '';
+    };
+
+    virtualHosts."vault.amarek.pl" = {
+      useACMEHost = "amarek.pl";
+      extraConfig = ''
+        reverse_proxy ${vwcfg.ROCKET_ADDRESS}:${toString vwcfg.ROCKET_PORT}
       '';
     };
   };
