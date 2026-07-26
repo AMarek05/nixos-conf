@@ -144,6 +144,18 @@ in
     };
   };
 
+  services.postgresql = {
+    enable = true;
+
+    ensureDatabases = [ "atticd" ];
+    ensureUsers = [
+      {
+        name = "atticd";
+        ensureDBOwnership = true;
+      }
+    ];
+  };
+
   services.atticd = {
     enable = true;
 
@@ -154,6 +166,8 @@ in
 
     settings = {
       listen = "[::]:8888";
+
+      database.url = "postgresql://atticd@%2Frun%2Fpostgresql/atticd";
 
       chunking = {
         # The minimum NAR size to trigger chunking
