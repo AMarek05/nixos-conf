@@ -130,7 +130,7 @@ in
       fi
 
       echo "Starting the cleanup..."
-      nh clean all --keep 1 --optimise
+      nh clean all --keep 3 --optimise
     '';
   };
 
