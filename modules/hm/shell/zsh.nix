@@ -118,6 +118,8 @@ in
         update-attic = "sudo systemctl start update-attic.service";
 
         fj = "${lib.getExe pkgs.forgejo-cli} --host https://git.amarek.pl";
+
+        bat = "${lib.getExe pkgs.bat} --decorations=always";
       };
     };
 
