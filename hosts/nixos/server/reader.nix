@@ -1,4 +1,9 @@
-{ config, inputs, ... }:
+{
+  config,
+  inputs,
+  lib,
+  ...
+}:
 {
   sops.secrets."kavita-token" = {
     sopsFile = inputs.self + "/secrets/serv.yaml";
@@ -25,10 +30,10 @@
 
   # Ensure the host directories exist with the correct permissions before services start
   systemd.tmpfiles.rules = [
-    "d /var/lib/kapowarr/db 0775 kapowarr manga - -"
     "d /media/manga 0775 kapowarr manga - -"
     "d /media/manga/downloads 0775 kapowarr manga - -"
     "d /media/manga/library 0775 kapowarr manga - -"
+    "d /var/lib/kaizoku/config 0775 972 manga - -"
   ];
 
   # ── 2. Kavita (The Reader) ──────────────────────────────────────────────
@@ -48,22 +53,58 @@
   # ── 3. Kapowarr (The Downloader) ────────────────────────────────────────
   virtualisation.oci-containers = {
     backend = "podman";
+    containers.kaizoku = {
+      image = "ghcr.io/oae/kaizoku:latest";
 
-    containers.kapowarr = {
-      image = "docker.io/mrcas/kapowarr:latest";
-      ports = [ "127.0.0.1:5656:5656" ];
-      volumes = [
-        "/var/lib/kapowarr/db:/app/db"
-        "/media/manga/downloads:/app/temp_downloads"
-        "/media/manga/library:/comics"
-      ];
+      # Maps the host machine's IP to 'host.containers.internal' inside the container
+      extraOptions = [ "--add-host=host.containers.internal:host-gateway" ];
+
+      # Map your desired host port (3010) to Kaizoku's hardcoded internal port (3000)
+      ports = [ "127.0.0.1:3010:3000" ];
+
       environment = {
+        DATABASE_URL = "postgresql://kaizoku@localhost/kaizoku?host=/run/postgresql";
+        REDIS_HOST = "host.containers.internal"; # Point to the NixOS host
+        REDIS_PORT = "6379";
         PUID = "972";
         PGID = "972";
-        TZ = "Europe/Warsaw"; # Matching your existing configuration
+        TZ = "Europe/Warsaw";
       };
+      volumes = [
+        "/var/lib/kaizoku/config:/config"
+        "/media/manga/library:/data"
+        "/run/postgresql:/run/postgresql:rw"
+      ];
     };
   };
+
+  services.postgresql = {
+    ensureDatabases = [ "kaizoku" ];
+    ensureUsers = [
+      {
+        name = "kaizoku";
+        ensureDBOwnership = true;
+      }
+    ];
+    # 'trust' local socket connections specifically for this app
+    # The first rule that matches takes precedence, so we put it at the top
+    authentication = lib.mkBefore ''
+      # TYPE  DATABASE  USER     ADDRESS  METHOD
+      local   kaizoku   kaizoku           trust
+    '';
+  };
+
+  services.redis.servers.kaizoku = {
+    enable = true;
+    port = 6379;
+    bind = "0.0.0.0";
+    settings = {
+      "protected-mode" = "no";
+    };
+  };
+
+  # open internal firewall for reddis
+  networking.firewall.interfaces."podman+".allowedTCPPorts = [ 6379 ];
 
   # ── 4. Caddy Reverse Proxy ──────────────────────────────────────────────
   services.caddy.virtualHosts = {
@@ -77,7 +118,7 @@
     "manga.amarek.pl" = {
       useACMEHost = "amarek.pl";
       extraConfig = ''
-        reverse_proxy 127.0.0.1:5656
+        reverse_proxy 127.0.0.1:3010
       '';
     };
   };
