@@ -43,7 +43,7 @@
       "cache.nixos.org-1:6NCHdD59X431o0gWypbMrAURkbJ16ZPMQFGspcDShjY="
       "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
       "ezkea.cachix.org-1:ioBmUbJTZIKsHmWWXPe1FSFbeVe+afhfgqgTSNd34eI="
-      "nixos-cache:NYH7cc9sD0f2oKbN42Oo7Bw7TkDyfvjrS2Isa5CY4GM="
+      "nixos-cache:Jp03HL/iNrPtKzxlNt1BoGlYVXv8NWpN/yoX1cd8ppc="
       "mic92.cachix.org-1:gi8IhgiT3CYZnJsaW7fxznzTkMUOn1RY4GmXdT/nXYQ="
     ];
 
