@@ -175,6 +175,38 @@ in
         min_idle_hours = 336;
         archive_after_days = 30;
       };
+
+      # ── Prompt / toolset trim ─────────────────────────────────────
+      # Pi-style minimalism: cut toolsets that never fire in this
+      # container so their JSON schemas (~14.8K tok baseline) don't
+      # ship on every turn. Per `hermes_cli/tools_config.py`, the
+      # `hermes-discord` default toolset resolves 50 tool definitions;
+      # these are the ones that have no caller in this setup.
+      #
+      # Baseline (before this change):  ~20.5K tok/turn fixed cost
+      #   - tool defs:  ~14,880 tok
+      #   - system prompt (built-in):  ~4,900 tok
+      #   - SOUL + memory + USER:  ~825 tok
+      #
+      # Cuts below remove ~5K tok of JSON schemas per turn (mac +
+      # kanban + ha + discord_admin). Other tools (cronjob,
+      # delegate_task, execute_code) are kept as cheap fallbacks.
+      #
+      # `task_completion_guidance` and `tool_use_enforcement` are
+      # written explicitly even though they're the defaults — makes
+      # intent visible in code review and survives upstream default
+      # changes.
+      agent = {
+        disabled_toolsets = [
+          "computer_use"      # macOS-only; this is a NixOS container
+          "kanban"            # no dispatcher spawns in this container (empty kanban.db)
+          "homeassistant"     # HASS_TOKEN not provisioned
+          "discord_admin"     # admin scope not granted to the bot
+        ];
+        task_completion_guidance = true;   # ship the "no fabrication" block
+        tool_use_enforcement = "auto";     # M3 not in TOOL_USE_ENFORCEMENT_MODELS — no-op but explicit
+        environment_probe = true;          # one-line python/pip state, ~50 tok
+      };
     };
   };
 
