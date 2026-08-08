@@ -175,6 +175,25 @@ in
         min_idle_hours = 336;
         archive_after_days = 30;
       };
+
+      # ── Prompt / toolset trim ─────────────────────────────────────
+      # Pi-style minimalism: cut toolsets that never fire in this
+      # container so their JSON schemas (~14.8K tok baseline) don't
+      # ship on every turn. Per `hermes_cli/tools_config.py`, the
+      # `hermes-discord` default toolset resolves 50 tool definitions;
+      # these are the ones that have no caller in this setup.
+      
+      agent = {
+        disabled_toolsets = [
+          "computer_use"
+          "kanban"
+          "homeassistant"
+          "discord_admin"
+        ];
+        task_completion_guidance = true;
+        tool_use_enforcement = "auto";
+        environment_probe = true;
+      };
     };
   };
 
