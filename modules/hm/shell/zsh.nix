@@ -113,7 +113,7 @@ in
 
         serv-rebuild = "nixos-rebuild switch --flake ~/sys#nixos-server --build-host nixos-server --target-host nixos-server --sudo --ask-sudo-password";
 
-        hermes = "ssh hermes@192.168.100.12 -t hermes chat -c main";
+        hermes = "ssh hermes@hermes -t hermes chat -c main";
 
         update-attic = "sudo systemctl start update-attic.service";
 
