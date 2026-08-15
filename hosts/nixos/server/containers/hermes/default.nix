@@ -155,6 +155,7 @@ in
     settings = {
       model = "minimax/MiniMax-M3";
       gateway.bind = "lan";
+      gateway.platforms.discord.gateway_restart_notification = false;
 
       providers.openai = null;
 
@@ -182,7 +183,7 @@ in
       # ship on every turn. Per `hermes_cli/tools_config.py`, the
       # `hermes-discord` default toolset resolves 50 tool definitions;
       # these are the ones that have no caller in this setup.
-      
+
       agent = {
         disabled_toolsets = [
           "computer_use"
