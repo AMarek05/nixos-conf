@@ -144,6 +144,34 @@ in
       env.MINIMAX_API_HOST = "https://api.minimax.io";
     };
 
+    # fff-mcp — Rust file/content search MCP server.
+    # Replaces built-in search_files (ripgrep spawn-per-call) with a warm
+    # LMDB-backed in-memory index + background file watcher. Frecency-ranks
+    # paths so recently-touched repos (nixos-conf, forge) surface first.
+    #
+    # Persistence: frecency + history DBs live under stateDir/.hermes/fff/
+    # so the warm-up cost (up to 30s on first scan) is paid once across
+    # restarts. The base-path argument auto-discovers the git root of any
+    # repo passed in — `/var/lib/hermes/workspace` covers nixos-conf,
+    # forge, sys, etc.
+    #
+    # --no-update-check suppresses the startup GitHub releases HTTP probe;
+    # the container's outbound policy is otherwise quiet and the probe is
+    # only useful on a developer workstation.
+    mcpServers.fff = let
+      fffState = "${cfg.stateDir}/.hermes/fff";
+      fffBin = inputs.fff.packages.${pkgs.stdenv.hostPlatform.system}.fff-mcp;
+    in {
+      command = "${fffBin}/bin/fff-mcp";
+      args = [
+        "/var/lib/hermes/workspace"
+        "--frecency-db" "${fffState}/frecency.db"
+        "--history-db" "${fffState}/history.db"
+        "--log-file" "${fffState}/fff-mcp.log"
+        "--no-update-check"
+      ];
+    };
+
     # All three templates are concatenated into ~/.hermes/.env at activation.
     # hermes reads them via load_hermes_dotenv() at startup.
     environmentFiles = [
@@ -200,6 +228,7 @@ in
 
   systemd.tmpfiles.rules = [
     "d ${cfg.stateDir}/.hermes/memories 2770 ${cfg.user} ${cfg.group} - -"
+    "d ${cfg.stateDir}/.hermes/fff 2770 ${cfg.user} ${cfg.group} - -"
 
     "C ${cfg.stateDir}/.hermes/SOUL.md 0640 ${cfg.user} ${cfg.group} - ${hermes-soul-file}"
 

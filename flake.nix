@@ -80,6 +80,17 @@
       inputs.flake-parts.follows = "flake-parts";
     };
 
+    # fff — fast file finder (Rust) with an MCP server (fff-mcp).
+    # Pin to v0.10.5 (latest as of 2026-08-16) so upgrades are deliberate.
+    # fff's own flake pulls nixpkgs-unstable + crane + rust-overlay + zig-overlay;
+    # we follow our nixpkgs so we don't fetch a second nixpkgs instance, and
+    # let flake-parts/rust-overlay/zig-overlay come from upstream to avoid
+    # version drift.
+    fff = {
+      url = "github:dmtrKovalenko/fff/v0.10.5";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     attic = {
       url = "github:zhaofengli/attic";
 
