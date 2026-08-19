@@ -333,6 +333,13 @@ in
     virtualHosts."hermes.amarek.pl" = {
       useACMEHost = "amarek.pl";
       extraConfig = ''
+        reverse_proxy ${hermes-address}:9119
+      '';
+    };
+
+    virtualHosts."api.hermes.amarek.pl" = {
+      useACMEHost = "amarek.pl";
+      extraConfig = ''
         reverse_proxy ${hermes-address}:8642
       '';
     };

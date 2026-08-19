@@ -213,6 +213,54 @@ in
     SendSIGKILL = false;
   };
 
+  systemd.services.hermes-dashboard = {
+    description = "Hermes Agent Web Dashboard";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "hermes-agent.service" ];
+    wants = [ "hermes-agent.service" ];
+
+    environment = {
+      HOME = cfg.stateDir;
+      HERMES_HOME = "${cfg.stateDir}/.hermes";
+      HERMES_MANAGED = "true";
+    };
+
+    serviceConfig = {
+      User = cfg.user;
+      Group = cfg.group;
+      WorkingDirectory = cfg.stateDir;
+
+      ExecStart = lib.concatStringsSep " " [
+        "${inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.full}/bin/hermes"
+        "dashboard"
+        "--host" "0.0.0.0"
+        "--port" "9119"
+        "--no-open"
+        "--insecure"
+        "--skip-build"
+      ];
+
+      Restart = "on-failure";
+      RestartSec = "5s";
+
+      UMask = "0007";
+
+      NoNewPrivileges = true;
+      ProtectSystem = "strict";
+      ProtectHome = false;
+      ReadWritePaths = [
+        cfg.stateDir
+      ];
+      PrivateTmp = true;
+    };
+
+    path = [
+      inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.full
+      pkgs.bash
+      pkgs.coreutils
+    ];
+  };
+
   services.openssh = {
     enable = true;
     settings = {
@@ -282,6 +330,7 @@ in
   networking.firewall.allowedTCPPorts = [
     8642
     8080
+    9119
   ];
 
   # ── Timezone ──────────────────────────────────────────────────────────
