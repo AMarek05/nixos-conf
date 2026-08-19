@@ -68,6 +68,11 @@ in
     owner = "hermes";
   };
 
+  sops.secrets."dashboard-admin-password" = {
+    sopsFile = serv-secrets;
+    owner = "hermes";
+  };
+
   sops.templates."open-webui-env" = {
     owner = "open-webui";
     group = "open-webui";
@@ -101,6 +106,15 @@ in
     '';
   };
 
+  sops.templates."hermes-dashboard-env" = {
+    owner = "hermes";
+    group = "hermes";
+    content = ''
+      HERMES_DASHBOARD_BASIC_AUTH_USERNAME=adam
+      HERMES_DASHBOARD_BASIC_AUTH_PASSWORD=${config.sops.placeholder."dashboard-admin-password"}
+    '';
+  };
+
   # ── Hermes Agent service ──────────────────────────────────────────────
   # The hermes module's activation script writes cfg.environment and
   # cfg.environmentFiles to ~/.hermes/.env (via load_hermes_dotenv at Python
@@ -109,7 +123,7 @@ in
   services.hermes-agent = {
     enable = true;
 
-    package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.full;
+    package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default;
     container.enable = false;
 
     user = "hermes";
@@ -253,12 +267,11 @@ in
       WorkingDirectory = cfg.stateDir;
 
       ExecStart = lib.concatStringsSep " " [
-        "${inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.full}/bin/hermes"
+        "${inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/hermes"
         "dashboard"
         "--host" "0.0.0.0"
         "--port" "9119"
         "--no-open"
-        "--insecure"
         "--skip-build"
       ];
 
@@ -274,10 +287,11 @@ in
         cfg.stateDir
       ];
       PrivateTmp = true;
+      EnvironmentFile = config.sops.templates."hermes-dashboard-env".path;
     };
 
     path = [
-      inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.full
+      inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
       pkgs.bash
       pkgs.coreutils
     ];
@@ -337,7 +351,7 @@ in
 
   # ── CLI ───────────────────────────────────────────────────────────────
   environment.systemPackages = [
-    inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.full
+    inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
     git-wrapper
     fj-wrapper
 
