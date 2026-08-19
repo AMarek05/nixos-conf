@@ -144,6 +144,25 @@ in
       env.MINIMAX_API_HOST = "https://api.minimax.io";
     };
 
+    mcpServers.fff =
+      let
+        fffState = "${cfg.stateDir}/.hermes/fff";
+        fffBin = inputs.fff.packages.${pkgs.stdenv.hostPlatform.system}.fff-mcp;
+      in
+      {
+        command = "${fffBin}/bin/fff-mcp";
+        args = [
+          "/var/lib/hermes/workspace"
+          "--frecency-db"
+          "${fffState}/frecency.db"
+          "--history-db"
+          "${fffState}/history.db"
+          "--log-file"
+          "${fffState}/fff-mcp.log"
+          "--no-update-check"
+        ];
+      };
+
     # All three templates are concatenated into ~/.hermes/.env at activation.
     # hermes reads them via load_hermes_dotenv() at startup.
     environmentFiles = [
@@ -200,10 +219,13 @@ in
 
   systemd.tmpfiles.rules = [
     "d ${cfg.stateDir}/.hermes/memories 2770 ${cfg.user} ${cfg.group} - -"
+    "d ${cfg.stateDir}/.hermes/fff 2770 ${cfg.user} ${cfg.group} - -"
 
-    "C ${cfg.stateDir}/.hermes/SOUL.md 0640 ${cfg.user} ${cfg.group} - ${hermes-soul-file}"
+    # L+ (not C): re-points the symlink to the new derivation on every rebuild.
+    # C only seeds the file once; subsequent source edits were silently ignored.
+    "L+ ${cfg.stateDir}/.hermes/SOUL.md - ${cfg.user} ${cfg.group} - ${hermes-soul-file}"
 
-    "C ${cfg.stateDir}/.hermes/memories/USER.md 0640 ${cfg.user} ${cfg.group} - ${hermes-user-file}"
+    "L+ ${cfg.stateDir}/.hermes/memories/USER.md - ${cfg.user} ${cfg.group} - ${hermes-user-file}"
   ];
 
   systemd.services.hermes-agent.serviceConfig = {
