@@ -337,13 +337,6 @@ in
       '';
     };
 
-    virtualHosts."api.hermes.amarek.pl" = {
-      useACMEHost = "amarek.pl";
-      extraConfig = ''
-        reverse_proxy ${hermes-address}:8642
-      '';
-    };
-
     virtualHosts."webui.amarek.pl" = {
       useACMEHost = "amarek.pl";
       extraConfig = ''

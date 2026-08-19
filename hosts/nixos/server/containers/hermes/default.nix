@@ -304,7 +304,7 @@ in
       DO_NOT_TRACK = "True";
       ANONYMIZED_TELEMETRY = "False";
       WEBUI_AUTH = "False";
-      OPENAI_API_BASE_URL = "http://192.168.100.12:8642/v1";
+      OPENAI_API_BASE_URL = "http://127.0.0.1:8642/v1";
     };
   };
 
