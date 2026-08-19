@@ -80,6 +80,11 @@
       inputs.flake-parts.follows = "flake-parts";
     };
 
+    fff = {
+      url = "github:dmtrKovalenko/fff";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     attic = {
       url = "github:zhaofengli/attic";
 
