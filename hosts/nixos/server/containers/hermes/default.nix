@@ -221,7 +221,9 @@ in
     "d ${cfg.stateDir}/.hermes/memories 2770 ${cfg.user} ${cfg.group} - -"
     "d ${cfg.stateDir}/.hermes/fff 2770 ${cfg.user} ${cfg.group} - -"
 
-    "C ${cfg.stateDir}/.hermes/SOUL.md 0640 ${cfg.user} ${cfg.group} - ${hermes-soul-file}"
+    # L+ (not C): re-points the symlink to the new derivation on every rebuild.
+    # C only seeds the file once; subsequent source edits were silently ignored.
+    "L+ ${cfg.stateDir}/.hermes/SOUL.md - ${cfg.user} ${cfg.group} - ${hermes-soul-file}"
 
     "C ${cfg.stateDir}/.hermes/memories/USER.md 0640 ${cfg.user} ${cfg.group} - ${hermes-user-file}"
   ];
