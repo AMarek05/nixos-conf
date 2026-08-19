@@ -267,16 +267,15 @@
         "zig-overlay": "zig-overlay"
       },
       "locked": {
-        "lastModified": 1786896023,
-        "narHash": "sha256-STWQVXZCTlXteuojY2L8dN5Hy+gcUYqn/FqxV4YbieA=",
+        "lastModified": 1787109758,
+        "narHash": "sha256-uNQN5BIwxrY+VrzFADXm8hj7uXAcbFaOwBbRTZH+bUc=",
         "owner": "dmtrKovalenko",
         "repo": "fff",
-        "rev": "459ebcdbdba094843fe5339a1a7f7dae4ced2d82",
+        "rev": "d5b4abd2ac22ba42a787c07b6c5d21b76918262f",
         "type": "github"
       },
       "original": {
         "owner": "dmtrKovalenko",
-        "ref": "v0.10.5",
         "repo": "fff",
         "type": "github"
       }
