@@ -202,7 +202,10 @@ in
         host = "0.0.0.0";
       };
 
-      memory.user_profile_enabled = true;
+      memory = {
+        user_profile_enabled = true;
+        memory_char_limit = 4000;
+      };
 
       curator = {
         interval_hours = 24;
