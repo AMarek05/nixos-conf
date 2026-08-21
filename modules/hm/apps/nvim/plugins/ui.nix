@@ -19,11 +19,6 @@
       borders.enable = true;
       illuminate.enable = true;
 
-      breadcrumbs = {
-        enable = true;
-        navbuddy.enable = true;
-      };
-
       noice.enable = true;
       noice.setupOpts = {
         cmdline.format = {
@@ -76,6 +71,13 @@
             right = "";
           };
           globalstatus = true;
+        };
+      };
+
+      integrations = {
+        breadcrumbs = {
+          nvim-navic.enable = true;
+          navbuddy.enable = true;
         };
       };
 
