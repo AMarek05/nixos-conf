@@ -8,13 +8,17 @@
 
       clang.enable = true;
       python.enable = true;
-      zig.enable = false;
       go.enable = true;
       bash.enable = true;
 
       java.enable = true;
 
       rust = {
+        enable = true;
+        lsp.enable = true;
+      };
+
+      zig = {
         enable = true;
         lsp.enable = true;
       };
