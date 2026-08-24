@@ -7,6 +7,9 @@
 }:
 let
   git-wrapper = myLib.git-wrapper { inherit pkgs config; };
+  fj-wrapper = myLib.fj-wrapper { inherit pkgs config; };
+
+  servSecrets = inputs.self + "/secrets/serv.yaml";
 in
 {
   imports = [
@@ -46,8 +49,13 @@ in
   };
 
   sops.secrets."attic_key" = {
-    sopsFile = inputs.self + "/secrets/serv.yaml";
+    sopsFile = servSecrets;
     owner = "atticd";
+  };
+
+  sops.secrets."fj-auth" = {
+    sopsFile = servSecrets;
+    owner = "root";
   };
 
   systemd.services.update-attic = {
@@ -67,7 +75,10 @@ in
         openssh
         nh
       ]
-      ++ [ git-wrapper ];
+      ++ [
+        git-wrapper
+        fj-wrapper
+      ];
 
     serviceConfig = {
       Type = "oneshot";
@@ -97,7 +108,6 @@ in
       git switch -c pulls/flake-update
 
       echo "Updating flake.lock..."
-      export NIX_CONFIG="access-tokens = github.com=$(cat ${config.sops.secrets."gh-token".path})"
       nix flake update
 
       TARGETS=(
@@ -125,6 +135,14 @@ in
         git add flake.lock
         git commit -m "chore(flake): update lockfile and cache closures"
         git push --force origin pulls/flake-update
+
+        echo "Opening Pull Request..."
+        fj pr create \
+          "chore(flake): update lockfile" \
+          --body "Automated flake update and closure cache generation from \`update-attic.service\`." \
+          --head pulls/flake-update \
+          --base main \
+          || echo "PR likely already exists. Skipping PR creation."
       else
         echo "No updates available for flake.lock."
       fi
