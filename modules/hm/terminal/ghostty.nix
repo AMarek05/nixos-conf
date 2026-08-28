@@ -16,7 +16,7 @@ in
 
         clipboard-read = "allow";
 
-        font-family = "0xProto Nerd Font";
+        font-family = "0xProto Nerd Font Propo";
 
         app-notifications = false;
         shell-integration-features = "ssh-env,ssh-terminfo,cursor,sudo,title";
