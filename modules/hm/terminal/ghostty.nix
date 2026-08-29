@@ -17,7 +17,7 @@ in
         clipboard-read = "allow";
 
         font-family = "0xProto Nerd Font Propo";
-        adjust-cell-height = "-10%";
+        adjust-cell-height = "-15%";
 
         app-notifications = false;
         shell-integration-features = "ssh-env,ssh-terminfo,cursor,sudo,title";
