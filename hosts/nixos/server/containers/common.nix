@@ -10,6 +10,8 @@ in
     ];
   };
 
+  environment.systemPackages = [ pkgs.ghostty.terminfo ];
+
   systemd.settings = {
     Manager = {
       DefaultTimeoutStopSec = "5s";
