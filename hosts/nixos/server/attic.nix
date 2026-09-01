@@ -93,7 +93,6 @@ in
 
       WORKDIR=$(mktemp -d -p /var/tmp)
 
-      # Ensure cleanup happens even if the script fails midway
       trap 'rm -rf "$WORKDIR"' EXIT
 
       export HOME="$WORKDIR"
@@ -102,13 +101,22 @@ in
       attic login local-attic http://127.0.0.1:8888 $(cat ${config.sops.secrets."attic_key".path})
 
       echo "Cloning repository..."
-      git clone --depth=1 git@amarek.pl:amarek/nixos-conf.git repo
+      git clone git@amarek.pl:amarek/nixos-conf.git repo
 
       cd repo
       git switch -c pulls/flake-update
 
       echo "Updating flake.lock..."
       nix flake update
+
+      if git diff --quiet flake.lock; then
+        echo "No updates available for flake.lock. Skipping."
+        exit 0
+      fi
+
+      echo "Changes detected in flake.lock, committing..."
+      git add flake.lock
+      git commit -m "chore(flake): update lockfile and cache closures"
 
       TARGETS=(
         ".#nixosConfigurations.nixos.config.system.build.toplevel"
@@ -130,22 +138,15 @@ in
         rm -f ./result
       done
 
-      if ! git diff --quiet flake.lock; then
-        echo "Changes detected in flake.lock, committing..."
-        git add flake.lock
-        git commit -m "chore(flake): update lockfile and cache closures"
-        git push --force origin pulls/flake-update
+      git push --force origin pulls/flake-update
 
-        echo "Opening Pull Request..."
-        fj pr create \
-          "chore(flake): update lockfile" \
-          --body "Automated flake update and closure cache generation from \`update-attic.service\`." \
-          --head pulls/flake-update \
-          --base main \
-          || echo "PR likely already exists. Skipping PR creation."
-      else
-        echo "No updates available for flake.lock."
-      fi
+      echo "Opening Pull Request..."
+      fj pr create \
+        "chore(flake): update lockfile" \
+        --body "Automated flake update and closure cache generation from \`update-attic.service\`." \
+        --head pulls/flake-update \
+        --base main \
+        || echo "PR likely already exists. Skipping PR creation."
 
       echo "Starting the cleanup..."
       nh clean all --keep 3 --optimise
