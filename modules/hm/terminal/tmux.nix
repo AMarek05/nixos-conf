@@ -7,7 +7,10 @@
 }:
 {
   config = lib.mkIf (config.hmModules.terminal.enable && config.hmModules.terminal.tmux.enable) {
-    home.packages = [ pkgs.gitmux ];
+    home.packages = [
+      pkgs.gitmux
+      pkgs.ghostty.terminfo
+    ];
 
     home.file.".config/.gitmux.conf".text = ''
       tmux:
@@ -106,6 +109,9 @@
       ];
 
       extraConfig = ''
+        set -g default-terminal "tmux-256color"
+        set -ga terminal-overrides ',xterm-ghostty:Tc:SF'
+
         bind \\ split-window -v
         bind v split-window -h
 
