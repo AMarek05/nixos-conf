@@ -12,6 +12,8 @@
       pkgs.ghostty.terminfo
     ];
 
+    home.sessionVariables.TERMINFO = "${config.home.profileDirectory}/share/terminfo";
+
     home.file.".config/.gitmux.conf".text = ''
       tmux:
         symbols:
