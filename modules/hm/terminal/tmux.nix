@@ -140,7 +140,6 @@
         set-option -g detach-on-destroy off
 
         new-session -d -s main
-        new-session -d -s servers
       '';
     };
   };
