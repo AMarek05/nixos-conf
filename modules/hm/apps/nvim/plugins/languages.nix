@@ -23,6 +23,11 @@
         lsp.enable = true;
       };
 
+      odin = {
+        enable = true;
+        lsp.enable = true;
+      };
+
       nix = {
         enable = true;
         format.type = [ "nixfmt" ];
