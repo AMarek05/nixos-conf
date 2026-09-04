@@ -34,11 +34,7 @@ let
     fi
 
     if ! infocmp -x xterm-ghostty | command ssh -o BatchMode=yes "$@" -- tic -x -; then
-      cat >&2 <<EOF
-install-term: tic failed on remote. If the error was 'tic: command not found',
-install ncurses on the remote, e.g.: ssh "$@" 'sudo apt install ncurses-bin'
-Then re-run this command.
-EOF
+      cat >&2 <<< "install-term: tic failed on remote"
       exit 1
     fi
 
@@ -149,7 +145,7 @@ in
 
         serv-rebuild = "nixos-rebuild switch --flake ~/sys#nixos-server --build-host nixos-server --target-host nixos-server --sudo --ask-sudo-password";
 
-        hermes = "ssh hermes@hermes -t hermes chat -c main";
+        hermes = "ssh hermes@hermes -t hermes chat";
 
         update-attic = "sudo systemctl start update-attic.service";
 
