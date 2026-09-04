@@ -52,6 +52,11 @@ in
 
             User = "ubuntu";
           };
+
+          "polluks" = {
+            HostName = "polluks.cs.put.poznan.pl";
+            User = "inf164182";
+          };
         }
 
         (mapAttrs (containerName: containerData: {

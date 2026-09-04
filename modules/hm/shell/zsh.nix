@@ -116,6 +116,8 @@ in
       ];
 
       shellAliases = {
+        reload = "source $XDG_CONFIG_HOME/zsh/.zshrc";
+
         c = "clear";
         tt = "tmux";
         tta = "tmux attach";
@@ -127,7 +129,6 @@ in
         lt = "eza      --icons=auto --tree";
 
         st = "${pkgs.sillytavern}/bin/sillytavern";
-        polluks = "ssh -A inf164182@polluks.cs.put.poznan.pl";
 
         nhc = "nh clean all --keep 3 --no-gcroots";
         nhco = "nh clean all --keep 3 --no-gcroots --optimise";
@@ -137,6 +138,10 @@ in
         nhh = "nh home switch";
 
         kc = "eval \"$(SHELL=zsh ${lib.getExe pkgs.keychain} --eval --quiet git)\"";
+
+        ssh-tpm = lib.mkIf (
+          osConfig.networking.hostName != "nixos-server"
+        ) "ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so";
 
         rsync = "rsync --info=progress2";
         hellfire = "sudo snx-rs -s hellfire.put.poznan.pl -u adam.marek@student.put.poznan.pl -o vpn_Username_Password";
