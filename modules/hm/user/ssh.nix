@@ -22,6 +22,12 @@ in
 
       settings = mkMerge [
         {
+          "*" = lib.mkBefore {
+            ControlMaster = "auto";
+            ControlPath = "~/.ssh/sockets/%r@%h:%p";
+            ControlPersist = "15m";
+          };
+
           "admin" = {
             HostName = "admin";
             User = "root";
