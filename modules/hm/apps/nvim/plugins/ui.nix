@@ -70,6 +70,7 @@
             right = "";
           };
           globalstatus = true;
+          theme = "base16";
         };
         sections = {
         lualine_a = lib.mkForce [
