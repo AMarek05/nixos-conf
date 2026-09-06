@@ -24,7 +24,7 @@ in
         map (name: {
           inherit name;
           value = {
-            fsType = "ntfs";
+            fsType = "ntfs3";
             options = [
               "nofail"
               "x-systemd.automount"

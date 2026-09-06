@@ -52,17 +52,14 @@
 
   fileSystems."/mnt/Shared" = {
     device = "/dev/disk/by-partuuid/052588a6-a32b-11ee-b2b0-74e5f9857e91";
-    fsType = "ntfs";
   };
 
   fileSystems."/mnt/Main" = {
     device = "/dev/disk/by-uuid/1AEE280EEE27E0AD";
-    fsType = "ntfs";
   };
 
   fileSystems."/mnt/Hard" = {
     device = "/dev/disk/by-uuid/20F80CA2F80C7874";
-    fsType = "ntfs";
   };
 
   fileSystems."/home/adam/media" = {
