@@ -4,6 +4,13 @@
   pkgs,
   ...
 }:
+let
+  ntfsDrives = [
+    "/mnt/Shared"
+    "/mnt/Hard"
+    "/mnt/Main"
+  ];
+in
 {
   imports = [
     ./default.nix
@@ -11,6 +18,22 @@
     ./hardware/gpu/nvidia.nix
 
     inputs.aagl.nixosModules.default
+
+    {
+      fileSystems = builtins.listToAttrs (
+        map (name: {
+          inherit name;
+          value = {
+            fsType = "ntfs";
+            options = [
+              "nofail"
+              "x-systemd.automount"
+            ];
+          };
+        }) ntfsDrives
+      );
+
+    }
   ];
 
   nixosModules.security.sandbox.enable = true;
