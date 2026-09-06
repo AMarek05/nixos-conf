@@ -59,7 +59,6 @@
       enable = true;
       setupOpts = {
         options = {
-          theme = "auto";
           # Subtle vertical line for separating components within the same section
           component_separators = {
             left = "❘";
@@ -72,30 +71,21 @@
           };
           globalstatus = true;
         };
-      };
-
-      integrations = {
-        breadcrumbs = {
-          nvim-navic.enable = true;
-          navbuddy.enable = true;
-        };
-      };
-
-      activeSection = {
-        a = [
+        sections = {
+        lualine_a = lib.mkForce [
           ''{ "mode", icons_enabled = true }''
         ];
 
-        b = [
+        lualine_b = lib.mkForce [
           ''{ "filetype", colored = true, icon_only = true, icon = { align = 'left' }, separator = "", padding = { left = 2, right = 1 } }''
           ''{ "filename", symbols = {modified = ' ', readonly = ' '}, padding = { left = 1, right = 1 } }''
         ];
 
-        c = [
+        lualine_c = lib.mkForce [
           ''{ "diff", colored = true, symbols = {added = '+', modified = '~', removed = '-'} }''
         ];
 
-        x = [
+        lualine_x = lib.mkForce [
           ''
             {
               function()
@@ -124,16 +114,24 @@
           ''
         ];
 
-        y = [
+        lualine_y = lib.mkForce [
           ''{ "searchcount", maxcount = 999, timeout = 120, padding = { left = 1, right = 1 } }''
           ''{ "branch", icon = '', padding = { left = 1, right = 1 } }''
         ];
 
-        z = [
+        lualine_z = lib.mkForce [
           ''{ "progress", padding = { left = 1, right = 1 } }''
           ''{ "location", padding = { left = 1, right = 1 } }''
           ''{ "fileformat", symbols = { unix = '', dos = '', mac = '' }, padding = { left = 1, right = 1 } }''
         ];
+        };
+      };
+
+      integrations = {
+        breadcrumbs = {
+          nvim-navic.enable = true;
+          navbuddy.enable = true;
+        };
       };
     };
 
