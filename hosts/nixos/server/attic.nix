@@ -146,6 +146,8 @@ in
         --body "Automated flake update and closure cache generation from \`update-attic.service\`." \
         --head pulls/flake-update \
         --base main \
+        --cwd "$WORKDIR/repo" \
+        --repo amarek/nixos-conf \
         || echo "PR likely already exists. Skipping PR creation."
 
       echo "Starting the cleanup..."
