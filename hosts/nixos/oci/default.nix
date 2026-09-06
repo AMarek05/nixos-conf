@@ -1,4 +1,4 @@
-# hosts/nixos/oci/default.nix
+# nixos-oci — Pangolin reverse-proxy host, OCI Ampere A1.
 { inputs, ... }:
 {
   imports = [
@@ -6,7 +6,6 @@
     ./disko.nix
   ];
 
-  # Bound by-uuid to match nixos-server's style. Switch to by-id/oracleoci.io-<OCID>-partN if OCI rotates UUIDs.
   swapDevices = [
     { device = "/dev/disk/by-uuid/def7fd2d-98f9-4ed1-a524-22ebc920be09"; }
   ];
