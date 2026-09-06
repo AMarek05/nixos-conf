@@ -18,6 +18,7 @@
     options = [
       "nofail"
       "x-systemd.device-timeout=10s"
+      "discard"
     ];
   };
 }
