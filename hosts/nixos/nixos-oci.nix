@@ -1,4 +1,4 @@
-# OCI Ampere A1 — arm64 VPS, nixos-anywhere install.
+# nixos-oci — OCI Ampere A1 (aarch64) VPS, hosts the Pangolin reverse-proxy. nixos-anywhere install.
 {
   lib,
   ...
