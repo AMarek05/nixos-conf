@@ -15,6 +15,13 @@ let
 in
 {
   config = mkIf (cfg.enable) {
+    home.activation.ensureSshSockets =
+      lib.hm.dag.entryAfter [ "writeBoundary" ]
+        ''
+          mkdir -p $HOME/.ssh/sockets
+          chmod 700 $HOME/.ssh/sockets
+        '';
+
     programs.ssh = {
       enable = true;
 
