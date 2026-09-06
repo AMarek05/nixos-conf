@@ -70,23 +70,24 @@
             right = "";
           };
           globalstatus = true;
+          theme = "base16";
         };
         sections = {
         lualine_a = lib.mkForce [
-          ''{ "mode", icons_enabled = true }''
+          (lib.generators.mkLuaInline ''{ "mode", icons_enabled = true }'')
         ];
 
         lualine_b = lib.mkForce [
-          ''{ "filetype", colored = true, icon_only = true, icon = { align = 'left' }, separator = "", padding = { left = 2, right = 1 } }''
-          ''{ "filename", symbols = {modified = ' ', readonly = ' '}, padding = { left = 1, right = 1 } }''
+          (lib.generators.mkLuaInline ''{ "filetype", colored = true, icon_only = true, icon = { align = 'left' }, separator = "", padding = { left = 2, right = 1 } }'')
+          (lib.generators.mkLuaInline ''{ "filename", symbols = {modified = ' ', readonly = ' '}, padding = { left = 1, right = 1 } }'')
         ];
 
         lualine_c = lib.mkForce [
-          ''{ "diff", colored = true, symbols = {added = '+', modified = '~', removed = '-'} }''
+          (lib.generators.mkLuaInline ''{ "diff", colored = true, symbols = {added = '+', modified = '~', removed = '-'} }'')
         ];
 
         lualine_x = lib.mkForce [
-          ''
+          (lib.generators.mkLuaInline ''
             {
               function()
                 local buf_ft = vim.bo.filetype
@@ -102,8 +103,8 @@
               icon = ' ',
               padding = { left = 1, right = 1 },
             }
-          ''
-          ''
+          '')
+          (lib.generators.mkLuaInline ''
             { 
               "diagnostics", 
               sources = {'nvim_diagnostic'}, 
@@ -111,18 +112,18 @@
               colored = true,
               padding = { left = 1, right = 1 },
             }
-          ''
+          '')
         ];
 
         lualine_y = lib.mkForce [
-          ''{ "searchcount", maxcount = 999, timeout = 120, padding = { left = 1, right = 1 } }''
-          ''{ "branch", icon = '', padding = { left = 1, right = 1 } }''
+          (lib.generators.mkLuaInline ''{ "searchcount", maxcount = 999, timeout = 120, padding = { left = 1, right = 1 } }'')
+          (lib.generators.mkLuaInline ''{ "branch", icon = '', padding = { left = 1, right = 1 } }'')
         ];
 
         lualine_z = lib.mkForce [
-          ''{ "progress", padding = { left = 1, right = 1 } }''
-          ''{ "location", padding = { left = 1, right = 1 } }''
-          ''{ "fileformat", symbols = { unix = '', dos = '', mac = '' }, padding = { left = 1, right = 1 } }''
+          (lib.generators.mkLuaInline ''{ "progress", padding = { left = 1, right = 1 } }'')
+          (lib.generators.mkLuaInline ''{ "location", padding = { left = 1, right = 1 } }'')
+          (lib.generators.mkLuaInline ''{ "fileformat", symbols = { unix = '', dos = '', mac = '' }, padding = { left = 1, right = 1 } }'')
         ];
         };
       };
