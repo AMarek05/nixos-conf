@@ -202,6 +202,11 @@ in
         host = "0.0.0.0";
       };
 
+      display = {
+        show_reasoning = true;
+        reasoning_full = true;
+      };
+
       memory = {
         user_profile_enabled = true;
         memory_char_limit = 4000;
@@ -272,8 +277,10 @@ in
       ExecStart = lib.concatStringsSep " " [
         "${inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/hermes"
         "dashboard"
-        "--host" "0.0.0.0"
-        "--port" "9119"
+        "--host"
+        "0.0.0.0"
+        "--port"
+        "9119"
         "--no-open"
         "--skip-build"
       ];
