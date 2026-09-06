@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:Nixos/nixpkgs/nixos-25.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
 
@@ -74,6 +74,11 @@
 
     flake-parts.url = "github:hercules-ci/flake-parts";
 
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
+    };
+
     hermes-agent = {
       url = "github:NousResearch/hermes-agent";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -111,6 +116,7 @@
           "nixos-laptop" = inputs.nixpkgs;
           "nixos-server" = inputs.nixpkgs;
           "nixos-wsl" = inputs.nixpkgs;
+          "nixos-oci" = inputs.nixpkgs-stable;
         };
 
         grimblastOverlay = final: prev: {
@@ -128,6 +134,18 @@
           name: pkgsInput:
           pkgsInput.lib.nixosSystem {
             system = "x86_64-linux";
+            specialArgs = { inherit inputs myLib; };
+            modules = [
+              ./modules/nixos/default.nix
+              ./hosts/nixos/${name}.nix
+            ]
+            ++ commonImports;
+          };
+
+        mkNixosArm =
+          name: pkgsInput:
+          pkgsInput.lib.nixosSystem {
+            system = "aarch64-linux";
             specialArgs = { inherit inputs myLib; };
             modules = [
               ./modules/nixos/default.nix
@@ -155,27 +173,41 @@
             };
           };
 
-        nixosCfgs = builtins.mapAttrs mkNixos hosts;
+        nixosCfgs = builtins.mapAttrs mkNixos (lib.filterAttrs (n: _: n != "nixos-oci") hosts);
+        nixosCfgsArm = builtins.mapAttrs mkNixosArm (lib.filterAttrs (n: _: n == "nixos-oci") hosts);
+        allNixosCfgs = nixosCfgs // nixosCfgsArm;
 
         homeCfgs = builtins.listToAttrs (
           lib.mapAttrsToList (name: pkgsInput: {
             name = "adam@${name}";
             value = mkHm name pkgsInput;
-          }) hosts
+          }) (lib.filterAttrs (n: _: n != "nixos-oci") hosts)
         );
 
       in
       {
-        systems = [ "x86_64-linux" ];
+        systems = [
+          "x86_64-linux"
+          "aarch64-linux"
+        ];
 
         perSystem =
           { pkgs, ... }:
           {
-            packages = { };
-            devShells.default = pkgs.mkShell { };
+            checks.nixfmt =
+              pkgs.runCommand "nixfmt-check"
+                {
+                  nativeBuildInputs = [ pkgs.nixfmt ];
+                  src = ./.;
+                }
+                ''
+                  cd "$src"
+                  find . -name '*.nix' -print0 | xargs -0 nixfmt --check
+                  touch "$out"
+                '';
           };
 
-        flake.nixosConfigurations = nixosCfgs;
+        flake.nixosConfigurations = allNixosCfgs;
         flake.homeConfigurations = homeCfgs;
       }
     );
