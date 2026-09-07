@@ -58,6 +58,10 @@
   services.traefik.staticConfigOptions.entryPoints.tcp-22.address = ":22/tcp";
 
   networking.firewall.allowedTCPPorts = [ 22 ];
+  networking.firewall.allowedUDPPorts = [
+    51820
+    21820
+  ];
 
   sops.templates."traefik-cloudflare-env" = {
     owner = "traefik";
