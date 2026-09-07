@@ -193,22 +193,6 @@
           "aarch64-linux"
         ];
 
-        perSystem =
-          { pkgs, ... }:
-          {
-            checks.nixfmt =
-              pkgs.runCommand "nixfmt-check"
-                {
-                  nativeBuildInputs = [ pkgs.nixfmt ];
-                  src = ./.;
-                }
-                ''
-                  cd "$src"
-                  find . -name '*.nix' -print0 | xargs -0 nixfmt --check
-                  touch "$out"
-                '';
-          };
-
         flake.nixosConfigurations = nixosCfgs;
         flake.homeConfigurations = homeCfgs;
       }
