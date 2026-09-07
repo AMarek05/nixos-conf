@@ -97,7 +97,7 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
-      ExecStart = "/bin/sh -c ''f=/etc/nixos/secrets/pangolin.env; test -f $f || { umask 037; install -d -m 0755 /etc/nixos/secrets; s=$(head -c 32 /dev/urandom | base64 -w 0); echo SERVER_SECRET=$s > $f; chown pangolin:fossorial $f; chmod 0640 $f; }''";
+      ExecStart = "/bin/sh -c ''f=/etc/nixos/secrets/pangolin.env; test -f \$f || { umask 037; install -d -m 0755 /etc/nixos/secrets; s=\$(head -c 32 /dev/urandom | base64 -w 0); echo SERVER_SECRET=\$s > \$f; chown pangolin:fossorial \$f; chmod 0640 \$f; }''";
     };
   };
 
