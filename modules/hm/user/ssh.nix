@@ -57,6 +57,12 @@ in
             ForwardAgent = true;
           };
 
+          "nixos-oci" = {
+            HostName = "amarek.pl";
+            User = "adam";
+            Port = 2222;
+          };
+
           "hermes".ForwardAgent = true;
 
           "pangolin" = {
