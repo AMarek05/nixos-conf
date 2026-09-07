@@ -15,12 +15,10 @@ let
 in
 {
   config = mkIf (cfg.enable) {
-    home.activation.ensureSshSockets =
-      lib.hm.dag.entryAfter [ "writeBoundary" ]
-        ''
-          mkdir -p $HOME/.ssh/sockets
-          chmod 700 $HOME/.ssh/sockets
-        '';
+    home.activation.ensureSshSockets = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      mkdir -p $HOME/.ssh/sockets
+      chmod 700 $HOME/.ssh/sockets
+    '';
 
     programs.ssh = {
       enable = true;
@@ -62,8 +60,6 @@ in
             User = "adam";
             Port = 2222;
           };
-
-          "hermes".ForwardAgent = true;
 
           "pangolin" = {
             HostName = "amarek.pl";
