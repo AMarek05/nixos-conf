@@ -60,6 +60,9 @@
     sopsFile = ../../../secrets/serv.yaml;
   };
 
+  # Same SOPS key path as nixos-server: dedicated file, provisioned at install time.
+  sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
+
   services.crowdsec = {
     enable = true;
     settings = {
