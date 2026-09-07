@@ -1,11 +1,11 @@
-# hosts/nixos/oci/disko.nix — GPT layout on /dev/sda (boot volume). Override device for paravirtualized shapes.
+# OCI Ampere A1 — boot disk by WWN. Override for a different shape.
 { lib, ... }:
 {
   disko.devices = {
     disk = {
       main = {
         type = "disk";
-        device = lib.mkDefault "/dev/sda";
+        device = lib.mkDefault "/dev/disk/by-id/wwn-0x60e9f48d1e6748f59bfe03b5cff22d2a";
         content = {
           type = "gpt";
           partitions = {
