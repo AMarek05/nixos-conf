@@ -1,4 +1,9 @@
-{ lib, config, pkgs, ... }:
+{
+  lib,
+  config,
+  pkgs,
+  ...
+}:
 {
   # Cross-cutting security config: polkit + udev packages.
   # Sub-modules (gnupg, tpm2, keyring) are auto-imported.
