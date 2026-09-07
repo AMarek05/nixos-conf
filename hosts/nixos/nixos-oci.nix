@@ -32,7 +32,7 @@
 
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
 
-  systemd.network.wait-online.extraArgs = [ "--interface=enp0s3" "--ipv4" ];
+  systemd.network.wait-online.extraArgs = [ "--interface=enp0s6" "--ipv4" ];
 
   nixosModules.desktop.enable = false;
   nixosModules.gaming.enable = false;
