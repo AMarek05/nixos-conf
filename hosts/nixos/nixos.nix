@@ -60,9 +60,9 @@ in
     enable = true;
     device = "nodev";
     efiSupport = true;
-    efiInstallAsRemovable = true;
+    efiInstallAsRemovable = false;
     default = "saved";
-    gfxmodeEfi = "keep";
+    gfxmodeEfi = "1920x1080";
     splashImage = null;
     theme = pkgs.sleek-grub-theme.override {
       withStyle = "dark";
@@ -82,7 +82,6 @@ in
       }
     '';
     extraPerEntryConfig = ''
-      set gfxpayload=text
       terminal_output console
       clear
     '';
@@ -95,7 +94,7 @@ in
     '';
   };
 
-  boot.loader.efi.canTouchEfiVariables = false;
+  boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.timeout = null;
 
   services.udisks2.enable = true;
