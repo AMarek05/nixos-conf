@@ -8,7 +8,7 @@
       "https://cache.nixos.org/"
       "https://hyprland.cachix.org"
       "https://ezkea.cachix.org"
-      "https://cache.amarek.pl/nixos-cache"
+      # "https://cache.amarek.pl/nixos-cache"
       "https://mic92.cachix.org"
     ];
 

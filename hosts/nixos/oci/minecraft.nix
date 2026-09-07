@@ -9,7 +9,7 @@
       EULA = "TRUE";
       RCON_PASSWORD = "pass";
     };
-    ports = [ "25565:25565" ];
+    ports = [ "25575:25565" ];
     volumes = [
       "/var/lib/minecraft/gtnh-data:/data"
     ];
