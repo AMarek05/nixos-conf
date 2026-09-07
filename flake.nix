@@ -196,7 +196,7 @@
         flake.nixosConfigurations = nixosCfgs;
         flake.homeConfigurations = homeCfgs;
 
-        flake.packages.x86_64-linux.ociImage = nixosCfgs."nixos-oci".config.system.build.ociImage;
+        flake.packages.x86_64-linux.ociImage = nixosCfgs."nixos-oci".config.system.build.image;
       }
     );
 }
