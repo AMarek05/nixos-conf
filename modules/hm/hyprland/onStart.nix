@@ -40,12 +40,7 @@ let
     "\"${escaped}\"";
 
   # Resolve a command entry to a runnable shell string.
-  resolveCmd =
-    c:
-    if lib.isDerivation c then
-      "${c}/bin/${c.pname or c.name}"
-    else
-      c;
+  resolveCmd = c: if lib.isDerivation c then "${c}/bin/${c.pname or c.name}" else c;
 
   # Render a command line. The heredoc lives on a single line so Nix's
   # anti-indent rule (\"\"\"...\"\"\") is not an issue.
@@ -54,19 +49,18 @@ let
   # Render a list of commands, one per line, each indented with two spaces.
   # We use `replaceStrings` to add the indent after joining — this avoids
   # the heredoc anti-indent trap while keeping the call sites readable.
-  renderCmds = cmds:
+  renderCmds =
+    cmds:
     let
       joined = lib.concatMapStringsSep "\n" cmdLine cmds;
     in
-    if joined == "" then
-      ""
-    else
-      lib.replaceStrings [ "\n" ] [ "\n  " ] joined;
+    if joined == "" then "" else lib.replaceStrings [ "\n" ] [ "\n  " ] joined;
 
   # Render a labelled group of commands as an `hl.on(\"hyprland.start\", ...)`
   # block. The `${renderCmds cmds}` insertion is also on a single line, so
   # the lambda body's indent (`  `) is preserved by heredoc anti-indent.
-  renderList = label: cmds:
+  renderList =
+    label: cmds:
     if cmds == [ ] then
       ""
     else
