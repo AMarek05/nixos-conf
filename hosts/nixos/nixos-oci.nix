@@ -10,6 +10,9 @@
     ./oci
   ];
 
+  # Match nixos-server: SOPS reads from a dedicated file, not the host SSH key.
+  sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
+
   networking.hostName = lib.mkForce "nixos-oci";
 
   boot.loader.grub = {
