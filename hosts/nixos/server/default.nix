@@ -294,61 +294,63 @@ in
   services.caddy = {
     enable = true;
 
-    virtualHosts."st.amarek.pl" = {
-      useACMEHost = "amarek.pl";
-      extraConfig = ''
-        @thumbnail path /thumbnail*
-        header @thumbnail Cache-Control "public, max-age=3600"
+    virtualHosts = {
+      "st.amarek.pl" = {
+        useACMEHost = "amarek.pl";
+        extraConfig = ''
+          @thumbnail path /thumbnail*
+          header @thumbnail Cache-Control "public, max-age=3600"
 
-        reverse_proxy 127.0.0.1:8000 {
-          transport http {
-            keepalive 5s
-            versions 2 1.1
+          reverse_proxy 127.0.0.1:8000 {
+            transport http {
+              keepalive 5s
+              versions 2 1.1
+            }
           }
-        }
-      '';
-    };
+        '';
+      };
 
-    virtualHosts."jellyfin.amarek.pl" = {
-      useACMEHost = "amarek.pl";
-      extraConfig = ''
-        reverse_proxy 127.0.0.1:8096
-      '';
-    };
+      "jellyfin.amarek.pl" = {
+        useACMEHost = "amarek.pl";
+        extraConfig = ''
+          reverse_proxy 127.0.0.1:8096
+        '';
+      };
 
-    virtualHosts."qbit.amarek.pl" = {
-      useACMEHost = "amarek.pl";
-      extraConfig = ''
-        reverse_proxy 127.0.0.1:${toString config.services.qbittorrent.webuiPort}
-      '';
-    };
+      "qbit.amarek.pl" = {
+        useACMEHost = "amarek.pl";
+        extraConfig = ''
+          reverse_proxy 127.0.0.1:${toString config.services.qbittorrent.webuiPort}
+        '';
+      };
 
-    virtualHosts."git.amarek.pl" = {
-      useACMEHost = "amarek.pl";
-      extraConfig = ''
-        reverse_proxy 127.0.0.1:3000
-      '';
-    };
+      "git.amarek.pl" = {
+        useACMEHost = "amarek.pl";
+        extraConfig = ''
+          reverse_proxy 127.0.0.1:3000
+        '';
+      };
 
-    virtualHosts."hermes.amarek.pl" = {
-      useACMEHost = "amarek.pl";
-      extraConfig = ''
-        reverse_proxy ${hermes-address}:9119
-      '';
-    };
+      "hermes.amarek.pl" = {
+        useACMEHost = "amarek.pl";
+        extraConfig = ''
+          reverse_proxy ${hermes-address}:9119
+        '';
+      };
 
-    virtualHosts."webui.amarek.pl" = {
-      useACMEHost = "amarek.pl";
-      extraConfig = ''
-        reverse_proxy ${hermes-address}:8080
-      '';
-    };
+      "webui.amarek.pl" = {
+        useACMEHost = "amarek.pl";
+        extraConfig = ''
+          reverse_proxy ${hermes-address}:8080
+        '';
+      };
 
-    virtualHosts."vault.amarek.pl" = {
-      useACMEHost = "amarek.pl";
-      extraConfig = ''
-        reverse_proxy ${vwcfg.ROCKET_ADDRESS}:${toString vwcfg.ROCKET_PORT}
-      '';
+      "vault.amarek.pl" = {
+        useACMEHost = "amarek.pl";
+        extraConfig = ''
+          reverse_proxy ${vwcfg.ROCKET_ADDRESS}:${toString vwcfg.ROCKET_PORT}
+        '';
+      };
     };
   };
 }
