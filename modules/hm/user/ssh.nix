@@ -15,12 +15,10 @@ let
 in
 {
   config = mkIf (cfg.enable) {
-    home.activation.ensureSshSockets =
-      lib.hm.dag.entryAfter [ "writeBoundary" ]
-        ''
-          mkdir -p $HOME/.ssh/sockets
-          chmod 700 $HOME/.ssh/sockets
-        '';
+    home.activation.ensureSshSockets = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+      mkdir -p $HOME/.ssh/sockets
+      chmod 700 $HOME/.ssh/sockets
+    '';
 
     programs.ssh = {
       enable = true;
@@ -57,7 +55,11 @@ in
             ForwardAgent = true;
           };
 
-          "hermes".ForwardAgent = true;
+          "nixos-oci" = {
+            HostName = "amarek.pl";
+            User = "adam";
+            Port = 2222;
+          };
 
           "pangolin" = {
             HostName = "amarek.pl";

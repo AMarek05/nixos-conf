@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-unstable";
-    nixpkgs-stable.url = "github:Nixos/nixpkgs/nixos-25.11";
+    nixpkgs-stable.url = "github:NixOS/nixpkgs/nixos-26.05";
 
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
 
@@ -74,6 +74,11 @@
 
     flake-parts.url = "github:hercules-ci/flake-parts";
 
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs-stable";
+    };
+
     hermes-agent = {
       url = "github:NousResearch/hermes-agent";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -107,10 +112,26 @@
         };
 
         hosts = {
-          "nixos" = inputs.nixpkgs;
-          "nixos-laptop" = inputs.nixpkgs;
-          "nixos-server" = inputs.nixpkgs;
-          "nixos-wsl" = inputs.nixpkgs;
+          "nixos" = {
+            nixpkgs = inputs.nixpkgs;
+            system = "x86_64-linux";
+          };
+          "nixos-laptop" = {
+            nixpkgs = inputs.nixpkgs;
+            system = "x86_64-linux";
+          };
+          "nixos-server" = {
+            nixpkgs = inputs.nixpkgs;
+            system = "x86_64-linux";
+          };
+          "nixos-wsl" = {
+            nixpkgs = inputs.nixpkgs;
+            system = "x86_64-linux";
+          };
+          "nixos-oci" = {
+            nixpkgs = inputs.nixpkgs-stable;
+            system = "aarch64-linux";
+          };
         };
 
         grimblastOverlay = final: prev: {
@@ -125,9 +146,10 @@
         ];
 
         mkNixos =
-          name: pkgsInput:
-          pkgsInput.lib.nixosSystem {
-            system = "x86_64-linux";
+          name:
+          { nixpkgs, system }:
+          nixpkgs.lib.nixosSystem {
+            inherit system;
             specialArgs = { inherit inputs myLib; };
             modules = [
               ./modules/nixos/default.nix
@@ -158,25 +180,23 @@
         nixosCfgs = builtins.mapAttrs mkNixos hosts;
 
         homeCfgs = builtins.listToAttrs (
-          lib.mapAttrsToList (name: pkgsInput: {
+          lib.mapAttrsToList (name: { nixpkgs, ... }: {
             name = "adam@${name}";
-            value = mkHm name pkgsInput;
+            value = mkHm name nixpkgs;
           }) hosts
         );
 
       in
       {
-        systems = [ "x86_64-linux" ];
-
-        perSystem =
-          { pkgs, ... }:
-          {
-            packages = { };
-            devShells.default = pkgs.mkShell { };
-          };
+        systems = [
+          "x86_64-linux"
+          "aarch64-linux"
+        ];
 
         flake.nixosConfigurations = nixosCfgs;
         flake.homeConfigurations = homeCfgs;
+
+        flake.packages.x86_64-linux.ociImage = nixosCfgs."nixos-oci".config.system.build.image;
       }
     );
 }
