@@ -82,7 +82,6 @@ in
       }
     '';
     extraPerEntryConfig = ''
-      terminal_output console
       clear
     '';
     extraInstallCommands = ''
