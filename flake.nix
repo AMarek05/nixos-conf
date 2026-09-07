@@ -112,14 +112,26 @@
         };
 
         hosts = {
-          "nixos" = inputs.nixpkgs;
-          "nixos-laptop" = inputs.nixpkgs;
-          "nixos-server" = inputs.nixpkgs;
-          "nixos-wsl" = inputs.nixpkgs;
-        };
-
-        hostsArm = {
-          "nixos-oci" = inputs.nixpkgs-stable;
+          "nixos" = {
+            nixpkgs = inputs.nixpkgs;
+            system = "x86_64-linux";
+          };
+          "nixos-laptop" = {
+            nixpkgs = inputs.nixpkgs;
+            system = "x86_64-linux";
+          };
+          "nixos-server" = {
+            nixpkgs = inputs.nixpkgs;
+            system = "x86_64-linux";
+          };
+          "nixos-wsl" = {
+            nixpkgs = inputs.nixpkgs;
+            system = "x86_64-linux";
+          };
+          "nixos-oci" = {
+            nixpkgs = inputs.nixpkgs-stable;
+            system = "aarch64-linux";
+          };
         };
 
         grimblastOverlay = final: prev: {
@@ -134,21 +146,10 @@
         ];
 
         mkNixos =
-          name: pkgsInput:
-          pkgsInput.lib.nixosSystem {
-            system = "x86_64-linux";
-            specialArgs = { inherit inputs myLib; };
-            modules = [
-              ./modules/nixos/default.nix
-              ./hosts/nixos/${name}.nix
-            ]
-            ++ commonImports;
-          };
-
-        mkNixosArm =
-          name: pkgsInput:
-          pkgsInput.lib.nixosSystem {
-            system = "aarch64-linux";
+          name:
+          { nixpkgs, system }:
+          nixpkgs.lib.nixosSystem {
+            inherit system;
             specialArgs = { inherit inputs myLib; };
             modules = [
               ./modules/nixos/default.nix
@@ -177,13 +178,11 @@
           };
 
         nixosCfgs = builtins.mapAttrs mkNixos hosts;
-        nixosCfgsArm = builtins.mapAttrs mkNixosArm hostsArm;
-        allNixosCfgs = nixosCfgs // nixosCfgsArm;
 
         homeCfgs = builtins.listToAttrs (
-          lib.mapAttrsToList (name: pkgsInput: {
+          lib.mapAttrsToList (name: { nixpkgs, ... }: {
             name = "adam@${name}";
-            value = mkHm name pkgsInput;
+            value = mkHm name nixpkgs;
           }) hosts
         );
 
@@ -210,7 +209,7 @@
                 '';
           };
 
-        flake.nixosConfigurations = allNixosCfgs;
+        flake.nixosConfigurations = nixosCfgs;
         flake.homeConfigurations = homeCfgs;
       }
     );
