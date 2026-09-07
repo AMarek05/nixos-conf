@@ -1,6 +1,7 @@
 # nixos-oci — OCI Ampere A1 (aarch64) VPS, hosts the Pangolin reverse-proxy. nixos-anywhere install.
 {
   lib,
+  pkgs,
   ...
 }:
 {
@@ -29,6 +30,8 @@
     "console=ttyS0,115200n8"
     "console=tty1"
   ];
+
+  boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
 
   nixosModules.desktop.enable = false;
   nixosModules.gaming.enable = false;
