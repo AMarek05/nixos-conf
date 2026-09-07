@@ -116,6 +116,9 @@
           "nixos-laptop" = inputs.nixpkgs;
           "nixos-server" = inputs.nixpkgs;
           "nixos-wsl" = inputs.nixpkgs;
+        };
+
+        hostsArm = {
           "nixos-oci" = inputs.nixpkgs-stable;
         };
 
@@ -173,15 +176,15 @@
             };
           };
 
-        nixosCfgs = builtins.mapAttrs mkNixos (lib.filterAttrs (n: _: n != "nixos-oci") hosts);
-        nixosCfgsArm = builtins.mapAttrs mkNixosArm (lib.filterAttrs (n: _: n == "nixos-oci") hosts);
+        nixosCfgs = builtins.mapAttrs mkNixos hosts;
+        nixosCfgsArm = builtins.mapAttrs mkNixosArm hostsArm;
         allNixosCfgs = nixosCfgs // nixosCfgsArm;
 
         homeCfgs = builtins.listToAttrs (
           lib.mapAttrsToList (name: pkgsInput: {
             name = "adam@${name}";
             value = mkHm name pkgsInput;
-          }) (lib.filterAttrs (n: _: n != "nixos-oci") hosts)
+          }) hosts
         );
 
       in
