@@ -1,10 +1,12 @@
 keys:
-  - &my_machine age1u74rz0d4l5nxqvdrjxkhzhjel9ww9ww8jacv4t7fsr03wcyhs35qcjwp92
-  - &my_machine_personal age16humsqez84yttsmm9kgw7yejv6a5q44hhgx6ac4praymk88rkdeqeqhfqg
+  # nixos-server host SSH key (currently unused at runtime — see server/default.nix override).
+  - &host_ed25519 age1u74rz0d4l5nxqvdrjxkhzhjel9ww9ww8jacv4t7fsr03wcyhs35qcjwp92
+  # /var/lib/sops-nix/age_key on nixos-server (ssh-keygen format, ssh-to-age by sops-nix).
+  - &nixos_server_sops_ssh_key age16humsqez84yttsmm9kgw7yejv6a5q44hhgx6ac4praymk88rkdeqeqhfqg
 
 creation_rules:
   - path_regex: secrets/.*\.yaml$
     key_groups:
       - age:
-          - *my_machine
-          - *my_machine_personal
+          - *host_ed25519
+          - *nixos_server_sops_ssh_key
