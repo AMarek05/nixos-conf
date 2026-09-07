@@ -28,8 +28,17 @@
       server = {
         cors = {
           origins = [ "https://pangolin.amarek.pl" ];
-          methods = [ "GET" "POST" "PUT" "DELETE" "PATCH" ];
-          allowed_headers = [ "X-CSRF-Token" "Content-Type" ];
+          methods = [
+            "GET"
+            "POST"
+            "PUT"
+            "DELETE"
+            "PATCH"
+          ];
+          allowed_headers = [
+            "X-CSRF-Token"
+            "Content-Type"
+          ];
           credentials = false;
         };
       };
@@ -98,26 +107,26 @@
     before = [ "pangolin.service" ];
     requiredBy = [ "pangolin.service" ]; # Ensures pangolin won't start if this fails
     after = [ "systemd-tmpfiles-setup.service" ];
-    
+
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
     };
-    
+
     # Use the native script attribute instead of ExecStart
     script = ''
       set -e
       f="/etc/nixos/secrets/pangolin.env"
-      
+
       if [ -f "$f" ]; then 
         exit 0
       fi
-      
+
       install -d -m 0755 /etc/nixos/secrets
       umask 037
       s=$(head -c 32 /dev/urandom | base64 -w 0)
       printf 'SERVER_SECRET=%s\n' "$s" > "$f"
-      
+
       # Ensure 'fossorial' group actually exists in your users.groups config!
       chown pangolin:fossorial "$f"
       chmod 0640 "$f"
