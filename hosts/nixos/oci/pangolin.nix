@@ -46,6 +46,10 @@
     config.sops.templates."traefik-cloudflare-env".path
   ];
 
+  services.traefik.staticConfigOptions.entryPoints.tcp-22.address = ":22/tcp";
+
+  networking.firewall.allowedTCPPorts = [ 22 ];
+
   sops.templates."traefik-cloudflare-env" = {
     owner = "traefik";
     group = "fossorial";
