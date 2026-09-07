@@ -159,10 +159,11 @@
           };
 
         mkHm =
-          name: pkgsInput:
+          name:
+          { nixpkgs, system }:
           hmLib.homeManagerConfiguration {
-            pkgs = import pkgsInput {
-              system = "x86_64-linux";
+            pkgs = import nixpkgs {
+              inherit system;
               config.allowUnfree = true;
               overlays = [ grimblastOverlay ];
             };
@@ -180,9 +181,9 @@
         nixosCfgs = builtins.mapAttrs mkNixos hosts;
 
         homeCfgs = builtins.listToAttrs (
-          lib.mapAttrsToList (name: { nixpkgs, ... }: {
+          lib.mapAttrsToList (name: hostAttrs: {
             name = "adam@${name}";
-            value = mkHm name nixpkgs;
+            value = mkHm name hostAttrs;
           }) hosts
         );
 
