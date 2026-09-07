@@ -13,7 +13,7 @@
     volumes = [
       "/var/lib/minecraft/gtnh-data:/data"
     ];
-    restart = "always";
+    autoStart = false;
   };
 
   virtualisation.oci-containers.containers.startech = {
@@ -33,7 +33,7 @@
     volumes = [
       "/var/lib/minecraft/startech-data:/data"
     ];
-    restart = "always";
+    autoStart = false;
   };
 
   systemd.tmpfiles.rules = [
