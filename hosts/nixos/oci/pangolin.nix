@@ -68,14 +68,6 @@
     };
   };
 
-  services.crowdsec.firewallBouncer = {
-    enable = true;
-    settings = {
-      mode = "live";
-      updateFrequency = "10s";
-    };
-  };
-
   systemd.tmpfiles.rules = [
     "d /var/lib/crowdsec 0755 crowdsec crowdsec - -"
   ];
