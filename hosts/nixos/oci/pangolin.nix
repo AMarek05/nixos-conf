@@ -85,11 +85,25 @@
 
   systemd.tmpfiles.rules = [
     "d /var/lib/crowdsec 0755 crowdsec crowdsec - -"
+    "d /etc/nixos/secrets 0755 root root - -"
   ];
+
+  # Generate pangolin.env on first boot if absent. Stable across
+  # rebuilds; replaced if you provision a real one via --extra-files.
+  systemd.services.pangolin-env-init = {
+    wantedBy = [ "multi-user.target" ];
+    before = [ "pangolin.service" ];
+    after = [ "systemd-tmpfiles-setup.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+      ExecStart = "/bin/sh -c ''test -f /etc/nixos/secrets/pangolin.env || { umask 077; printf SERVER_SECRET=\$(head -c 32 /dev/urandom | base64)\n > /etc/nixos/secrets/pangolin.env && chown pangolin:fossorial /etc/nixos/secrets/pangolin.env && chmod 0640 /etc/nixos/secrets/pangolin.env; }''";
+    };
+  };
 
   virtualisation.oci-containers.containers.error-pages = {
     image = "ghcr.io/tarampampam/error-pages:3";
     environment.TEMPLATE_NAME = "connection";
-    ports = [ "127.0.0.1:8080:8080" ];
+    ports = [ "127.0.0.1:8081:8080" ];
   };
 }
