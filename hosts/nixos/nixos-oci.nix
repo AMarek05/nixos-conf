@@ -8,6 +8,7 @@
 {
   imports = [
     "${modulesPath}/virtualisation/oci-image.nix"
+    ./oci
   ];
 
   # Match nixos-server: SOPS reads from a dedicated file, not the host SSH key.
@@ -30,6 +31,8 @@
   ];
 
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
+
+  systemd.network.wait-online.extraArgs = [ "--interface=enp0s3" "--ipv4" ];
 
   nixosModules.desktop.enable = false;
   nixosModules.gaming.enable = false;
