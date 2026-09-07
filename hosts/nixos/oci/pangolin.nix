@@ -76,6 +76,5 @@
     image = "ghcr.io/tarampampam/error-pages:3";
     environment.TEMPLATE_NAME = "connection";
     ports = [ "127.0.0.1:8080:8080" ];
-    restart = "always";
   };
 }
