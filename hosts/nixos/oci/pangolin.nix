@@ -66,6 +66,18 @@
       general.api.server.enable = true;
       lapi.credentialsFile = "/var/lib/crowdsec/lapi-credentials.yaml";
     };
+    localConfig.acquisitions = [
+      {
+        source = "file";
+        filename = "/var/log/traefik/access.log";
+        labels.type = "traefik";
+      }
+      {
+        source = "journalctl";
+        journalctl_filter = [ "_SYSTEMD_UNIT=sshd.service" ];
+        labels.type = "syslog";
+      }
+    ];
   };
 
   systemd.tmpfiles.rules = [
