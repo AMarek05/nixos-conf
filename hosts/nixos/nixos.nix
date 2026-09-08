@@ -1,4 +1,5 @@
 {
+  config,
   inputs,
   lib,
   pkgs,
@@ -26,8 +27,15 @@ in
           value = {
             fsType = "ntfs3";
             options = [
+              "rw"
               "nofail"
               "x-systemd.automount"
+              "windows_names"
+
+              "dmask=0022"
+              "fmask=0133"
+              "uid=1000"
+              "gid=1000"
             ];
           };
         }) ntfsDrives
