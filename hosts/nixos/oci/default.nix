@@ -4,6 +4,7 @@
     ./conf.nix
     ./pangolin.nix
     ./minecraft.nix
+    ./backup.nix
   ];
 
   environment.systemPackages = with pkgs; [ nh ];
