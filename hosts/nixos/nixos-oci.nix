@@ -33,6 +33,24 @@
 
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
 
+  fileSystems = {
+    "/mnt/backup" = {
+      device = "/dev/disk/by-id/scsi-360f690748c414c32978d1e2a986086dc-part2";
+      fsType = "ext4";
+      options = [
+        "defaults"
+        "nofail"
+      ];
+    };
+  };
+
+  swapDevices = [
+    {
+      device = "/dev/disk/by-id/scsi-360f690748c414c32978d1e2a986086dc-part1";
+      priority = 10;
+    }
+  ];
+
   systemd.network.wait-online.extraArgs = [
     "--interface=enp0s6"
     "--ipv4"
