@@ -14,7 +14,7 @@
   # Match nixos-server: SOPS reads from a dedicated file, not the host SSH key.
   networking.hostName = lib.mkForce "nixos-oci";
 
-  security.sudo.wheelNeedsPassword = false;
+  security.sudo.wheelNeedsPassword = true;
 
   environment.systemPackages = with pkgs; [
     git
@@ -33,7 +33,10 @@
 
   boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
 
-  systemd.network.wait-online.extraArgs = [ "--interface=enp0s6" "--ipv4" ];
+  systemd.network.wait-online.extraArgs = [
+    "--interface=enp0s6"
+    "--ipv4"
+  ];
 
   nixosModules.desktop.enable = false;
   nixosModules.gaming.enable = false;
