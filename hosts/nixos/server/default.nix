@@ -29,6 +29,7 @@ in
     ./vaultwarden.nix
     ./reader.nix
     ./caddy.nix
+    ./image-proxy.nix
 
     "${inputs.self}/lib/containers.nix"
 
@@ -159,6 +160,12 @@ in
     configFile = "/var/lib/SillyTavern/config.yaml.bak";
 
     port = 8000;
+  };
+
+  services.image-proxy = {
+    enable = true;
+    port = 8765;
+    upstream.envFile = config.sops.templates."image-proxy-env".path;
   };
 
   services.newt = {
