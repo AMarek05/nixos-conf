@@ -2,8 +2,6 @@
   config,
   lib,
   inputs,
-  pkgs,
-  myLib,
   ...
 }:
 let
@@ -19,6 +17,10 @@ let
   hermes-address = config.containers.hermes.localAddress;
 
   vwcfg = config.services.vaultwarden.config;
+
+  qbitPort = config.services.qbittorrent.webuiPort;
+  forgejoPort = config.services.forgejo.settings.server.HTTP_PORT;
+  atticPort = config.services.atticd.port;
 in
 {
   imports = [
@@ -26,6 +28,7 @@ in
     ./attic.nix
     ./vaultwarden.nix
     ./reader.nix
+    ./caddy.nix
 
     "${inputs.self}/lib/containers.nix"
 
@@ -291,66 +294,45 @@ in
 
   users.groups.git = { };
 
-  services.caddy = {
-    enable = true;
+  services.caddy.enable = true;
 
-    virtualHosts = {
-      "st.amarek.pl" = {
-        useACMEHost = "amarek.pl";
-        extraConfig = ''
-          @thumbnail path /thumbnail*
-          header @thumbnail Cache-Control "public, max-age=3600"
+  nixosModules.vhosts = {
+    "jellyfin".port = 8096;
 
-          reverse_proxy 127.0.0.1:8000 {
-            transport http {
-              keepalive 5s
-              versions 2 1.1
-            }
-          }
-        '';
-      };
+    "qbit".port = qbitPort;
 
-      "jellyfin.amarek.pl" = {
-        useACMEHost = "amarek.pl";
-        extraConfig = ''
-          reverse_proxy 127.0.0.1:8096
-        '';
-      };
+    "git".port = forgejoPort;
 
-      "qbit.amarek.pl" = {
-        useACMEHost = "amarek.pl";
-        extraConfig = ''
-          reverse_proxy 127.0.0.1:${toString config.services.qbittorrent.webuiPort}
-        '';
-      };
+    "cache".port = atticPort;
 
-      "git.amarek.pl" = {
-        useACMEHost = "amarek.pl";
-        extraConfig = ''
-          reverse_proxy 127.0.0.1:3000
-        '';
-      };
-
-      "hermes.amarek.pl" = {
-        useACMEHost = "amarek.pl";
-        extraConfig = ''
-          reverse_proxy ${hermes-address}:9119
-        '';
-      };
-
-      "webui.amarek.pl" = {
-        useACMEHost = "amarek.pl";
-        extraConfig = ''
-          reverse_proxy ${hermes-address}:8080
-        '';
-      };
-
-      "vault.amarek.pl" = {
-        useACMEHost = "amarek.pl";
-        extraConfig = ''
-          reverse_proxy ${vwcfg.ROCKET_ADDRESS}:${toString vwcfg.ROCKET_PORT}
-        '';
-      };
+    "vault" = {
+      address = vwcfg.ROCKET_ADDRESS;
+      port = vwcfg.ROCKET_PORT;
     };
+
+    "hermes" = {
+      address = hermes-address;
+      port = 9119;
+    };
+
+    webui = {
+      address = hermes-address;
+      port = 8080;
+    };
+
+    "st" = {
+      port = 8000;
+      proxyConfig = ''
+        transport http {
+          keepalive 5s
+          versions 2 1.1
+        }
+      '';
+      extraConfig = ''
+        @thumbnail path /thumbnail*
+        header @thumbnail Cache-Control "public, max-age=3600"
+      '';
+    };
+
   };
 }

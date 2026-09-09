@@ -107,19 +107,8 @@
   networking.firewall.interfaces."podman+".allowedTCPPorts = [ 6379 ];
 
   # ── 4. Caddy Reverse Proxy ──────────────────────────────────────────────
-  services.caddy.virtualHosts = {
-    "reader.amarek.pl" = {
-      useACMEHost = "amarek.pl";
-      extraConfig = ''
-        reverse_proxy 127.0.0.1:5000
-      '';
-    };
-
-    "manga.amarek.pl" = {
-      useACMEHost = "amarek.pl";
-      extraConfig = ''
-        reverse_proxy 127.0.0.1:3010
-      '';
-    };
+  nixosModules.vhosts = {
+    "reader".port = 5000;
+    "manga".port = 3010;
   };
 }
