@@ -12,6 +12,15 @@
     }
   ];
 
+  hmModules.hyprland.monitors = lib.mkForce [
+    {
+      output = "";
+      mode = "1920x1080@74.97";
+      position = "auto";
+      scale = 1;
+    }
+  ];
+
   home.packages = with pkgs; [
     vdpauinfo
   ];
