@@ -63,6 +63,12 @@ in
     mode = "0444";
   };
 
+  sops.secrets."gh-token-hermes" = {
+    sopsFile = openclaw-secrets;
+    key = "gh-token";
+    owner = "hermes";
+  };
+
   sops.secrets."fj-auth" = {
     sopsFile = serv-secrets;
     owner = "hermes";
@@ -85,24 +91,12 @@ in
     owner = "hermes";
     group = "hermes";
     content = ''
-      MINIMAX_API_KEY=${config.sops.placeholder."minimax-api-key"}
-    '';
-  };
-
-  sops.templates."hermes-discord-env" = {
-    owner = "hermes";
-    group = "hermes";
-    content = ''
-      DISCORD_BOT_TOKEN=${config.sops.placeholder."hermes-bot-key"}
-    '';
-  };
-
-  sops.templates."hermes-api-key-env" = {
-    owner = "hermes";
-    group = "hermes";
-    content = ''
       API_SERVER_HOST=0.0.0.0
       API_SERVER_KEY=${config.sops.placeholder."hermes-api-key"}
+
+      MINIMAX_API_KEY=${config.sops.placeholder."minimax-api-key"}
+      DISCORD_BOT_TOKEN=${config.sops.placeholder."hermes-bot-key"}
+      GH_TOKEN=${config.sops.placeholder."gh-token-hermes"}
     '';
   };
 
@@ -177,13 +171,7 @@ in
         ];
       };
 
-    # All three templates are concatenated into ~/.hermes/.env at activation.
-    # hermes reads them via load_hermes_dotenv() at startup.
-    environmentFiles = [
-      config.sops.templates."hermes-env".path
-      config.sops.templates."hermes-api-key-env".path
-      config.sops.templates."hermes-discord-env".path
-    ];
+    environmentFiles = [ config.sops.templates."hermes-env".path ];
 
     settings = {
       model = "minimax/MiniMax-M3";
