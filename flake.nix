@@ -8,7 +8,8 @@
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
 
     hyprland = {
-      url = "github:hyprwm/Hyprland";
+      url = "github:hyprwm/Hyprland?rev=34eb03bd8da01024596c367fba66485a8c9b8ca7";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     home-manager = {
@@ -42,7 +43,7 @@
     };
 
     caelestia-shell = {
-      url = "github:caelestia-dots/shell/v2.4.0";
+      url = "github:caelestia-dots/shell";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.quickshell.follows = "quickshell";
     };
