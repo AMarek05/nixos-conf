@@ -204,6 +204,8 @@ in
 
           database.url = "postgresql://atticd@%2Frun%2Fpostgresql/atticd";
 
+          garbage-collection.default-retention-period = "14 days";
+
           chunking = {
             # The minimum NAR size to trigger chunking
             #
