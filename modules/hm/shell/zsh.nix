@@ -10,6 +10,8 @@
 let
   cfg = config.hmModules.shell.zsh;
 
+  isServer = osConfig.networking.hostName == "nixos-server";
+
   installTerm = pkgs.writeShellScriptBin "install-term" ''
     set -euo pipefail
 
@@ -139,9 +141,7 @@ in
 
         kc = "eval \"$(SHELL=zsh ${lib.getExe pkgs.keychain} --eval --quiet git)\"";
 
-        ssh-tpm = lib.mkIf (
-          osConfig.networking.hostName != "nixos-server"
-        ) "ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so";
+        ssh-tpm = lib.mkIf (!isServer) "ssh-add -s ${pkgs.tpm2-pkcs11}/lib/libtpm2_pkcs11.so";
 
         rsync = "rsync --info=progress2";
         hellfire = "sudo snx-rs -s hellfire.put.poznan.pl -u adam.marek@student.put.poznan.pl -o vpn_Username_Password";
@@ -152,7 +152,7 @@ in
 
         hermes = "ssh hermes@hermes -t hermes chat";
 
-        update-attic = "sudo systemctl start update-attic.service";
+        update-attic = lib.mkIf isServer "sudo systemctl start --no-block update-attic.service && journalctl -fu update-attic.service";
 
         fj = "${lib.getExe pkgs.forgejo-cli} --host https://git.amarek.pl";
 
