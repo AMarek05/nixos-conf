@@ -9,7 +9,6 @@
 
     hyprland = {
       url = "github:hyprwm/Hyprland?rev=34eb03bd8da01024596c367fba66485a8c9b8ca7";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
 
     home-manager = {
