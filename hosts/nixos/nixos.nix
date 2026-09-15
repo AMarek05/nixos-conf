@@ -1,5 +1,4 @@
 {
-  config,
   inputs,
   lib,
   pkgs,
@@ -109,28 +108,4 @@ in
   services.udisks2.enable = true;
   services.gvfs.enable = true;
   services.tumbler.enable = true;
-
-  nixpkgs.overlays = [
-    (final: prev: {
-      ollama-cuda = prev.ollama-cuda.overrideAttrs (old: {
-        preBuild = ''
-          unset CUDAToolkit_ROOT
-        ''
-        + (old.preBuild or "");
-      });
-    })
-  ];
-
-  services.ollama = {
-    enable = true;
-    package = pkgs.ollama-cuda;
-
-    port = 11434;
-
-    modelsDir = "/mnt/Hard/models/";
-  };
-
-  environment.systemPackages = with pkgs; [
-    ollama-cuda
-  ];
 }
