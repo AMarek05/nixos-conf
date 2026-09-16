@@ -12,8 +12,6 @@ let
   cfg = config.hmModules.shell.zsh;
 
   isServer = osConfig.networking.hostName == "nixos-server";
-
-  installTerm = import "${inputs.self}/lib/install-term.nix" { inherit pkgs; };
 in
 {
   config = lib.mkIf (config.hmModules.shell.enable && cfg.enable) {
@@ -25,7 +23,7 @@ in
       nh
       devenv
       forgejo-cli
-      installTerm
+      custom.installTerm
     ];
 
     xdg.configFile."zsh/.p10k.zsh".source = ../../../store/starship/.p10k.zsh;

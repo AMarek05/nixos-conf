@@ -134,11 +134,18 @@
           };
         };
 
-        grimblastOverlay = final: prev: {
-          grimblast = prev.grimblast.override {
-            hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
-          };
-        };
+        overlays = [
+          (final: prev: {
+            grimblast = prev.grimblast.override {
+              hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
+            };
+          })
+          (final: prev: {
+            custom = {
+              install-term = final.callPackage ./lib/install-term.nix { };
+            };
+          })
+        ];
 
         commonImports = [
           inputs.sops-nix.nixosModules.sops
@@ -152,6 +159,8 @@
             inherit system;
             specialArgs = { inherit inputs myLib; };
             modules = [
+              { nixpkgs.overlays = overlays; }
+
               ./modules/nixos/default.nix
               ./hosts/nixos/${name}.nix
             ]
@@ -163,9 +172,8 @@
           { nixpkgs, system }:
           hmLib.homeManagerConfiguration {
             pkgs = import nixpkgs {
-              inherit system;
+              inherit system overlays;
               config.allowUnfree = true;
-              overlays = [ grimblastOverlay ];
             };
             modules = [
               ./hosts/hm/${name}.nix
