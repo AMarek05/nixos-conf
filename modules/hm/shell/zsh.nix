@@ -46,6 +46,7 @@ in
 {
   config = lib.mkIf (config.hmModules.shell.enable && cfg.enable) {
     home.packages = with pkgs; [
+      dtrx
       eza
       rsync
       snx-rs
@@ -78,7 +79,6 @@ in
         enable = true;
         plugins = [
           "git"
-          "extract"
         ];
       };
 
