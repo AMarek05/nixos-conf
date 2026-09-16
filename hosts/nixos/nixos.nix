@@ -18,6 +18,7 @@ in
     ./hardware/gpu/nvidia.nix
 
     inputs.aagl.nixosModules.default
+    inputs.sd-webui-nix.nixosModules.default
 
     {
       fileSystems = builtins.listToAttrs (
@@ -108,4 +109,24 @@ in
   services.udisks2.enable = true;
   services.gvfs.enable = true;
   services.tumbler.enable = true;
+
+  services.sd-webui-forge = {
+    enable = true;
+    package = pkgs.stable-diffusion-webui.forge.cuda;
+
+    listen = false;
+
+    extraArgs = "--cuda-malloc --cuda-stream --pin-shared-memory --skip-load-model-at-start --api --models-dir /mnt/Shared/models/txt2image";
+  };
+
+  systemd.services.sd-webui-forge = {
+    environment = {
+      GRADIO_SERVER_NAME = "127.0.0.1";
+      GRADIO_SERVER_PORT = "7860";
+    };
+
+    serviceConfig = {
+      ReadWritePaths = [ "/mnt/Shared/models/txt2image/" ];
+    };
+  };
 }

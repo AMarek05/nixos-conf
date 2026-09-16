@@ -7,6 +7,8 @@
 {
   environment.systemPackages = with pkgs; [ nvtopPackages.nvidia ];
 
+  nixpkgs.config.cudaSupport = true;
+
   boot.kernelParams = [
     "nvidia.NVreg_PreserveVideoMemoryAllocations=1"
     "nvidia-drm.modeset=1"
