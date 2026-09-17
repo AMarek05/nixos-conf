@@ -25,7 +25,6 @@ in
     ./windowrules.nix
     ./animations.nix
 
-    inputs.walker.homeManagerModules.default
     inputs.caelestia-shell.homeManagerModules.default
   ];
 

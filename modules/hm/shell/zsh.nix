@@ -23,7 +23,7 @@ in
       nh
       devenv
       forgejo-cli
-      custom.installTerm
+      custom.install-term
     ];
 
     xdg.configFile."zsh/.p10k.zsh".source = ../../../store/starship/.p10k.zsh;
