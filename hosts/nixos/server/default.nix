@@ -1,19 +1,9 @@
 {
   config,
-  lib,
   inputs,
   ...
 }:
 let
-  commonAssign = lib.mapAttrs (
-    name: specificConfig:
-    specificConfig
-    // {
-      group = name;
-      isSystemUser = true;
-    }
-  );
-
   hermes-address = config.containers.hermes.localAddress;
 
   vwcfg = config.services.vaultwarden.config;
@@ -32,23 +22,6 @@ in
     ./image-proxy.nix
 
     "${inputs.self}/lib/containers.nix"
-
-    # static container guest user declaration module
-    {
-      users = {
-        users = commonAssign {
-          hermes.uid = 970;
-          openclaw.uid = 968;
-          runner.uid = 971;
-        };
-
-        groups = {
-          openclaw.gid = 968;
-          hermes.gid = 970;
-          runner.gid = 971;
-        };
-      };
-    }
   ];
 
   nixosModules.containers = {
@@ -64,19 +37,21 @@ in
     instances = {
       "hermes" = {
         configFile = "hermes/default.nix";
+        internalUid = 970;
 
         bindMounts = {
           "/var/lib/sops-nix/age_key" = {
-            hostPath = "/var/lib/sops-nix/age_key";
+            hostPath = "/var/lib/sops-nix/hermes_key";
             isReadOnly = true;
           };
         };
       };
 
       "runner" = {
+        internalUid = 971;
         bindMounts = {
           "/var/lib/sops-nix/age_key" = {
-            hostPath = "/var/lib/sops-nix/age_key";
+            hostPath = "/var/lib/sops-nix/runner_key";
             isReadOnly = true;
           };
         };

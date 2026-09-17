@@ -10,17 +10,21 @@
 let
   cfg = config.nixosModules.containers;
 
-  # Sort the container names alphabetically to guarantee deterministic IP assignment across rebuilds.
+  # Sort container names alphabetically to guarantee deterministic IP & UID allocation across rebuilds.
   containerNames = lib.sort (a: b: a < b) (builtins.attrNames cfg.instances);
 
-  # Assign IP offsets based on the sorted index (e.g., index 0 -> .11, index 1 -> .12)
+  # Assign deterministic IP offsets (e.g., index 0 -> .11, index 1 -> .12)
   ipMappings = lib.imap1 (i: name: {
     inherit name;
     ip = "${cfg.subnetPrefix}.${toString (cfg.baseIpOffset + i)}";
   }) containerNames;
 
-  # Convert the list back into an easily queryable attribute set
   ipMap = builtins.listToAttrs (map (x: lib.nameValuePair x.name x.ip) ipMappings);
+
+  # Assign deterministic per-container index for base UID calculations
+  containerIndexMap = builtins.listToAttrs (
+    lib.imap0 (i: name: lib.nameValuePair name i) containerNames
+  );
 in
 {
   options.nixosModules.containers = {
@@ -39,6 +43,12 @@ in
     baseIpOffset = lib.mkOption {
       type = lib.types.int;
       default = 10;
+    };
+
+    uidGidOffsetBase = lib.mkOption {
+      type = lib.types.ints.u32;
+      default = 100000;
+      description = "Starting offset for unprivileged user namespaces.";
     };
 
     basePath = lib.mkOption {
@@ -61,23 +71,49 @@ in
       default = { };
       type = lib.types.attrsOf (
         lib.types.submodule (
-          { name, ... }: {
+          { name, config, ... }: {
             options = {
+              # --- Exposed Computed Attributes ---
+              shiftedHostUid = lib.mkOption {
+                type = lib.types.ints.u32;
+                readOnly = true;
+                description = "The computed host-side shifted UID for this container's service user.";
+              };
+
+              ip = lib.mkOption {
+                type = lib.types.str;
+                readOnly = true;
+                description = "The computed static IP assigned to this container.";
+              };
+
+              baseUidOffset = lib.mkOption {
+                type = lib.types.int;
+                readOnly = true;
+                description = "The starting UID offset assigned to this container's namespace.";
+              };
+
+              # --- Configuration Inputs ---
+              internalUid = lib.mkOption {
+                type = lib.types.ints.u32;
+                description = "Unmapped UID of the service user inside the container.";
+              };
+
               stateDir = lib.mkOption {
                 type = lib.types.nullOr lib.types.str;
                 default = "/var/lib/${name}";
-                description = "Bind-mounted state directory";
+                description = "Bind-mounted state directory.";
               };
 
               bindMounts = lib.mkOption {
                 type = lib.types.attrs;
                 default = { };
+                description = "Attribute set of bind mounts (same syntax as NixOS bindMounts).";
               };
 
               configFile = lib.mkOption {
                 type = lib.types.str;
-                default = "${name}.nix"; # Defaults to assuming the file/folder shares the container's name
-                description = "Name of the file or directory containing the internal config (e.g., 'hermes' or 'openclaw.nix')";
+                default = "${name}.nix";
+                description = "Name of the file or directory containing the internal config.";
               };
 
               ports = lib.mkOption {
@@ -86,6 +122,13 @@ in
                 description = "List of ports to open in both firewalls.";
               };
             };
+
+            # Automatically compute values accessible elsewhere in your NixOS config
+            config = {
+              ip = ipMap.${name};
+              baseUidOffset = cfg.uidGidOffsetBase + (containerIndexMap.${name} * 65536);
+              shiftedHostUid = config.baseUidOffset + config.internalUid;
+            };
           }
         )
       );
@@ -93,48 +136,82 @@ in
   };
 
   config = lib.mkIf cfg.enable {
+    # Ensure stateDir on the host is created owned by the shifted UID:GID
     systemd.tmpfiles.rules = lib.mapAttrsToList (
       name: instanceCfg:
-      if instanceCfg.stateDir != null then "d ${instanceCfg.stateDir} 0770 ${name} ${name} - -" else ""
+      if instanceCfg.stateDir != null then
+        "d ${instanceCfg.stateDir} 0770 ${toString instanceCfg.shiftedHostUid} ${toString instanceCfg.shiftedHostUid} - -"
+      else
+        ""
     ) cfg.instances;
 
-    # Generate the standard NixOS container definitions
-    containers = lib.mapAttrs (name: instanceCfg: {
-      autoStart = true;
-      privateNetwork = true;
-      hostAddress = "${cfg.subnetPrefix}.${toString cfg.hostIpSuffix}";
-      localAddress = ipMap.${name};
-
-      specialArgs = { inherit inputs myLib; };
-      bindMounts =
-        instanceCfg.bindMounts
-        // (lib.optionalAttrs (instanceCfg.stateDir != null)) {
-          "${instanceCfg.stateDir}" = {
-            hostPath = instanceCfg.stateDir;
-            isReadOnly = false;
+    # Generate standard NixOS container definitions
+    containers = lib.mapAttrs (
+      name: instanceCfg:
+      let
+        # Combine user bindMounts with the auto-generated stateDir
+        allBinds =
+          instanceCfg.bindMounts
+          // (lib.optionalAttrs (instanceCfg.stateDir != null)) {
+            "${instanceCfg.stateDir}" = {
+              hostPath = instanceCfg.stateDir;
+              isReadOnly = false;
+            };
           };
+
+        # Route every bind mount through extraFlags to inject :idmap,norbind
+        bindFlags = lib.mapAttrsToList (
+          target: mount:
+          let
+            flag = if mount.isReadOnly or false then "--bind-ro" else "--bind";
+          in
+          "${flag}=${mount.hostPath}:${target}:idmap,norbind"
+        ) allBinds;
+      in
+      {
+        autoStart = true;
+        privateNetwork = true;
+        hostAddress = "${cfg.subnetPrefix}.${toString cfg.hostIpSuffix}";
+        localAddress = instanceCfg.ip;
+
+        # Standard linear private user namespace
+        privateUsers = instanceCfg.baseUidOffset;
+
+        # Bypass NixOS default bindMounts schema to use raw nspawn flags with :idmap
+        bindMounts = { };
+        extraFlags = bindFlags;
+
+        specialArgs = { inherit inputs myLib; };
+
+        config = { ... }: {
+          imports = cfg.sharedModules ++ [ (cfg.basePath + "/${instanceCfg.configFile}") ];
+
+          networking.hostName = name;
+          networking.usePredictableInterfaceNames = false;
+          networking.nameservers = lib.mkForce cfg.nameservers;
+
+          services.resolved.enable = true;
+          networking.useHostResolvConf = lib.mkForce false;
+          networking.firewall.allowedTCPPorts = instanceCfg.ports;
+
+          # Service user inside the container assumes the unmapped internalUid (default 970)
+          users.users."${name}".uid = lib.mkDefault instanceCfg.internalUid;
+          users.groups."${name}".gid = lib.mkDefault instanceCfg.internalUid;
+
+          time.timeZone = lib.mkDefault "Europe/Warsaw";
+          system.stateVersion = lib.mkDefault "24.11";
         };
+      }
+    ) cfg.instances;
 
-      config = { ... }: {
-        imports = cfg.sharedModules ++ [ (cfg.basePath + "/${instanceCfg.configFile}") ];
+    users.users = lib.mapAttrs (name: instanceCfg: {
+      isSystemUser = true;
+      group = name;
+      uid = instanceCfg.shiftedHostUid;
+    }) cfg.instances;
 
-        networking.hostName = name;
-
-        networking.usePredictableInterfaceNames = false;
-        networking.nameservers = lib.mkForce cfg.nameservers;
-
-        services.resolved.enable = true;
-        networking.useHostResolvConf = lib.mkForce false;
-
-        networking.firewall.allowedTCPPorts = instanceCfg.ports;
-
-        users.users."${name}".uid = config.users.users."${name}".uid;
-        users.groups."${name}".gid = config.users.groups."${name}".gid;
-
-        # Standard baseline inherited from the host structure
-        time.timeZone = lib.mkDefault "Europe/Warsaw";
-        system.stateVersion = lib.mkDefault "24.11";
-      };
+    users.groups = lib.mapAttrs (name: instanceCfg: {
+      gid = instanceCfg.shiftedHostUid;
     }) cfg.instances;
 
     networking.nat = {
@@ -148,7 +225,6 @@ in
       lib.mapAttrsToList (name: instanceCfg: instanceCfg.ports) cfg.instances
     );
 
-    # Generate the systemd service workarounds for each container
     systemd.services = lib.mkMerge (
       map (name: {
         "container@${name}".serviceConfig = {
