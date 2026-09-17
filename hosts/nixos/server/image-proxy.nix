@@ -6,20 +6,6 @@
   ...
 }:
 let
-  image-proxy = pkgs.rustPlatform.buildRustPackage {
-    pname = "image-proxy";
-    version = "0.1.0";
-
-    src = lib.cleanSource (inputs.self + "/src/image-proxy");
-    cargoLock.lockFile = inputs.self + "/src/image-proxy/Cargo.lock";
-
-    meta = {
-      description = "Translates SillyTavern OpenAI image calls to MiniMax.";
-      license = lib.licenses.mit;
-      mainProgram = "image-proxy";
-    };
-  };
-
   cfg = config.services.image-proxy;
 in
 {
@@ -85,7 +71,7 @@ in
 
     users.groups.${cfg.group} = { };
 
-    environment.systemPackages = [ image-proxy ];
+    environment.systemPackages = [ pkgs.custom.image-proxy ];
 
     systemd.services.image-proxy = {
       description = "SillyTavern OpenAI to MiniMax image translation proxy";
@@ -96,7 +82,7 @@ in
       wants = [ "sops-nix.service" ];
 
       serviceConfig = {
-        ExecStart = lib.getExe image-proxy;
+        ExecStart = lib.getExe pkgs.custom.image-proxy;
         EnvironmentFile = cfg.upstream.envFile;
         Environment = [
           "IMAGE_PROXY_BIND=${cfg.bind}"
@@ -118,7 +104,10 @@ in
         ProtectKernelTunables = true;
         ProtectKernelModules = true;
         ProtectControlGroups = true;
-        RestrictAddressFamilies = [ "AF_INET" "AF_INET6" ];
+        RestrictAddressFamilies = [
+          "AF_INET"
+          "AF_INET6"
+        ];
         RestrictNamespaces = true;
         LockPersonality = true;
         MemoryDenyWriteExecute = true;

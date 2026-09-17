@@ -127,6 +127,7 @@
           (final: prev: {
             custom = {
               install-term = final.callPackage ./lib/install-term.nix { };
+              image-proxy = final.callPackage ./src/image-proxy/package.nix { };
             };
           })
         ];
