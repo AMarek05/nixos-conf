@@ -128,6 +128,8 @@ in
 
     environment = {
       DISCORD_HOME_CHANNEL = "1511502650338971758";
+
+      AGENT_BROWSER_EXECUTABLE_PATH = "${pkgs.chromium}/bin/chromium";
     };
 
     # MCP servers — see https://github.com/MiniMax-AI/MiniMax-Coding-Plan-MCP.
@@ -358,6 +360,8 @@ in
     pkgs.python3
     pkgs.nodejs
     pkgs.dig
+
+    pkgs.agent-browser
   ];
 
   # ── Network ───────────────────────────────────────────────────────────
