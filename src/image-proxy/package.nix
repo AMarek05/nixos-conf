@@ -9,7 +9,7 @@ rustPlatform.buildRustPackage {
 
     meta = {
         description = "Translates SillyTavern OpenAI image calls to MiniMax.";
-        license = lib.licenses.mit;
+        license = lib.licenses.mit0;
         mainProgram = "image-proxy";
     };
 }
