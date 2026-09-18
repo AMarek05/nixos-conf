@@ -31,7 +31,17 @@
     "ecdsa-sha2-nistp256 AAAAE2VjZHNhLXNoYTItbmlzdHAyNTYAAAAIbmlzdHAyNTYAAABBBMVue17Ck5epd5LBWWWd9Es+XN+IFtdkMxy2NHkFbtghXH+1lujMQxTjv3ZUD0R2pt8jfycdNqNmiH4QnjYpSgI= id-nixos"
   ];
 
-  boot.kernelPackages = lib.mkForce pkgs.linuxPackages;
+  boot = {
+    initrd.compressor = "zstd";
+    initrd.compressorArgs = [
+      "-19"
+      "-T0"
+    ];
+
+    loader.grub.configurationLimit = 2;
+
+    kernelPackages = lib.mkForce pkgs.linuxPackages;
+  };
 
   fileSystems = {
     "/mnt/backup" = {
