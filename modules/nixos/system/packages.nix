@@ -12,11 +12,9 @@
       man-pages
       rclone
       gparted-full
-      alsa-ucm-conf
-      alsa-utils
       android-tools
       openssl
-      steam-run-free
+      jq
     ];
   };
 }
