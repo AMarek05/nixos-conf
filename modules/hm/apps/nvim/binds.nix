@@ -4,6 +4,30 @@
     binds.whichKey.enable = true;
 
     keymaps = [
+      # Conditional visual navigation (gj/gk for wrapped lines, regular j/k with counts)
+      {
+        key = "j";
+        mode = [
+          "n"
+          "x"
+        ];
+        action = "v:count == 0 ? 'gj' : 'j'";
+        expr = true;
+        silent = true;
+        desc = "Move down (visually when no count)";
+      }
+      {
+        key = "k";
+        mode = [
+          "n"
+          "x"
+        ];
+        action = "v:count == 0 ? 'gk' : 'k'";
+        expr = true;
+        silent = true;
+        desc = "Move up (visually when no count)";
+      }
+
       {
         key = "<Esc>";
         mode = [ "n" ];
