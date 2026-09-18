@@ -1,6 +1,7 @@
 # caelestia module — declarative configuration
 {
   lib,
+  myLib,
   config,
   inputs,
   pkgs,
@@ -11,10 +12,21 @@ let
   cfg = config.hmModules.caelestia;
 
   inputHyprland = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+
+  # Patch Quickshell to read new Hyprland IPC format
+  patchedQuickshell =
+    inputs.caelestia-shell.inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
+      (old: {
+        patches = (old.patches or [ ]) ++ [
+          myLib.patches.qs
+        ];
+      });
+
   inputsCaelestia =
     inputs.caelestia-shell.packages.${pkgs.stdenv.hostPlatform.system}.default.override
       {
         hyprland = inputHyprland;
+        quickshell = patchedQuickshell;
         withCli = true;
       };
 in

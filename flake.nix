@@ -8,7 +8,7 @@
     nixos-wsl.url = "github:nix-community/NixOS-WSL/main";
 
     hyprland = {
-      url = "github:hyprwm/Hyprland?rev=34eb03bd8da01024596c367fba66485a8c9b8ca7";
+      url = "github:hyprwm/Hyprland";
     };
 
     home-manager = {
@@ -91,9 +91,13 @@
         hmLib = inputs.home-manager.lib;
         myLib = {
           toLua = import ./lib/toLua.nix { inherit lib; };
-          
+
           gitWrapper = ./modules/nixos/wrappers/git.nix;
           fjWrapper = ./modules/nixos/wrappers/fj.nix;
+
+          patches = {
+            qs = ./patches/quickshell-monitor-fix.patch;
+          };
         };
 
         hosts = {

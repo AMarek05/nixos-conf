@@ -1,0 +1,41 @@
+diff --git a/src/wayland/hyprland/ipc/connection.cpp b/src/wayland/hyprland/ipc/connection.cpp
+index 998bd8e..c5e829c 100644
+--- a/src/wayland/hyprland/ipc/connection.cpp
++++ b/src/wayland/hyprland/ipc/connection.cpp
+@@ -633,7 +633,8 @@ void HyprlandIpc::refreshWorkspaces(bool canCreate) {
+ 		for (auto entry: json) {
+ 			auto object = entry.toObject().toVariantMap();
+ 
+-			auto id = object.value("id").toInt();
++			// Hyprland >= e9e2f64c: workspace id is now the string "address" field
++			auto id = object.value("address").toString().toInt();
+ 
+ 		auto workspaceIter = std::ranges::find_if(mList, [&](HyprlandWorkspace* m) {
+ 			return m->bindableId().value() == id;
+diff --git a/src/wayland/hyprland/ipc/monitor.cpp b/src/wayland/hyprland/ipc/monitor.cpp
+index ddf3706..6258039 100644
+--- a/src/wayland/hyprland/ipc/monitor.cpp
++++ b/src/wayland/hyprland/ipc/monitor.cpp
+@@ -28,7 +28,8 @@ void HyprlandMonitor::updateInitial(qint32 id, const QString& name, const QStrin
+ 
+ void HyprlandMonitor::updateFromObject(QVariantMap object) {
+ 	auto activeWorkspaceObj = object.value("activeWorkspace").value<QVariantMap>();
+-	auto activeWorkspaceId = activeWorkspaceObj.value("id").value<qint32>();
++	// Hyprland >= e9e2f64c: "id" field removed; use "address"
++	auto activeWorkspaceId = activeWorkspaceObj.value("address").toString().toInt();
+ 	auto activeWorkspaceName = activeWorkspaceObj.value("name").value<QString>();
+ 	auto focused = object.value("focused").value<bool>();
+ 
+diff --git a/src/wayland/hyprland/ipc/workspace.cpp b/src/wayland/hyprland/ipc/workspace.cpp
+index 44377c0..7714f0a 100644
+--- a/src/wayland/hyprland/ipc/workspace.cpp
++++ b/src/wayland/hyprland/ipc/workspace.cpp
+@@ -51,7 +51,7 @@ void HyprlandWorkspace::updateFromObject(QVariantMap object) {
+ 
+ 	// ID cannot be updated after creation
+ 	if (initial) {
+-		this->bId = object.value("id").value<qint32>();
++		this->bId = object.value("address").toString().toInt();
+ 	}
+ 
+ 	// No events we currently handle give a workspace id but not a name,
