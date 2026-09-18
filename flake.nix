@@ -91,8 +91,9 @@
         hmLib = inputs.home-manager.lib;
         myLib = {
           toLua = import ./lib/toLua.nix { inherit lib; };
-          git-wrapper = import ./lib/git.nix;
-          fj-wrapper = import ./lib/fj.nix;
+          
+          gitWrapper = ./modules/nixos/wrappers/git.nix;
+          fjWrapper = ./modules/nixos/wrappers/fj.nix;
         };
 
         hosts = {

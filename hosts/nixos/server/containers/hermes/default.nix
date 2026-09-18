@@ -14,9 +14,6 @@ let
   hermes-soul-file = pkgs.writeText "SOUL.md" (builtins.readFile ./SOUL.md);
   hermes-user-file = pkgs.writeText "USER.md" (builtins.readFile ./USER.md);
 
-  git-wrapper = myLib.git-wrapper { inherit config pkgs; };
-  fj-wrapper = myLib.fj-wrapper { inherit config pkgs; };
-
   openclaw-secrets = "${inputs.self}/secrets/openclaw.yaml";
   serv-secrets = "${inputs.self}/secrets/serv.yaml";
 in
@@ -24,6 +21,8 @@ in
   imports = [
     inputs.hermes-agent.nixosModules.default
     inputs.sops-nix.nixosModules.sops
+    myLib.gitWrapper
+    myLib.fjWrapper
   ];
 
   systemd.settings = {
@@ -352,8 +351,6 @@ in
   # ── CLI ───────────────────────────────────────────────────────────────
   environment.systemPackages = [
     inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
-    git-wrapper
-    fj-wrapper
 
     pkgs.gawk
 

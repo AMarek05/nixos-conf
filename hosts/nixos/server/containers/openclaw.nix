@@ -10,8 +10,6 @@
 }:
 
 let
-  git-wrapper = myLib.git-wrapper { inherit config pkgs; };
-
   gh-wrapper = pkgs.writeShellScriptBin "gh" ''
     set -euo pipefail
 
@@ -34,6 +32,7 @@ in
   imports = [
     "${inputs.self}/modules/nixos/openclaw"
     inputs.sops-nix.nixosModules.sops
+    myLib.gitWrapper
   ];
 
   # ── Static networking on the virtual ethernet (ve-+) ───────────────────
@@ -141,7 +140,7 @@ in
       ripgrep
     ])
     ++ [
-      git-wrapper
+      config.services.git-wrapper.package
       gh-wrapper
     ];
 

@@ -12,6 +12,8 @@ in
 {
   imports = [
     inputs.attic.nixosModules.atticd
+    myLib.gitWrapper
+    myLib.fjWrapper
   ];
 
   options.services.atticd = {
@@ -24,9 +26,6 @@ in
 
   config =
     let
-      git-wrapper = myLib.git-wrapper { inherit pkgs config; };
-      fj-wrapper = myLib.fj-wrapper { inherit pkgs config; };
-
       servSecrets = inputs.self + "/secrets/serv.yaml";
     in
     {
@@ -90,8 +89,8 @@ in
             nh
           ]
           ++ [
-            git-wrapper
-            fj-wrapper
+            config.services.git-wrapper.package
+            config.services.fj-wrapper.package
           ];
 
         serviceConfig = {
