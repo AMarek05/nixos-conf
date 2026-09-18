@@ -9,7 +9,7 @@
 
   nix.settings = {
     max-jobs = lib.mkForce 2;
-    cores = lib.mkForce 4;
+    cores = lib.mkForce 6;
   };
 
   networking = {
