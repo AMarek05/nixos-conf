@@ -128,6 +128,9 @@
             grimblast = prev.grimblast.override {
               hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
             };
+
+            nodejs-slim_26 = prev.nodejs-slim_24;
+            nodejs_26 = prev.nodejs_24;
           })
           (final: prev: {
             custom = {
