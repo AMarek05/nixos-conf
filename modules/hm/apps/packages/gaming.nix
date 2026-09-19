@@ -21,6 +21,7 @@
           heroic
           ckan
           qbittorrent
+          openmw
         ];
       };
 }
