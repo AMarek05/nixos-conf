@@ -20,7 +20,7 @@
 
           snx-rs
 
-          nh
+          baobab
         ];
       };
 }

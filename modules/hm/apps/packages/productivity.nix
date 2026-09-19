@@ -15,7 +15,6 @@
       {
         home.packages = with pkgs; [
           dbeaver-bin
-          onlyoffice-desktopeditors
           libreoffice-stable
 
           alacarte
