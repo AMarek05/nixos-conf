@@ -82,7 +82,11 @@ in
     owner = "open-webui";
     group = "open-webui";
     content = ''
-      OPENAI_API_KEY=${config.sops.placeholder."open-webui-api-key"}
+      # Wired direct to minimax upstream (api.minimax.io/v1) — bypasses the
+      # local hermes-agent relay on :8642. Reuses the same minimax-api-key SOPS
+      # secret already consumed by the Hermes MCP config and the image-proxy.
+      OPENAI_API_BASE_URL=https://api.minimax.io/v1
+      OPENAI_API_KEY=${config.sops.placeholder."minimax-api-key"}
     '';
   };
 
@@ -339,7 +343,11 @@ in
       DO_NOT_TRACK = "True";
       ANONYMIZED_TELEMETRY = "False";
       WEBUI_AUTH = "False";
-      OPENAI_API_BASE_URL = "http://127.0.0.1:8642/v1";
+
+      # Pin the chat UI's default model so new chats land on M3 without
+      # users having to dig through the model dropdown. Comma-separated
+      # model IDs accepted by OpenWebUI; see OpenWebUI docs "DEFAULT_MODELS".
+      DEFAULT_MODELS = "MiniMax-M3";
     };
   };
 
