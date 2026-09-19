@@ -173,7 +173,7 @@ in
         wantedBy = [ "timers.target" ];
         timerConfig = {
           # Runs every 5th day of the month starting on the 1st, at 3AM
-          OnCalendar = "*-*-1/5 03:00:00";
+          OnCalendar = "Sun 03:00:00";
           Persistent = true;
         };
       };
