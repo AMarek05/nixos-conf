@@ -198,7 +198,7 @@ in
 
       memory = {
         user_profile_enabled = true;
-        memory_char_limit = 4000;
+        memory_char_limit = 10000;
       };
 
       curator = {
