@@ -1,4 +1,5 @@
 {
+  pkgs,
   config,
   inputs,
   ...
@@ -264,6 +265,65 @@ in
       WIKI = "always";
       CRUD_ACTIONS = "always";
       MERGES = "always";
+    };
+  };
+
+  systemd.services.forgejo-hard-gc = {
+    description = "Hard Garbage Collection for Forgejo Repositories";
+    serviceConfig = {
+      Type = "oneshot";
+      User = config.services.forgejo.user; # usually "forgejo" or "git"
+      Group = config.services.forgejo.group;
+      Nice = 19;
+      CPUSchedulingPolicy = "idle";
+      IOSchedulingClass = "idle";
+    };
+
+    path = [
+      pkgs.git
+      pkgs.findutils
+      pkgs.coreutils
+    ];
+
+    script = ''
+      set -euo pipefail
+
+      REPOS_DIR="${config.services.forgejo.stateDir}"
+      if [ ! -d "$REPOS_DIR" ]; then
+        echo "Repository directory $REPOS_DIR not found!"
+        exit 1
+      fi
+
+      echo "Starting deep Git GC across repositories in $REPOS_DIR..."
+
+      find "$REPOS_DIR" -type d -name "*.git" | while read -r repo; do
+        echo "=== Compacting $repo ==="
+        pushd "$repo" > /dev/null
+
+        # 1. Expire reflogs older than 14 days
+        git reflog expire --all --expire=14.days.ago || true
+
+        # 2. Rebuild the pack, discarding unreachable blobs older than 14 days
+        git repack -a -d --cruft --cruft-expiration=14.days.ago || true
+
+        # 3. Prune dangling loose objects older than 14 days
+        git prune --expire=14.days.ago || true
+
+        popd > /dev/null
+      done
+
+      echo "Hard GC complete."
+    '';
+  };
+
+  # Run weekly at 03:30 AM
+  systemd.timers.forgejo-hard-gc = {
+    description = "Weekly Deep Git GC for Forgejo";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnCalendar = "Sun *-*-* 03:30:00";
+      Persistent = true;
+      RandomizedDelaySec = "1800";
     };
   };
 
