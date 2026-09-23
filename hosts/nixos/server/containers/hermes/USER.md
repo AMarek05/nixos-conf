@@ -23,7 +23,7 @@
 - **OpenClaw** — dev/CI workload, different agent personality
 - **Hermes** (__HERMES_IP__) — this agent
 - **NixOS flake:** `git@amarek.pl:amarek/nixos-conf`
-- **Secrets:** SOPS-managed in `openclaw.yaml`, shared across containers
+- **Secrets:** SOPS-managed in `secrets/`
 - **Discord:** user Atrys (ID: 323086933716893697), in his server
 - **GitHub mirror:** AMarek05 (read-only fork of the Forgejo origin; legacy reference)
 

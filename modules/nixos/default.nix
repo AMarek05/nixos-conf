@@ -46,11 +46,6 @@ modulesLib.mkHostModules {
       ];
     }
     {
-      name = "openclaw";
-      kind = "dir";
-      optional = true;
-    }
-    {
       name = "security";
       kind = "dir";
       sub = [

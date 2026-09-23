@@ -202,7 +202,6 @@ in
     "jellyfin"
     "sillytavern"
     "hermes"
-    "openclaw"
   ];
 
   services.bazarr = {
