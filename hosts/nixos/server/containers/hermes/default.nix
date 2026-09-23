@@ -6,20 +6,25 @@
   inputs,
   lib,
   myLib,
+  myIp,
   ...
 }:
 let
   cfg = config.services.hermes-agent;
 
-  hermes-soul-file = pkgs.writeText "SOUL.md" (builtins.readFile ./SOUL.md);
-  hermes-user-file = pkgs.writeText "USER.md" (builtins.readFile ./USER.md);
+  hermes-soul-file = pkgs.writeText "SOUL.md" (
+    builtins.replaceStrings [ "__HERMES_IP__" ] [ myIp ] (builtins.readFile ./SOUL.md)
+  );
+  hermes-user-file = pkgs.writeText "USER.md" (
+    builtins.replaceStrings [ "__HERMES_IP__" ] [ myIp ] (builtins.readFile ./USER.md)
+  );
 
   openclaw-secrets = "${inputs.self}/secrets/openclaw.yaml";
   serv-secrets = "${inputs.self}/secrets/serv.yaml";
 
   # open-webui runs on the host and reaches the hermes relay via the
-  # container's host-side address (192.168.100.12 = containers.hermes.localAddress).
-  hermesApiBaseUrl = "http://192.168.100.12:8642/v1";
+  # container's host-side address (myIp = containers.hermes.localAddress).
+  hermesApiBaseUrl = "http://${myIp}:8642/v1";
 
   openWebuiApiConfigs = builtins.toJSON [
     {
@@ -105,8 +110,8 @@ in
     owner = "open-webui";
     group = "open-webui";
     content = ''
-      # Two backends: MiniMax upstream + Hermes local relay on 192.168.100.12:8642.
-      # Model ids match each backend's /v1/models output (MiniMax-M3, hermes-agent).
+      # Two backends: MiniMax upstream + Hermes local relay on the container's
+      # host-side IP. Model ids match each backend's /v1/models output.
       OPENAI_API_CONFIGS=${openWebuiApiConfigs}
     '';
   };
