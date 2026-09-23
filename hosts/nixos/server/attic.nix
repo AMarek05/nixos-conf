@@ -27,6 +27,7 @@ in
   config =
     let
       servSecrets = inputs.self + "/secrets/serv.yaml";
+      agentSecrets = inputs.self + "/secrets/agent.yaml";
     in
     {
       environment.systemPackages = with pkgs; [ attic-client ];
@@ -52,12 +53,12 @@ in
       users.groups.atticd = { };
 
       sops.secrets."claw-ssh-key" = {
-        sopsFile = inputs.self + "/secrets/openclaw.yaml";
+        sopsFile = agentSecrets;
         owner = "root";
       };
 
       sops.secrets."gh-token" = {
-        sopsFile = inputs.self + "/secrets/openclaw.yaml";
+        sopsFile = agentSecrets;
         owner = "root";
       };
 

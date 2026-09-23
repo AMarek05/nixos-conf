@@ -19,7 +19,7 @@ let
     builtins.replaceStrings [ "__HERMES_IP__" ] [ myIp ] (builtins.readFile ./USER.md)
   );
 
-  openclaw-secrets = "${inputs.self}/secrets/openclaw.yaml";
+  agent-secrets = "${inputs.self}/secrets/agent.yaml";
   serv-secrets = "${inputs.self}/secrets/serv.yaml";
 
   # open-webui runs on the host and reaches the hermes relay via the
@@ -32,7 +32,10 @@ let
       baseUrl = "https://api.minimax.io/v1";
       apiKey = config.sops.placeholder."minimax-api-key";
       models = [
-        { id = "MiniMax-M3"; name = "MiniMax M3"; }
+        {
+          id = "MiniMax-M3";
+          name = "MiniMax M3";
+        }
       ];
     }
     {
@@ -40,7 +43,10 @@ let
       baseUrl = hermesApiBaseUrl;
       apiKey = config.sops.placeholder."hermes-api-key";
       models = [
-        { id = "hermes-agent"; name = "Hermes Agent"; }
+        {
+          id = "hermes-agent";
+          name = "Hermes Agent";
+        }
       ];
     }
   ];
@@ -65,33 +71,33 @@ in
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
 
   sops.secrets."minimax-api-key" = {
-    sopsFile = openclaw-secrets;
+    sopsFile = agent-secrets;
     owner = "hermes";
   };
 
   sops.secrets."hermes-bot-key" = {
-    sopsFile = openclaw-secrets;
+    sopsFile = agent-secrets;
     owner = "hermes";
   };
 
   sops.secrets."hermes-api-key" = {
-    sopsFile = openclaw-secrets;
+    sopsFile = agent-secrets;
     owner = "hermes";
   };
 
   sops.secrets."claw-ssh-key" = {
-    sopsFile = openclaw-secrets;
+    sopsFile = agent-secrets;
     owner = "hermes";
   };
 
   sops.secrets."open-webui-api-key" = {
-    sopsFile = openclaw-secrets;
+    sopsFile = agent-secrets;
     owner = "root";
     mode = "0444";
   };
 
   sops.secrets."gh-token-hermes" = {
-    sopsFile = openclaw-secrets;
+    sopsFile = agent-secrets;
     key = "gh-token";
     owner = "hermes";
   };

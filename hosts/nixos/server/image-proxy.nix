@@ -51,7 +51,7 @@ in
 
   config = lib.mkIf cfg.enable {
     sops.secrets."minimax-api-key" = {
-      sopsFile = inputs.self + "/secrets/openclaw.yaml";
+      sopsFile = inputs.self + "/secrets/agent.yaml";
       owner = cfg.user;
       group = cfg.group;
     };
