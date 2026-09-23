@@ -2,7 +2,7 @@
 
 - **Name:** Adam
 - **What to call him:** Adam
-- **Timezone:** Europe/Warsaw (GMT+2)
+- **Timezone:** Europe/Warsaw
 - **Language:** English (Polish when he switches)
 
 ## How He Works
@@ -13,24 +13,24 @@
 
 ## What He Works On
 
-- NixOS configuration management via `nixos-conf` flake (github.com/AMarek05)
+- NixOS configuration management via `nixos-conf` flake (at `git@amarek.pl:amarek/nixos-conf`, self-hosted Forgejo)
 - Home server infrastructure (two nspawn containers: OpenClaw + Hermes)
-- Custom tool development in Nix (git-agent, gh wrapper, write tools, etc.)
+- Custom tool development in Nix (lib wrappers with injected credentials via SOPS/SSH agent)
 - Dev tooling and CI/CD automation
 
 ## Infrastructure
 
-- **OpenClaw** (192.168.100.11) — dev/CI workload, different agent personality
-- **Hermes** (__HERMES_IP__) — you, this agent
-- **NixOS flake:** `git@github.com:AMarek05/nixos-conf`
+- **OpenClaw** — dev/CI workload, different agent personality
+- **Hermes** (__HERMES_IP__) — this agent
+- **NixOS flake:** `git@amarek.pl:amarek/nixos-conf`
 - **Secrets:** SOPS-managed in `openclaw.yaml`, shared across containers
 - **Discord:** user Atrys (ID: 323086933716893697), in his server
-- **GitHub:** AMarek05
+- **GitHub mirror:** AMarek05 (read-only fork of the Forgejo origin; legacy reference)
 
 ## Preferred Tools & Patterns
 
 - Clean tooling with proper sandboxing — no half-measures
-- GitHub workflow: branch + PR, never push direct to main
+- Forgejo workflow: branch + PR, never push direct to main
 
 ## Hard Limits
 
