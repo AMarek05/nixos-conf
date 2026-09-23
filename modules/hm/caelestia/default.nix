@@ -128,7 +128,7 @@ in
             capitalisation = "preserve";
             maxWindowIcons = 0;
             occupiedBg = false;
-            perMonitorWorkspaces = true;
+            perMonitor = true;
             showWindows = true;
             showWindowsOnSpecialWorkspaces = true;
             specialWorkspaceIcons = [ ];
@@ -138,16 +138,6 @@ in
                 icon = "sports_esports";
               }
             ];
-          };
-          status = {
-            showAudio = false;
-            showBattery = false;
-            showBluetooth = true;
-            showKbLayout = true;
-            showLockStatus = true;
-            showMicrophone = false;
-            showNetwork = true;
-            showWifi = true;
           };
           tray = {
             background = false;
@@ -509,11 +499,10 @@ in
           brightnessIncrement = 0.1;
           defaultPlayer = "Spotify";
           maxVolume = 1;
-          gpuType = "";
-          useFahrenheit = false;
-          useFahrenheitPerformance = false;
-          useTwelveHourClock = false;
-          showLyrics = false;
+          gpuType = "Auto";
+          weatherUnits = "Celsius";
+          sensorUnits = "Celsius";
+          clockFormat = "TwentyFourHour";
           lyricsBackend = "Auto";
           visualiserBars = 45;
           smartScheme = true;
