@@ -124,14 +124,19 @@
         };
 
         overlays = [
-          (final: prev: {
-            grimblast = prev.grimblast.override {
-              hyprland = inputs.hyprland.packages.${prev.stdenv.hostPlatform.system}.hyprland;
-            };
+          (
+            final: prev:
+            let
+              system = prev.stdenv.hostPlatform.system;
+            in
+            {
+              grimblast = prev.grimblast.override {
+                hyprland = inputs.hyprland.packages.${system}.hyprland;
+              };
 
-            nodejs-slim_26 = prev.nodejs-slim_24;
-            nodejs_26 = prev.nodejs_24;
-          })
+              hermes-agent = inputs.hermes-agent.packages.${system}.default;
+            }
+          )
           (final: prev: {
             custom = {
               install-term = final.callPackage ./lib/install-term.nix { };

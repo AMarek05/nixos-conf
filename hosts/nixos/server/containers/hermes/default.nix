@@ -152,7 +152,7 @@ in
   services.hermes-agent = {
     enable = true;
 
-    package = inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default;
+    package = pkgs.hermes-agent;
     container.enable = false;
 
     user = "hermes";
@@ -300,7 +300,7 @@ in
       WorkingDirectory = cfg.stateDir;
 
       ExecStart = lib.concatStringsSep " " [
-        "${inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/hermes"
+        "${lib.getExe pkgs.hermes-agent}"
         "dashboard"
         "--host"
         "0.0.0.0"

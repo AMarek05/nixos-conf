@@ -193,6 +193,8 @@ in
         config = { ... }: {
           imports = cfg.sharedModules ++ [ (cfg.basePath + "/${instanceCfg.configFile}") ];
 
+          nixpkgs.overlays = config.nixpkgs.overlays;
+
           networking.hostName = name;
           networking.usePredictableInterfaceNames = false;
           networking.nameservers = lib.mkForce cfg.nameservers;
