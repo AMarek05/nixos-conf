@@ -14,13 +14,12 @@
 ## What He Works On
 
 - NixOS configuration management via `nixos-conf` flake (at `git@amarek.pl:amarek/nixos-conf`, self-hosted Forgejo)
-- Home server infrastructure (two nspawn containers: OpenClaw + Hermes)
+- Home server infrastructure (one nspawn container: Hermes)
 - Custom tool development in Nix (lib wrappers with injected credentials via SOPS/SSH agent)
 - Dev tooling and CI/CD automation
 
 ## Infrastructure
 
-- **OpenClaw** — dev/CI workload, different agent personality
 - **Hermes** (__HERMES_IP__) — this agent
 - **NixOS flake:** `git@amarek.pl:amarek/nixos-conf`
 - **Secrets:** SOPS-managed in `secrets/`
