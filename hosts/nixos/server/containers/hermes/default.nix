@@ -9,6 +9,7 @@
   myIp,
   ...
 }:
+# Dashboard and serve units live in dashboard.nix and server.nix (siblings).
 let
   cfg = config.services.hermes-agent;
 
@@ -57,6 +58,8 @@ in
     inputs.sops-nix.nixosModules.sops
     myLib.gitWrapper
     myLib.fjWrapper
+    ./dashboard.nix
+    ./server.nix
   ];
 
   systemd.settings = {
@@ -282,55 +285,7 @@ in
     SendSIGKILL = false;
   };
 
-  systemd.services.hermes-dashboard = {
-    description = "Hermes Agent Web Dashboard";
-    wantedBy = [ "multi-user.target" ];
-    after = [ "hermes-agent.service" ];
-    wants = [ "hermes-agent.service" ];
-
-    environment = {
-      HOME = cfg.stateDir;
-      HERMES_HOME = "${cfg.stateDir}/.hermes";
-      HERMES_MANAGED = "true";
-    };
-
-    serviceConfig = {
-      User = cfg.user;
-      Group = cfg.group;
-      WorkingDirectory = cfg.stateDir;
-
-      ExecStart = lib.concatStringsSep " " [
-        "${lib.getExe pkgs.hermes-agent}"
-        "dashboard"
-        "--host"
-        "0.0.0.0"
-        "--port"
-        "9119"
-        "--no-open"
-        "--skip-build"
-      ];
-
-      Restart = "on-failure";
-      RestartSec = "5s";
-
-      UMask = "0007";
-
-      NoNewPrivileges = true;
-      ProtectSystem = "strict";
-      ProtectHome = false;
-      ReadWritePaths = [
-        cfg.stateDir
-      ];
-      PrivateTmp = true;
-      EnvironmentFile = config.sops.templates."hermes-dashboard-env".path;
-    };
-
-    path = [
-      inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
-      pkgs.bash
-      pkgs.coreutils
-    ];
-  };
+# hermes-dashboard.service and hermes-serve.service live in dashboard.nix and server.nix.
 
   services.openssh = {
     enable = true;
@@ -338,6 +293,13 @@ in
       PasswordAuthentication = false;
       PermitRootLogin = "no";
     };
+  };
+
+# Tailscale: first-boot login is interactive (same as nixos + nixos-laptop).
+  services.tailscale = {
+    enable = true;
+    useRoutingFeatures = "none";
+    openFirewall = false;
   };
 
   users.users.open-webui = {
@@ -388,7 +350,7 @@ in
 
   # ── CLI ───────────────────────────────────────────────────────────────
   environment.systemPackages = [
-    inputs.hermes-agent.packages.${pkgs.stdenv.hostPlatform.system}.default
+    pkgs.hermes-agent
 
     pkgs.gawk
 
@@ -399,12 +361,8 @@ in
     pkgs.agent-browser
   ];
 
-  # ── Network ───────────────────────────────────────────────────────────
-  networking.firewall.allowedTCPPorts = [
-    8642
-    8080
-    9119
-  ];
+  # Per-container firewall is owned by lib/containers.nix via instances.<name>.ports.
+  # OpenWebUI (8080) and the hermes API server (8642) are already in there.
 
   # ── Timezone ──────────────────────────────────────────────────────────
   time.timeZone = "Europe/Warsaw";

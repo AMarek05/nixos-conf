@@ -40,6 +40,17 @@ in
         configFile = "hermes/default.nix";
         internalUid = 970;
 
+        ports = [
+          8080
+          8642
+          9119
+          9120
+        ];
+
+        udpPorts = [
+          41641
+        ];
+
         bindMounts = {
           "/var/lib/sops-nix/age_key" = {
             hostPath = "/var/lib/sops-nix/hermes_key";

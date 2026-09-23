@@ -121,6 +121,12 @@ in
                 default = [ ];
                 description = "List of ports to open in both firewalls.";
               };
+
+              udpPorts = lib.mkOption {
+                type = lib.types.listOf lib.types.port;
+                default = [ ];
+                description = "List of UDP ports to open in both firewalls.";
+              };
             };
 
             # Automatically compute values accessible elsewhere in your NixOS config
@@ -202,6 +208,7 @@ in
           services.resolved.enable = true;
           networking.useHostResolvConf = lib.mkForce false;
           networking.firewall.allowedTCPPorts = instanceCfg.ports;
+          networking.firewall.allowedUDPPorts = instanceCfg.udpPorts;
 
           # Service user inside the container assumes the unmapped internalUid (default 970)
           users.users."${name}".uid = lib.mkDefault instanceCfg.internalUid;
@@ -232,6 +239,9 @@ in
     networking.firewall.trustedInterfaces = [ "ve-+" ];
     networking.firewall.allowedTCPPorts = lib.flatten (
       lib.mapAttrsToList (name: instanceCfg: instanceCfg.ports) cfg.instances
+    );
+    networking.firewall.allowedUDPPorts = lib.flatten (
+      lib.mapAttrsToList (name: instanceCfg: instanceCfg.udpPorts) cfg.instances
     );
 
     systemd.services = lib.mkMerge (
