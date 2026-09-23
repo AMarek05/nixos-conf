@@ -16,6 +16,29 @@ let
 
   openclaw-secrets = "${inputs.self}/secrets/openclaw.yaml";
   serv-secrets = "${inputs.self}/secrets/serv.yaml";
+
+  # open-webui runs on the host and reaches the hermes relay via the
+  # container's host-side address (192.168.100.12 = containers.hermes.localAddress).
+  hermesApiBaseUrl = "http://192.168.100.12:8642/v1";
+
+  openWebuiApiConfigs = builtins.toJSON [
+    {
+      name = "MiniMax";
+      baseUrl = "https://api.minimax.io/v1";
+      apiKey = config.sops.placeholder."minimax-api-key";
+      models = [
+        { id = "MiniMax-M3"; name = "MiniMax M3"; }
+      ];
+    }
+    {
+      name = "Hermes";
+      baseUrl = hermesApiBaseUrl;
+      apiKey = config.sops.placeholder."hermes-api-key";
+      models = [
+        { id = "hermes-agent"; name = "Hermes Agent"; }
+      ];
+    }
+  ];
 in
 {
   imports = [
@@ -82,11 +105,9 @@ in
     owner = "open-webui";
     group = "open-webui";
     content = ''
-      # Wired direct to minimax upstream (api.minimax.io/v1) — bypasses the
-      # local hermes-agent relay on :8642. Reuses the same minimax-api-key SOPS
-      # secret already consumed by the Hermes MCP config and the image-proxy.
-      OPENAI_API_BASE_URL=https://api.minimax.io/v1
-      OPENAI_API_KEY=${config.sops.placeholder."minimax-api-key"}
+      # Two backends: MiniMax upstream + Hermes local relay on 192.168.100.12:8642.
+      # Model ids match each backend's /v1/models output (MiniMax-M3, hermes-agent).
+      OPENAI_API_CONFIGS=${openWebuiApiConfigs}
     '';
   };
 
@@ -344,10 +365,8 @@ in
       ANONYMIZED_TELEMETRY = "False";
       WEBUI_AUTH = "False";
 
-      # Pin the chat UI's default model so new chats land on M3 without
-      # users having to dig through the model dropdown. Comma-separated
-      # model IDs accepted by OpenWebUI; see OpenWebUI docs "DEFAULT_MODELS".
-      DEFAULT_MODELS = "MiniMax-M3";
+      # Comma-separated model ids or display names; both are accepted.
+      DEFAULT_MODELS = "MiniMax M3, Hermes Agent";
     };
   };
 
