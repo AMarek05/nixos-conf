@@ -181,7 +181,14 @@ in
         bindMounts = { };
         extraFlags = bindFlags;
 
-        specialArgs = { inherit inputs myLib; };
+        # Thread the resolved IP and host bridge address into the guest config so
+        # downstream templates (e.g. open-webui upstream URL) interpolate from
+        # this single source of truth rather than hardcoding.
+        specialArgs = {
+          inherit inputs myLib;
+          myIp = instanceCfg.ip;
+          hostBridgeAddress = "${cfg.subnetPrefix}.${toString cfg.hostIpSuffix}";
+        };
 
         config = { ... }: {
           imports = cfg.sharedModules ++ [ (cfg.basePath + "/${instanceCfg.configFile}") ];

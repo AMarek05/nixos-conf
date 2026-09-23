@@ -6,16 +6,44 @@
   inputs,
   lib,
   myLib,
+  myIp,
   ...
 }:
 let
   cfg = config.services.hermes-agent;
 
-  hermes-soul-file = pkgs.writeText "SOUL.md" (builtins.readFile ./SOUL.md);
-  hermes-user-file = pkgs.writeText "USER.md" (builtins.readFile ./USER.md);
+  hermes-soul-file = pkgs.writeText "SOUL.md" (
+    builtins.replaceStrings [ "__HERMES_IP__" ] [ myIp ] (builtins.readFile ./SOUL.md)
+  );
+  hermes-user-file = pkgs.writeText "USER.md" (
+    builtins.replaceStrings [ "__HERMES_IP__" ] [ myIp ] (builtins.readFile ./USER.md)
+  );
 
   openclaw-secrets = "${inputs.self}/secrets/openclaw.yaml";
   serv-secrets = "${inputs.self}/secrets/serv.yaml";
+
+  # open-webui runs on the host and reaches the hermes relay via the
+  # container's host-side address (myIp = containers.hermes.localAddress).
+  hermesApiBaseUrl = "http://${myIp}:8642/v1";
+
+  openWebuiApiConfigs = builtins.toJSON [
+    {
+      name = "MiniMax";
+      baseUrl = "https://api.minimax.io/v1";
+      apiKey = config.sops.placeholder."minimax-api-key";
+      models = [
+        { id = "MiniMax-M3"; name = "MiniMax M3"; }
+      ];
+    }
+    {
+      name = "Hermes";
+      baseUrl = hermesApiBaseUrl;
+      apiKey = config.sops.placeholder."hermes-api-key";
+      models = [
+        { id = "hermes-agent"; name = "Hermes Agent"; }
+      ];
+    }
+  ];
 in
 {
   imports = [
@@ -82,7 +110,9 @@ in
     owner = "open-webui";
     group = "open-webui";
     content = ''
-      OPENAI_API_KEY=${config.sops.placeholder."open-webui-api-key"}
+      # Two backends: MiniMax upstream + Hermes local relay on the container's
+      # host-side IP. Model ids match each backend's /v1/models output.
+      OPENAI_API_CONFIGS=${openWebuiApiConfigs}
     '';
   };
 
@@ -339,7 +369,9 @@ in
       DO_NOT_TRACK = "True";
       ANONYMIZED_TELEMETRY = "False";
       WEBUI_AUTH = "False";
-      OPENAI_API_BASE_URL = "http://127.0.0.1:8642/v1";
+
+      # Comma-separated model ids or display names; both are accepted.
+      DEFAULT_MODELS = "MiniMax M3, Hermes Agent";
     };
   };
 

@@ -21,7 +21,7 @@
 ## Infrastructure
 
 - **OpenClaw** (192.168.100.11) — dev/CI workload, different agent personality
-- **Hermes** (192.168.100.12) — you, this agent
+- **Hermes** (__HERMES_IP__) — you, this agent
 - **NixOS flake:** `git@github.com:AMarek05/nixos-conf`
 - **Secrets:** SOPS-managed in `openclaw.yaml`, shared across containers
 - **Discord:** user Atrys (ID: 323086933716893697), in his server
