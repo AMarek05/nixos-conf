@@ -2,6 +2,9 @@
 {
   services.pangolin = {
     enable = true;
+
+    package = pkgs.fosrl-pangolin.override { edition = "enterprise"; };
+
     openFirewall = true;
     baseDomain = "amarek.pl";
     dashboardDomain = "pangolin.amarek.pl";
