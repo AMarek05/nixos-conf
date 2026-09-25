@@ -1,5 +1,12 @@
-{ config, pkgs, ... }:
 {
+  config,
+  pkgs,
+  lib,
+  ...
+}:
+{
+  users.users.adam.extraGroups = [ "fossorial" ];
+
   services.pangolin = {
     enable = true;
 
@@ -54,11 +61,68 @@
     };
   };
 
+  systemd.services.pangolin = {
+    serviceConfig = {
+      CapabilityBoundingSet = [
+        "CAP_DAC_READ_SEARCH"
+        "CAP_NET_BIND_SERVICE"
+      ];
+      AmbientCapabilities = [ "CAP_DAC_READ_SEARCH" ];
+    };
+  };
+
   services.traefik.environmentFiles = [
     config.sops.templates."traefik-cloudflare-env".path
   ];
 
-  services.traefik.staticConfigOptions.entryPoints.tcp-22.address = ":22/tcp";
+  services.traefik.staticConfigOptions.entryPoints = {
+    tcp-22.address = ":22/tcp";
+    web.http.middlewares = [ "custom-errors@file" ];
+    websecure.http.middlewares = [ "custom-errors@file" ];
+  };
+
+  services.traefik.staticConfigOptions.providers.http.endpoint =
+    lib.mkForce "http://127.0.0.1:3001/api/v1/traefik-config";
+
+  services.traefik.dynamicConfigOptions.http = {
+    services.int-api-service.loadBalancer.servers = [
+      { url = "http://127.0.0.1:3000"; }
+    ];
+
+    services.error-pages-svc.loadBalancer = {
+      passHostHeader = false;
+      servers = [
+        { url = "http://127.0.0.1:8081"; }
+      ];
+    };
+
+    middlewares.custom-errors.errors = {
+      status = [ "400-599" ];
+      service = "error-pages-svc";
+      query = "/{status}.html";
+    };
+
+    routers.error-pages-router = {
+      rule = "PathRegexp(`^/[0-9]{3}\\.html$`)";
+      service = "error-pages-svc";
+      priority = 99999;
+      entryPoints = [
+        "web"
+        "websecure"
+      ];
+    };
+
+    routers.catch-all-fallback = {
+      rule = "PathPrefix(`/`)";
+      service = "error-pages-svc";
+      priority = 1;
+      entryPoints = [
+        "web"
+        "websecure"
+      ];
+      middlewares = [ "custom-errors@file" ];
+    };
+  };
 
   networking.firewall.allowedTCPPorts = [ 22 ];
   networking.firewall.allowedUDPPorts = [
@@ -79,7 +143,6 @@
     sopsFile = ../../../secrets/serv.yaml;
   };
 
-  # Same SOPS key path as nixos-server: dedicated file, provisioned at install time.
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
 
   services.crowdsec = {
@@ -105,14 +168,14 @@
   systemd.tmpfiles.rules = [
     "d /var/lib/crowdsec 0755 crowdsec crowdsec - -"
     "d /etc/nixos/secrets 0755 root root - -"
+    "d /var/lib/pangolin/config/letsencrypt 0750 traefik fossorial - -"
+    "z /var/lib/pangolin/config/letsencrypt/acme.json 0600 traefik fossorial - -"
   ];
 
-  # Generate pangolin.env on first boot if absent. Stable across
-  # rebuilds; replaced if you provision a real one via --extra-files.
   systemd.services.pangolin-env-init = {
     wantedBy = [ "multi-user.target" ];
     before = [ "pangolin.service" ];
-    requiredBy = [ "pangolin.service" ]; # Ensures pangolin won't start if this fails
+    requiredBy = [ "pangolin.service" ];
     after = [ "systemd-tmpfiles-setup.service" ];
 
     serviceConfig = {
@@ -120,7 +183,6 @@
       RemainAfterExit = true;
     };
 
-    # Use the native script attribute instead of ExecStart
     script = ''
       set -e
       f="/etc/nixos/secrets/pangolin.env"
@@ -134,7 +196,6 @@
       s=$(head -c 32 /dev/urandom | base64 -w 0)
       printf 'SERVER_SECRET=%s\n' "$s" > "$f"
 
-      # Ensure 'fossorial' group actually exists in your users.groups config!
       chown pangolin:fossorial "$f"
       chmod 0640 "$f"
     '';
