@@ -247,7 +247,7 @@ in
     systemd.services = lib.mkMerge (
       map (name: {
         "container@${name}".serviceConfig = {
-          TimeoutStopSec = lib.mkForce "15s";
+          TimeoutStopSec = lib.mkForce "30s";
           KillMode = lib.mkForce "mixed";
           ExecStopPost = lib.mkForce [
             "-${pkgs.util-linux}/bin/umount -l /run/systemd/nspawn/unix-export/${name}"

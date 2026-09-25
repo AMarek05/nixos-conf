@@ -26,31 +26,6 @@ let
   # open-webui runs on the host and reaches the hermes relay via the
   # container's host-side address (myIp = containers.hermes.localAddress).
   hermesApiBaseUrl = "http://${myIp}:8642/v1";
-
-  openWebuiApiConfigs = builtins.toJSON [
-    {
-      name = "MiniMax";
-      baseUrl = "https://api.minimax.io/v1";
-      apiKey = config.sops.placeholder."minimax-api-key";
-      models = [
-        {
-          id = "MiniMax-M3";
-          name = "MiniMax M3";
-        }
-      ];
-    }
-    {
-      name = "Hermes";
-      baseUrl = hermesApiBaseUrl;
-      apiKey = config.sops.placeholder."hermes-api-key";
-      models = [
-        {
-          id = "hermes-agent";
-          name = "Hermes Agent";
-        }
-      ];
-    }
-  ];
 in
 {
   imports = [
@@ -119,9 +94,10 @@ in
     owner = "open-webui";
     group = "open-webui";
     content = ''
-      # Two backends: MiniMax upstream + Hermes local relay on the container's
-      # host-side IP. Model ids match each backend's /v1/models output.
-      OPENAI_API_CONFIGS=${openWebuiApiConfigs}
+      OPENAI_API_BASE_URLS=https://api.minimax.io/v1;${hermesApiBaseUrl}
+      OPENAI_API_KEYS=${config.sops.placeholder."minimax-api-key"};${
+        config.sops.placeholder."hermes-api-key"
+      }
     '';
   };
 
@@ -285,7 +261,7 @@ in
     SendSIGKILL = false;
   };
 
-# hermes-dashboard.service and hermes-serve.service live in dashboard.nix and server.nix.
+  # hermes-dashboard.service and hermes-serve.service live in dashboard.nix and server.nix.
 
   services.openssh = {
     enable = true;
@@ -295,7 +271,7 @@ in
     };
   };
 
-# Tailscale: first-boot login is interactive (same as nixos + nixos-laptop).
+  # Tailscale: first-boot login is interactive (same as nixos + nixos-laptop).
   services.tailscale = {
     enable = true;
     useRoutingFeatures = "none";
@@ -338,8 +314,15 @@ in
       ANONYMIZED_TELEMETRY = "False";
       WEBUI_AUTH = "False";
 
-      # Comma-separated model ids or display names; both are accepted.
-      DEFAULT_MODELS = "MiniMax M3, Hermes Agent";
+      ENABLE_PERSISTENT_CONFIG = "False";
+
+      ENABLE_OPENAI_API = "True";
+      ENABLE_OLLAMA_API = "False";
+
+      ENABLE_MODEL_FILTER = "False";
+      BYPASS_MODEL_ACCESS_CONTROL = "True";
+
+      DEFAULT_MODELS = "MiniMax-M3";
     };
   };
 
