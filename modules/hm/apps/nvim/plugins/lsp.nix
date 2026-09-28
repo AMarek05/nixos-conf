@@ -9,7 +9,7 @@
         enable = true;
       };
 
-      formatOnSave = true;
+      # formatOnSave = true;
       inlayHints.enable = true;
 
       mappings = {
@@ -56,6 +56,27 @@
         underline = true,         -- Underline the error in the code
         update_in_insert = false, -- Don't scream at me while I'm typing
         severity_sort = true,     -- Put errors above warnings
+      })
+    '';
+
+    luaConfigRC.universalFormatOnSave = ''
+      local lsp_format_group = vim.api.nvim_create_augroup("UniversalLspFormatOnSave", { clear = true })
+
+      vim.api.nvim_create_autocmd("BufWritePre", {
+        group = lsp_format_group,
+        pattern = "*",
+        callback = function(args)
+          local clients = vim.lsp.get_clients({ bufnr = args.buf, method = "textDocument/formatting" })
+          if #clients == 0 then
+            return
+          end
+
+          vim.lsp.buf.format({
+            bufnr = args.buf,
+            async = false,
+            timeout_ms = 3000,
+          })
+        end,
       })
     '';
   };
