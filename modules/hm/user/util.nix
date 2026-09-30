@@ -11,6 +11,7 @@ in
 {
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
+      file
       zip
       unzip
       unrar-free
