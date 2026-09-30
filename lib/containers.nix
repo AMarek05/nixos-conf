@@ -143,13 +143,15 @@ in
 
   config = lib.mkIf cfg.enable {
     # Ensure stateDir on the host is created owned by the shifted UID:GID
-    systemd.tmpfiles.rules = lib.mapAttrsToList (
-      name: instanceCfg:
-      if instanceCfg.stateDir != null then
-        "d ${instanceCfg.stateDir} 0770 ${toString instanceCfg.shiftedHostUid} ${toString instanceCfg.shiftedHostUid} - -"
-      else
-        ""
-    ) cfg.instances;
+    systemd.tmpfiles.rules = lib.flatten (
+      lib.mapAttrsToList (
+        name: instanceCfg:
+        lib.optionals (instanceCfg.stateDir != null) [
+          "d ${instanceCfg.stateDir} 0755 ${toString instanceCfg.shiftedHostUid} ${toString instanceCfg.shiftedHostUid} - -"
+          "Z ${instanceCfg.stateDir} 0755 ${toString instanceCfg.shiftedHostUid} ${toString instanceCfg.shiftedHostUid} - -"
+        ]
+      ) cfg.instances
+    );
 
     # Generate standard NixOS container definitions
     containers = lib.mapAttrs (
