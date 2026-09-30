@@ -222,6 +222,9 @@ in
         archive_after_days = 30;
       };
 
+      # Keep cards in `review` after `kanban_request_review` — no auto-spawn of a peer reviewer.
+      kanban.review_dispatch = false;
+
       # ── Prompt / toolset trim ─────────────────────────────────────
       # Pi-style minimalism: cut toolsets that never fire in this
       # container so their JSON schemas (~14.8K tok baseline) don't
