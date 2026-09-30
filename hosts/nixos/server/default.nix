@@ -100,12 +100,25 @@ in
 
   security.acme = {
     acceptTerms = true;
-    defaults.email = "amarek05@pm.me";
+    defaults = {
+      email = "amarek05@pm.me";
+    };
 
     certs."amarek.pl" = {
       domain = "*.amarek.pl";
       extraDomainNames = [ "amarek.pl" ];
       dnsProvider = "cloudflare";
+
+      environmentFile = pkgs.writeText "acme-cf-env" ''
+        CLOUDFLARE_PROPAGATION_TIMEOUT=300
+        CLOUDFLARE_POLLING_INTERVAL=5
+        LEGO_DISABLE_CNAME_SUPPORT=true
+      '';
+
+      extraLegoFlags = [
+        "--dns.propagation.wait"
+        "30s"
+      ];
 
       credentialFiles = {
         "CLOUDFLARE_DNS_API_TOKEN_FILE" = config.sops.secrets."cloudflare_dns_key".path;
