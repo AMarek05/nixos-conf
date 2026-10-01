@@ -57,6 +57,7 @@ in
       R
 
       pkgs.custom.kanban-tail
+      pkgs.custom.hermes-chat
     ];
 
     programs.java = {
