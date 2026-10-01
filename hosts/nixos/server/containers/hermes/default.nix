@@ -235,7 +235,6 @@ in
       agent = {
         disabled_toolsets = [
           "computer_use"
-          "kanban"
           "homeassistant"
           "discord_admin"
         ];
