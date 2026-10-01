@@ -142,6 +142,7 @@
               install-term = final.callPackage ./src/install-term { };
               image-proxy = final.callPackage ./src/image-proxy/package.nix { };
               utftex = final.callPackage ./src/utftex { };
+              kanban-tail = final.callPackage ./src/kanban-tail { };
             };
           })
         ];

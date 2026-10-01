@@ -55,6 +55,8 @@ in
       nodejs
       zig
       R
+
+      pkgs.custom.kanban-tail
     ];
 
     programs.java = {
