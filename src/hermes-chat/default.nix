@@ -1,4 +1,8 @@
-{ openssh, writeShellScriptBin }:
+{
+  openssh,
+  tmux,
+  writeShellScriptBin,
+}:
 
 writeShellScriptBin "hermes-chat" ''
   set -euo pipefail
@@ -14,6 +18,6 @@ writeShellScriptBin "hermes-chat" ''
   done
 
   exec ${openssh}/bin/ssh -t "$ssh_host" \
-    tmux new-session -A -s "$tmux_session" \
+    ${tmux}/bin/tmux new-session -A -s "$tmux_session" \
     "${openssh}/bin/ssh -t $hermes_target $hermes_cmd ''${inner_args[*]}"
 ''

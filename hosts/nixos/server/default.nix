@@ -25,8 +25,6 @@ in
     "${inputs.self}/lib/containers.nix"
   ];
 
-  environment.systemPackages = with pkgs; [ tmux ];
-
   nixosModules.containers = {
     enable = true;
     basePath = ./containers;
