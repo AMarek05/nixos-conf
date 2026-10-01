@@ -241,8 +241,17 @@ in
       # the worker-facing `kanban_*` verbs via MCP `EXPOSED_TOOLS` regardless
       # of this config, so PR nixos-conf#90's `disabled_toolsets` cleanup
       # was a no-op for workers too — the actual fix is here.
+      #
+      # `platform_toolsets.<platform>` is the explicit opt-in key. The
+      # hermes-agent CLI/orchestrator session resolves its platform as
+      # `cli` (`hermes_cli/setup_quick.py:171`). Listing `kanban` alongside
+      # the `hermes-cli` composite keeps the rest of the orchestrator tool
+      # surface (`file`, `terminal`, `clarify`, ...) AND adds `kanban`.
+      # Without the composite, `_explicit_toolsets` strips everything not
+      # in the explicit list.
+      platform_toolsets.cli = [ "hermes-cli" "kanban" ];
+
       agent = {
-        platform_toolsets.default = [ "kanban" ];
         disabled_toolsets = [
           "computer_use"
           "homeassistant"
