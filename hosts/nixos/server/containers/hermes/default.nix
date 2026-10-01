@@ -231,8 +231,18 @@ in
       # ship on every turn. Per `hermes_cli/tools_config.py`, the
       # `hermes-discord` default toolset resolves 50 tool definitions;
       # these are the ones that have no caller in this setup.
-
+      #
+      # `kanban` is opt-in (in upstream `_DEFAULT_OFF_TOOLSETS`); removing it
+      # from `disabled_toolsets` is a no-op because that list is a global
+      # suppression (subtracted LAST). The orchestrator side calls
+      # `kanban_create` / `kanban_unblock` / `kanban_link` directly (not via
+      # `hermes kanban <verb>` through the terminal tool) — these are the
+      # in-tool verbs surfaced by the `kanban` toolset. Workers always had
+      # the worker-facing `kanban_*` verbs via MCP `EXPOSED_TOOLS` regardless
+      # of this config, so PR nixos-conf#90's `disabled_toolsets` cleanup
+      # was a no-op for workers too — the actual fix is here.
       agent = {
+        platform_toolsets.default = [ "kanban" ];
         disabled_toolsets = [
           "computer_use"
           "homeassistant"
