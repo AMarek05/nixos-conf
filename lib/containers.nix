@@ -147,8 +147,8 @@ in
       lib.mapAttrsToList (
         name: instanceCfg:
         lib.optionals (instanceCfg.stateDir != null) [
-          "d ${instanceCfg.stateDir} 0755 ${toString instanceCfg.shiftedHostUid} ${toString instanceCfg.shiftedHostUid} - -"
-          "Z ${instanceCfg.stateDir} 0755 ${toString instanceCfg.shiftedHostUid} ${toString instanceCfg.shiftedHostUid} - -"
+          "d ${instanceCfg.stateDir} 2775 ${toString instanceCfg.internalUid} ${toString instanceCfg.internalUid} - -"
+          "Z ${instanceCfg.stateDir} 2775 ${toString instanceCfg.internalUid} ${toString instanceCfg.internalUid} - -"
         ]
       ) cfg.instances
     );
@@ -222,15 +222,11 @@ in
       }
     ) cfg.instances;
 
-    users.users = lib.mapAttrs (name: instanceCfg: {
-      isSystemUser = true;
-      group = name;
-      uid = instanceCfg.shiftedHostUid;
+    users.groups = lib.mapAttrs (name: instanceCfg: {
+      gid = instanceCfg.internalUid;
     }) cfg.instances;
 
-    users.groups = lib.mapAttrs (name: instanceCfg: {
-      gid = instanceCfg.shiftedHostUid;
-    }) cfg.instances;
+    users.users.adam.extraGroups = builtins.attrNames cfg.instances;
 
     networking.nat = {
       enable = true;
