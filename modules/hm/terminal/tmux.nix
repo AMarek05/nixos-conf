@@ -49,7 +49,7 @@
     programs.tmux = {
       enable = true;
 
-      terminal = "xterm-ghostty";
+      terminal = "tmux-256color";
       shell = "${pkgs.zsh}/bin/zsh";
 
       sensibleOnTop = true;
@@ -111,7 +111,6 @@
       ];
 
       extraConfig = ''
-        set -g default-terminal "tmux-256color"
         set -ga terminal-overrides ',xterm-ghostty:Tc:SF'
 
         bind \\ split-window -v
