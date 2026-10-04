@@ -1,6 +1,5 @@
 # shell/zsh module — interactive zsh setup, aliases, and shell utilities
 {
-  inputs,
   pkgs,
   config,
   osConfig,
@@ -99,8 +98,6 @@ in
         ll = "eza -lha --icons=auto --sort=name --group-directories-first";
         ld = "eza -lhD --icons=auto";
         lt = "eza      --icons=auto --tree";
-
-        st = "${pkgs.sillytavern}/bin/sillytavern";
 
         nhc = "nh clean all --keep 3 --no-gcroots";
         nhco = "nh clean all --keep 3 --no-gcroots --optimise";
