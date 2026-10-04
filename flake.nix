@@ -76,11 +76,6 @@
       inputs.nixpkgs-stable.follows = "nixpkgs-stable";
       inputs.flake-parts.follows = "flake-parts";
     };
-
-    sd-webui-nix = {
-      url = "github:Janrupf/stable-diffusion-webui-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs =
