@@ -92,6 +92,7 @@
 
           patches = {
             qs = ./patches/quickshell-monitor-fix.patch;
+            fj = ./patches/forgejo-cli-pr-create-fix.patch;
           };
         };
 
@@ -130,6 +131,10 @@
               };
 
               hermes-agent = inputs.hermes-agent.packages.${system}.default;
+
+              forgejo-cli = prev.forgejo-cli.overrideAttrs (old: {
+                patches = (old.patches or [ ]) ++ [ myLib.patches.fj ];
+              });
             }
           )
           (final: prev: {
