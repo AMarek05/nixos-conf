@@ -28,7 +28,7 @@
   curator = {
     interval_hours = 24;
     min_idle_hours = 336;
-    archive_after_days = 14;
+    archive_after_days = 30;
   };
 
   kanban = {
