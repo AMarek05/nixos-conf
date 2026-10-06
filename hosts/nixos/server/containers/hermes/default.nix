@@ -5,7 +5,6 @@
   config,
   inputs,
   lib,
-  myLib,
   myIp,
   ...
 }:
@@ -31,8 +30,8 @@ in
   imports = [
     inputs.hermes-agent.nixosModules.default
     inputs.sops-nix.nixosModules.sops
-    myLib.gitWrapper
-    myLib.fjWrapper
+    lib.my.modules.gitWrapper
+    lib.my.modules.fjWrapper
     ./dashboard.nix
     ./server.nix
   ];

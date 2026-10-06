@@ -82,23 +82,24 @@
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } (
       let
-        lib = inputs.nixpkgs.lib;
-        hmLib = inputs.home-manager.lib;
-        myLib = {
-          toLua = import ./lib/toLua.nix { inherit lib; };
+        lib = inputs.nixpkgs.lib.extend (
+          final: prev:
+          (removeAttrs inputs.home-manager.lib [ "homeManagerConfiguration" ])
+          // {
+            my = {
+              toLua = import ./lib/toLua.nix { lib = final; };
 
-          gitWrapper = ./modules/nixos/wrappers/git.nix;
-          fjWrapper = ./modules/nixos/wrappers/fj.nix;
+              modules = final.mapAttrs' (
+                name: _: final.nameValuePair (final.removeSuffix ".nix" name) (./modules/custom + "/${name}")
+              ) (builtins.readDir ./modules/custom);
 
-          patches = {
-            qs = ./patches/quickshell-monitor-fix.patch;
-            fj = ./patches/forgejo-cli-pr-create-fix.patch;
-          };
-
-          modules = lib.mapAttrs' (
-            name: _: lib.nameValuePair (lib.removeSuffix ".nix" name) (./modules/custom + "/${name}")
-          ) (builtins.readDir ./modules/custom);
-        };
+              patches = {
+                qs = ./patches/quickshell-monitor-fix.patch;
+                fj = ./patches/forgejo-cli-pr-create-fix.patch;
+              };
+            };
+          }
+        );
 
         hosts = {
           "nixos" = {
@@ -137,7 +138,7 @@
               hermes-agent = inputs.hermes-agent.packages.${system}.default;
 
               forgejo-cli = prev.forgejo-cli.overrideAttrs (old: {
-                patches = (old.patches or [ ]) ++ [ myLib.patches.fj ];
+                patches = (old.patches or [ ]) ++ [ lib.my.patches.fj ];
               });
             }
           )
@@ -163,7 +164,7 @@
           { nixpkgs, system }:
           nixpkgs.lib.nixosSystem {
             inherit system;
-            specialArgs = { inherit inputs myLib; };
+            specialArgs = { inherit inputs lib; };
             modules = [
               { nixpkgs.overlays = overlays; }
 
@@ -176,7 +177,7 @@
         mkHm =
           name:
           { nixpkgs, system }:
-          hmLib.homeManagerConfiguration {
+          inputs.home-manager.lib.homeManagerConfiguration {
             pkgs = import nixpkgs {
               inherit system overlays;
               config.allowUnfree = true;
@@ -185,7 +186,7 @@
               ./hosts/hm/${name}.nix
             ];
             extraSpecialArgs = {
-              inherit inputs myLib;
+              inherit inputs lib;
               osConfig = nixosCfgs.${name}.config;
 
               osConfigs = nixosCfgs;

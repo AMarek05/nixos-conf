@@ -1,13 +1,12 @@
 {
   lib,
   config,
-  myLib,
   ...
 }:
 let
   cfg = config.hmModules.hyprland.animations;
 
-  inherit (myLib) toLua;
+  inherit (lib.my) toLua;
 
   renderCurve =
     name: points: "hl.curve(${toLua name}, { type = \"bezier\", points = ${toLua points} })";

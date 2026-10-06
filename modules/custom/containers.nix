@@ -3,7 +3,6 @@
   lib,
   pkgs,
   inputs,
-  myLib,
   ...
 }:
 
@@ -193,7 +192,7 @@ in
         # downstream templates (e.g. open-webui upstream URL) interpolate from
         # this single source of truth rather than hardcoding.
         specialArgs = {
-          inherit inputs myLib;
+          inherit inputs lib;
           myIp = instanceCfg.ip;
           hostBridgeAddress = "${cfg.subnetPrefix}.${toString cfg.hostIpSuffix}";
         };

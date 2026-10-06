@@ -1,14 +1,13 @@
 {
   lib,
   config,
-  myLib,
   ...
 }:
 let
   mod = "SUPER";
   cfg = config.hmModules.hyprland.binds;
 
-  inherit (myLib) toLua;
+  inherit (lib.my) toLua;
 
   renderBind =
     b:

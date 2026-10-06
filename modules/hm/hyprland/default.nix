@@ -3,13 +3,12 @@
   lib,
   config,
   pkgs,
-  myLib,
   ...
 }:
 let
   cfg = config.hmModules.hyprland;
 
-  inherit (myLib) toLua;
+  inherit (lib.my) toLua;
   inherit (lib)
     mkOption
     types

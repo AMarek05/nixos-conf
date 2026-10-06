@@ -1,4 +1,4 @@
-# modules/nixos/wrappers/git.nix
+# modules/custom/gitWrapper.nix
 #
 # Transparent `git` wrapper that wires the claw-ssh-key for SSH and signing.
 #
@@ -10,7 +10,7 @@
 # enable=true but the secret is missing.
 #
 # Consumers:
-#   imports = [ myLib.gitWrapper ];
+#   imports = [ lib.my.modules.gitWrapper ];
 #
 # Reference the wrapper package via `config.services.git-wrapper.package`
 # when pinning onto a systemd.path (e.g. update-attic.service).

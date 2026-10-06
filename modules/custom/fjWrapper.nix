@@ -1,4 +1,4 @@
-# modules/nixos/wrappers/fj.nix
+# modules/custom/fjWrapper.nix
 #
 # Wrapper around `forgejo-cli` (`fj`) that injects the auth token from
 # the SOPS-managed secret `sops.secrets."fj-auth"` at use time.
@@ -9,7 +9,7 @@
 # through to the underlying `fj` binary.
 #
 # Consumers:
-#   imports = [ myLib.fjWrapper ];
+#   imports = [ lib.my.modules.fjWrapper ];
 #
 # Reference the wrapper package via `config.services.fj-wrapper.package`
 # when pinning onto a systemd.path.

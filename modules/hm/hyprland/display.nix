@@ -1,13 +1,12 @@
 {
   config,
   lib,
-  myLib,
   ...
 }:
 let
   cfg = config.hmModules.hyprland;
 
-  inherit (myLib) toLua;
+  inherit (lib.my) toLua;
   inherit (lib) mkOption types concatMapStringsSep;
 
   renderMonitor = mon: "hl.monitor(${toLua mon})";

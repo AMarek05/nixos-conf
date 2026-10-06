@@ -1,8 +1,8 @@
 {
   pkgs,
+  lib,
   config,
   inputs,
-  myLib,
   ...
 }:
 let
@@ -22,8 +22,8 @@ in
     ./reader.nix
     ./caddy.nix
 
-    myLib.modules.image-proxy
-    myLib.modules.containers
+    lib.my.modules.image-proxy
+    lib.my.modules.containers
   ];
 
   nixosModules.containers = {

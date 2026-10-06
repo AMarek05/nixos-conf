@@ -1,7 +1,6 @@
 # caelestia module — declarative configuration
 {
   lib,
-  myLib,
   config,
   inputs,
   pkgs,
@@ -18,7 +17,7 @@ let
     inputs.caelestia-shell.inputs.quickshell.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs
       (old: {
         patches = (old.patches or [ ]) ++ [
-          myLib.patches.qs
+          lib.my.patches.qs
         ];
       });
 

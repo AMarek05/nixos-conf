@@ -3,7 +3,6 @@
   lib,
   inputs,
   config,
-  myLib,
   ...
 }:
 let
@@ -12,8 +11,8 @@ in
 {
   imports = [
     inputs.attic.nixosModules.atticd
-    myLib.gitWrapper
-    myLib.fjWrapper
+    lib.my.modules.gitWrapper
+    lib.my.modules.fjWrapper
   ];
 
   options.services.atticd = {

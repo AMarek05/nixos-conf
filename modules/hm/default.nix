@@ -1,12 +1,11 @@
 {
   lib,
   inputs,
-  myLib,
   ...
 }:
 
 let
-  modulesLib = import myLib.modules.modules { inherit lib; };
+  modulesLib = import lib.my.modules.modules { inherit lib; };
 in
 modulesLib.mkHostModules {
   namespace = "hmModules";
