@@ -1,7 +1,7 @@
-{ lib, ... }:
+{ lib, myLib, ... }:
 
 let
-  modulesLib = import ../../lib/modules.nix { inherit lib; };
+  modulesLib = import myLib.modules.modules { inherit lib; };
 in
 modulesLib.mkHostModules {
   namespace = "nixosModules";

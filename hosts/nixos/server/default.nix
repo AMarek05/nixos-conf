@@ -2,6 +2,7 @@
   pkgs,
   config,
   inputs,
+  myLib,
   ...
 }:
 let
@@ -20,9 +21,9 @@ in
     ./vaultwarden.nix
     ./reader.nix
     ./caddy.nix
-    ./image-proxy.nix
 
-    "${inputs.self}/lib/containers.nix"
+    myLib.modules.image-proxy
+    myLib.modules.containers
   ];
 
   nixosModules.containers = {

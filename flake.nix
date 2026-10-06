@@ -94,6 +94,10 @@
             qs = ./patches/quickshell-monitor-fix.patch;
             fj = ./patches/forgejo-cli-pr-create-fix.patch;
           };
+
+          modules = lib.mapAttrs' (
+            name: _: lib.nameValuePair (lib.removeSuffix ".nix" name) (./modules/custom + "/${name}")
+          ) (builtins.readDir ./modules/custom);
         };
 
         hosts = {

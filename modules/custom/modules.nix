@@ -1,4 +1,4 @@
-# lib/modules.nix
+# modules/custom/modules.nix
 # Shared module library for modules/nixos/ and modules/hm/.
 #
 # Each entry drives:
@@ -23,7 +23,7 @@
 # via lib.mkIf (config.<ns>.<parent>.enable && config.<ns>.<parent>.<sub>.enable).
 #
 # Usage:
-#   let modulesLib = import ../../lib/modules.nix { inherit lib; };
+#   let modulesLib = import modules.nix { inherit lib; };
 #   in modulesLib.mkHostModules {
 #     namespace = "nixosModules";
 #     basePath  = ../../modules/nixos;

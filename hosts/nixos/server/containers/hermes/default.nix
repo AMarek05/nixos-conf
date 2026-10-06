@@ -293,7 +293,7 @@ in
     pkgs.agent-browser
   ];
 
-  # Per-container firewall is owned by lib/containers.nix via instances.<name>.ports.
+  # Per-container firewall is owned by containers.nix via instances.<name>.ports.
   # OpenWebUI (8080) and the hermes API server (8642) are already in there.
 
   # ── Timezone ──────────────────────────────────────────────────────────
