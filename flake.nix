@@ -144,6 +144,7 @@
               utftex = final.callPackage ./src/utftex { };
               kanban-tail = final.callPackage ./src/kanban-tail { };
               hermes-chat = final.callPackage ./src/hermes-chat { };
+              mmx-cli = final.callPackage ./src/mmx-cli { };
             };
           })
         ];
