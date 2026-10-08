@@ -56,6 +56,7 @@ in
       gcc
       nodejs
       zig
+      cargo
       R
 
       pkgs.custom.kanban-tail

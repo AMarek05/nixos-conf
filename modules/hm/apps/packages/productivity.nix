@@ -14,6 +14,7 @@
       )
       {
         home.packages = with pkgs; [
+          antigravity-hub
           dbeaver-bin
           libreoffice-stable
 
