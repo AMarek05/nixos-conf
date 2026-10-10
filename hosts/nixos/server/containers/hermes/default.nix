@@ -122,6 +122,8 @@ in
     '';
   };
 
+  users.users.${cfg.user}.extraGroups = [ "systemd-journal" ];
+
   # ── Hermes Agent service ──────────────────────────────────────────────
   # The hermes module's activation script writes cfg.environment and
   # cfg.environmentFiles to ~/.hermes/.env (via load_hermes_dotenv at Python
