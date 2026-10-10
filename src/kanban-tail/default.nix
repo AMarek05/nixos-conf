@@ -3,12 +3,10 @@
 writeShellScriptBin "kanban-tail" ''
   set -euo pipefail
 
-  if (( $# < 1 )) || [[ ''${1-} == -* ]]; then
+  if (( $# < 1 )) || [[ ''${1-} == -* && ''${1-} != "--" ]]; then
     echo "usage: kanban-tail [<board>] <task-id> [-- tail-flags...]" >&2
-    echo "  <board>    optional kanban board slug; different boards keep logs in different" >&2
-    echo "             dirs. With one positional arg, that arg is the task id and the" >&2
-    echo "             'default' board is used." >&2
-    echo "  <task-id>  kanban task id, with or without 't_' prefix (e.g. 26b2d7cf or t_26b2d7cf)" >&2
+    echo "  <board>    optional kanban board slug (default: 'default')" >&2
+    echo "  <task-id>  kanban task id, with or without 't_' prefix" >&2
     echo "  --         pass remaining args through to tail (default: -F)" >&2
     echo "" >&2
     echo "env: KANBAN_TAIL_SSH_HOST  (default: hermes)" >&2
@@ -16,18 +14,38 @@ writeShellScriptBin "kanban-tail" ''
     exit 2
   fi
 
-  board="default"
-  if (( $# >= 2 )); then
-    board="$1"
-    shift
-  fi
-  raw="$1"
-  shift
+  # Collect positional operands before '--' or options
+  pos=()
+  while (( $# > 0 )); do
+    case "$1" in
+      --)
+        shift
+        break
+        ;;
+      -*)
+        break
+        ;;
+      *)
+        pos+=("$1")
+        shift
+        ;;
+    esac
+  done
 
-  if [[ -z "$board" || "$board" == -* || "$raw" == -* ]]; then
-    echo "kanban-tail: missing <task-id> (got 'flags' where a task id was expected)" >&2
-    exit 2
-  fi
+  case ''${#pos[@]} in
+    1)
+      board="default"
+      raw="''${pos[0]}"
+      ;;
+    2)
+      board="''${pos[0]}"
+      raw="''${pos[1]}"
+      ;;
+    *)
+      echo "kanban-tail: expected [<board>] <task-id>, got ''${#pos[@]} arguments" >&2
+      exit 2
+      ;;
+  esac
 
   id="''${raw#t_}"
   if ! [[ "$id" =~ ^[a-f0-9]+$ ]]; then
