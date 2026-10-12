@@ -51,6 +51,8 @@ in
 
   programs.sleepy-launcher.enable = true;
 
+  programs.kdeconnect.enable = true;
+
   networking.hostName = lib.mkForce "nixos";
 
   # No battery on desktop
