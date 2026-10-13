@@ -2,139 +2,145 @@
 # Shared module library for modules/nixos/ and modules/hm/.
 #
 # Each entry drives:
-#   1. The `imports = [ ... ]` list (./name.nix or ./name/)
-#   2. The `options` declarations for <namespace>.<name>[/<sub>].enable
+#   1. The `imports = [ ... ]` list:
+#      - Resolves `name.nix` or `name/default.nix` automatically from disk.
+#      - Lone directories with only `default.nix` need no special flags.
+#      - For directories with `sub` entries, recursively imports every
+#        nested sibling and any existing `default.nix` along the path.
+#   2. The `options` declarations for <namespace>.<name>[.<sub>...].enable
+#      recursively to arbitrary depth.
 #
-# For dir entries with sub-entries, the catalog auto-imports each sibling
-# alongside default.nix — so the directory's default.nix has zero import
-# Third-party inputs the directory needs are imported directly in the
-# directory's own file(s) (e.g. inputs.X.homeModules in someFile.nix).
+# Entry Shorthand:
+#   Plain strings are supported for simple modules without custom flags:
+#     entries = [ "git" "fish" { name = "desktop"; sub = [ "audio" "wayland" ]; } ];
 #
 # Enable semantics:
 #   optional = true         → enable default false
 #   optional = false/absent → enable default true
 #
-# createOption (default: true): lib emits typed enable options for the
-# entry. Set to false when the entry has a richer option surface than
-# enable alone (e.g. caelestia with settings); the file then declares
-# its own options.
+# Option flags:
+#   createOption (default: true): Emits typed enable options for the entry.
+#   Set to false when an entry defines a richer option surface manually
+#   in its own file (e.g. settings submodules).
 #
-# Atomicity (parent-off cascades to subs) is enforced at consumer sites
-# via lib.mkIf (config.<ns>.<parent>.enable && config.<ns>.<parent>.<sub>.enable).
+# Atomicity (parent-off cascades to children):
+#   Enforce parent-to-child cascading at consumer sites using the exported
+#   `isEnabled` helper:
+#     lib.mkIf (modulesLib.isEnabled config "nixosModules" "desktop.wm.hyprland") { ... }
 #
 # Usage:
 #   let modulesLib = import modules.nix { inherit lib; };
 #   in modulesLib.mkHostModules {
 #     namespace = "nixosModules";
 #     basePath  = ../../modules/nixos;
-#     entries   = [ ... ];
+#     entries   = [
+#       "sound"       # auto-resolves to sound.nix or sound/default.nix
+#       "git"
+#       {
+#         name = "desktop";
+#         sub  = [
+#           "audio"
+#           {
+#             name = "wm";
+#             sub  = [ "hyprland" "waybar" ];
+#           }
+#         ];
+#       }
+#     ];
 #   }
 { lib }:
 
 let
-  # Build the `imports` list for one entry.
-  # For dir-with-sub: returns default.nix + each sibling.
-  mkEntryImports =
-    basePath: e:
-    let
-      dirPath = basePath + "/${e.name}";
-      baseImports =
-        if e.kind == "dir" then
-          # Only import default.nix if it actually exists on disk.
-          # An empty/default.nix that does nothing is a no-op placeholder
-          # and should be deleted rather than kept around.
-          (if builtins.pathExists (dirPath + "/default.nix") then [ (dirPath + "/default.nix") ] else [ ])
-          ++ lib.optionals (e ? sub) (
-            # Build a flat list of imports for one entry: own default.nix
-            # + each sub (or each sub's children if the sub is itself a
-            # nested grouping).
-            let
-              perSub =
-                sub:
-                if sub ? sub then
-                  # A sub-entry with its own sub is a grouping label.
-                  # Import its directory's default.nix + each sibling.
-                  [
-                    (dirPath + "/${sub.name}/default.nix")
-                  ]
-                  ++ map (ss: dirPath + "/${sub.name}/${ss.name}.nix") sub.sub
-                else
-                  [ (dirPath + "/${sub.name}.nix") ];
-            in
-            lib.concatMap perSub e.sub
-          )
-        else
-          [ (basePath + "/${e.name}.nix") ];
-    in
-    baseImports;
+  # Normalize entry syntax: allows string shorthand "foo" -> { name = "foo"; }
+  normalizeEntry = e: if builtins.isString e then { name = e; } else e;
 
-  mkImports = basePath: entries: lib.concatLists (map (mkEntryImports basePath) entries);
-
-  # An entry is enabled-by-default unless explicitly marked optional.
+  # Enable semantics: true unless explicitly marked optional
   isEnabledByDefault = e: !(e.optional or false);
 
-  # One entry's contribution to options.<ns>.
-  # createOption = true (default): lib emits typed enable option + per-sub.
-  # createOption = false: caller file declares its own options (escape
-  # hatch for entries like caelestia with a richer option surface).
-  buildEntryOptions =
-    e:
-    if e.createOption or true then
+  # Imports resolution
+  mkEntryImports =
+    basePath: rawEntry:
+    let
+      e = normalizeEntry rawEntry;
+      dirPath = basePath + "/${e.name}";
+      filePath = basePath + "/${e.name}.nix";
+      defaultNix = dirPath + "/default.nix";
+
+      # An entry is treated as a directory if:
+      #   - explicitly tagged with kind = "dir"
+      #   - declares sub-entries
+      #   - no <name>.nix exists, but <name>/default.nix exists on disk
+      isDirEntry =
+        (e.kind or null) == "dir"
+        || (e ? sub)
+        || ((e.kind or null) != "file" && !builtins.pathExists filePath && builtins.pathExists defaultNix);
+    in
+    if isDirEntry then
       let
-        parentEnable = {
-          enable = lib.mkEnableOption "${e.name} module" // {
-            default = isEnabledByDefault e;
-          };
-        };
-
-        buildSubEnable =
-          sub:
-          let
-            subDefault = isEnabledByDefault sub;
-            subCreateOption = sub.createOption or true;
-            childEnable =
-              if subCreateOption then
-                {
-                  enable = lib.mkEnableOption "${e.name}.${sub.name}" // {
-                    default = subDefault;
-                  };
-                }
-              else
-                { };
-            grandchildren =
-              if sub ? sub then
-                lib.foldl' (
-                  acc: ss:
-                  acc
-                  // {
-                    ${ss.name}.enable = lib.mkEnableOption "${e.name}.${sub.name}.${ss.name}" // {
-                      default = isEnabledByDefault ss;
-                    };
-                  }
-                ) { } sub.sub
-              else
-                { };
-          in
-          {
-            ${sub.name} = childEnable // grandchildren;
-          };
-
-        subEnables =
-          if e.kind == "dir" && e ? sub then
-            lib.foldl' (acc: sub: acc // buildSubEnable sub) { } e.sub
-          else
-            { };
+        hasDefault = builtins.pathExists defaultNix;
+        subImports = lib.optionals (e ? sub) (lib.concatMap (mkEntryImports dirPath) e.sub);
       in
-      {
-        ${e.name} = parentEnable // subEnables;
-      }
+      lib.optional hasDefault defaultNix ++ subImports
     else
-      { };
+      [ filePath ];
 
-  mkOptions = ns: entries: { ${ns} = lib.foldl' (acc: e: acc // buildEntryOptions e) { } entries; };
+  mkImports = basePath: entries: lib.concatMap (mkEntryImports basePath) entries;
+
+  # Options generation
+  mkEntryOptions =
+    pathPrefix: rawEntry:
+    let
+      e = normalizeEntry rawEntry;
+      currentPath = pathPrefix ++ [ e.name ];
+      pathStr = lib.concatStringsSep "." currentPath;
+
+      # Emit typed enable option unless explicitly opted out
+      nodeOption = lib.optionalAttrs (e.createOption or true) {
+        enable = lib.mkEnableOption pathStr // {
+          default = isEnabledByDefault e;
+        };
+      };
+
+      # Recursively declare options for any sub-entries
+      subOptions =
+        if e ? sub then
+          lib.foldl' lib.recursiveUpdate { } (map (mkEntryOptions currentPath) e.sub)
+        else
+          { };
+
+      combined = nodeOption // subOptions;
+    in
+    lib.optionalAttrs (combined != { }) {
+      ${e.name} = combined;
+    };
+
+  mkOptions = ns: entries: {
+    ${ns} = lib.foldl' lib.recursiveUpdate { } (map (mkEntryOptions [ ]) entries);
+  };
+
+  # Cascading enable helper
+  # Verifies that every level along the path is enabled in `config`.
+  # Accepts either dot-notation ("desktop.wm.hyprland") or a list (["desktop" "wm" "hyprland"]).
+  # If any intermediate level lacks an `enable` option (e.g. grouping container),
+  # it passes through to the next level.
+  isEnabled =
+    config: ns: path:
+    let
+      parts = if builtins.isList path then path else lib.splitString "." path;
+      prefixes = lib.genList (i: lib.take (i + 1) parts) (builtins.length parts);
+      checkPrefix =
+        prefix:
+        let
+          node = lib.attrByPath ([ ns ] ++ prefix) null config;
+        in
+        if node != null && node ? enable then node.enable else true;
+    in
+    builtins.all checkPrefix prefixes;
+
 in
-
 {
+  inherit isEnabled;
+
   mkHostModules =
     {
       namespace,
