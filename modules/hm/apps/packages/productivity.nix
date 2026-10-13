@@ -18,6 +18,8 @@
           dbeaver-bin
           libreoffice-stable
 
+          remmina
+
           alacarte
           evince
 
