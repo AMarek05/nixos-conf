@@ -5,22 +5,15 @@
   ...
 }:
 {
-  config =
-    lib.mkIf
-      (
-        config.hmModules.apps.enable
-        && config.hmModules.apps.packages.enable
-        && config.hmModules.apps.packages.system.enable
-      )
-      {
-        home.packages = with pkgs; [
-          grim
-          slurp
-          grimblast
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "apps.packages.system") {
+    home.packages = with pkgs; [
+      grim
+      slurp
+      grimblast
 
-          snx-rs
+      snx-rs
 
-          baobab
-        ];
-      };
+      baobab
+    ];
+  };
 }

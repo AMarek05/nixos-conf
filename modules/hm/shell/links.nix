@@ -1,6 +1,6 @@
 { config, lib, ... }:
 {
-  config = lib.mkIf (config.hmModules.shell.enable && config.hmModules.shell.links.enable) {
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "shell.links") {
     # starship.toml and .transient_prompt moved to terminal/starship.nix
   };
 }

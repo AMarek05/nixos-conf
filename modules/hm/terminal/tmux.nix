@@ -6,7 +6,7 @@
   ...
 }:
 {
-  config = lib.mkIf (config.hmModules.terminal.enable && config.hmModules.terminal.tmux.enable) {
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "terminal.tmux") {
     home.packages = [
       pkgs.gitmux
       pkgs.ghostty.terminfo

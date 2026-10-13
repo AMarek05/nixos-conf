@@ -5,7 +5,7 @@
   ...
 }:
 {
-  config = lib.mkIf (config.hmModules.user.enable && config.hmModules.user.env.enable) {
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "user.env") {
     xdg.enable = true;
     xdg.portal.xdgOpenUsePortal = true;
 

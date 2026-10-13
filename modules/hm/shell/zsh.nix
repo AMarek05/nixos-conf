@@ -13,7 +13,7 @@ let
   isServer = osConfig.networking.hostName == "nixos-server";
 in
 {
-  config = lib.mkIf (config.hmModules.shell.enable && cfg.enable) {
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "shell.zsh") {
     home.packages = with pkgs; [
       dtrx
       eza
