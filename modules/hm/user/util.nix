@@ -9,6 +9,8 @@ let
   cfg = config.hmModules.user.util;
 in
 {
+  imports = [ ./rust.nix ];
+
   config = lib.mkIf cfg.enable {
     home.packages = with pkgs; [
       custom.mmx-cli
@@ -56,7 +58,6 @@ in
       gcc
       nodejs
       zig
-      cargo
       R
 
       pkgs.custom.kanban-tail

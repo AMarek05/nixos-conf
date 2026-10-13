@@ -24,6 +24,7 @@
           evince
 
           intellij-idea
+          rust-rover
 
           thunderbird
         ];
