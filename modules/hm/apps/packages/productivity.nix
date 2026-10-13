@@ -23,6 +23,8 @@
           alacarte
           evince
 
+          intellij-idea
+
           thunderbird
         ];
       };
