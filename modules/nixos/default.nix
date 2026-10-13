@@ -1,7 +1,7 @@
 { lib, ... }:
 
 let
-  modulesLib = import lib.my.modules.modules { inherit lib; };
+  modulesLib = import (lib.my.modules.modules) { inherit lib; };
 in
 modulesLib.mkHostModules {
   namespace = "nixosModules";
@@ -9,35 +9,31 @@ modulesLib.mkHostModules {
   entries = [
     {
       name = "desktop";
-      kind = "dir";
       sub = [
-        { name = "audio"; }
-        { name = "console"; }
-        { name = "fonts"; }
-        { name = "hyprland"; }
+        "audio"
+        "console"
+        "fonts"
+        "hyprland"
       ];
     }
     {
       name = "gaming";
-      kind = "dir";
       optional = true;
       sub = [
-        { name = "gamemode"; }
-        { name = "sunshine"; }
+        "gamemode"
+        "sunshine"
       ];
     }
     {
       name = "networking";
-      kind = "dir";
       sub = [
-        { name = "firewall"; }
-        { name = "ssh"; }
-        { name = "syncthing"; }
+        "firewall"
+        "ssh"
+        "syncthing"
       ];
     }
     {
       name = "vpn";
-      kind = "dir";
       sub = [
         {
           name = "tailscale";
@@ -47,10 +43,9 @@ modulesLib.mkHostModules {
     }
     {
       name = "security";
-      kind = "dir";
       sub = [
-        { name = "gnupg"; }
-        { name = "keyring"; }
+        "gnupg"
+        "keyring"
         {
           name = "sandbox";
           optional = true;
@@ -63,20 +58,18 @@ modulesLib.mkHostModules {
     }
     {
       name = "shell";
-      kind = "dir";
       sub = [
-        { name = "zsh"; }
-        { name = "direnv"; }
-        { name = "dconf"; }
+        "dconf"
+        "direnv"
+        "zsh"
       ];
     }
     {
       name = "system";
-      kind = "dir";
       sub = [
-        { name = "nix-ld"; }
-        { name = "packages"; }
-        { name = "user"; }
+        "nix-ld"
+        "packages"
+        "user"
       ];
     }
   ];

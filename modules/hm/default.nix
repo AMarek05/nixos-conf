@@ -5,77 +5,67 @@
 }:
 
 let
-  modulesLib = import lib.my.modules.modules { inherit lib; };
+  modulesLib = import (lib.my.modules.modules) { inherit lib; };
 in
 modulesLib.mkHostModules {
   namespace = "hmModules";
   basePath = "${inputs.self}/modules/hm";
   entries = [
-    # dirs with nested options
     {
       name = "user";
-      kind = "dir";
       sub = [
-        { name = "util"; }
-        { name = "git"; }
-        { name = "ssh"; }
-        { name = "env"; }
-
+        "env"
+        "git"
+        "ssh"
+        "util"
       ];
     }
     {
       name = "apps";
-      kind = "dir";
       sub = [
-        { name = "stylix"; }
-        { name = "nvf"; }
-        { name = "dolphin"; }
-        { name = "forge"; }
+        "dolphin"
+        "forge"
+        "nvf"
+        "stylix"
         {
           name = "packages";
           sub = [
-            { name = "browsers"; }
-            { name = "media"; }
-            { name = "productivity"; }
-            { name = "gaming"; }
-            { name = "system"; }
+            "browsers"
+            "gaming"
+            "media"
+            "productivity"
+            "system"
           ];
         }
       ];
     }
     {
       name = "caelestia";
-      kind = "dir";
       createOption = false;
     }
     {
       name = "hyprland";
-      kind = "dir";
       sub = [
-        { name = "onStart"; }
+        "onStart"
       ];
     }
     {
       name = "shell";
-      kind = "dir";
       sub = [
-        { name = "links"; }
+        "links"
         {
           name = "starship";
           optional = true;
         }
-        {
-          name = "zsh";
-        }
+        "zsh"
       ];
     }
     {
       name = "terminal";
-      kind = "dir";
       sub = [
-        { name = "ghostty"; }
-        { name = "man"; }
-        { name = "tmux"; }
+        "ghostty"
+        "man"
+        "tmux"
       ];
     }
   ];
