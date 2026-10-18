@@ -4,10 +4,7 @@
   ...
 }:
 
-let
-  modulesLib = import (lib.my.modules.modules) { inherit lib; };
-in
-modulesLib.mkHostModules {
+lib.my.mkHostModules {
   namespace = "hmModules";
   basePath = "${inputs.self}/modules/hm";
   entries = [

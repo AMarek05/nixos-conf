@@ -26,11 +26,10 @@
 # Atomicity (parent-off cascades to children):
 #   Enforce parent-to-child cascading at consumer sites using the exported
 #   `isEnabled` helper:
-#     lib.mkIf (modulesLib.isEnabled config "nixosModules" "desktop.wm.hyprland") { ... }
+#     lib.mkIf (lib.my.isEnabled config "nixosModules" "desktop.wm.hyprland") { ... }
 #
 # Usage:
-#   let modulesLib = import modules.nix { inherit lib; };
-#   in modulesLib.mkHostModules {
+#   lib.my.mkHostModules {
 #     namespace = "nixosModules";
 #     basePath  = ../../modules/nixos;
 #     entries   = [
@@ -123,17 +122,25 @@ let
   # Accepts either dot-notation ("desktop.wm.hyprland") or a list (["desktop" "wm" "hyprland"]).
   # If any intermediate level lacks an `enable` option (e.g. grouping container),
   # it passes through to the next level.
+  # Throws if any segment along the path does not exist in `config.<ns>`.
   isEnabled =
     config: ns: path:
     let
       parts = if builtins.isList path then path else lib.splitString "." path;
+      pathStr = if builtins.isString path then path else lib.concatStringsSep "." path;
       prefixes = lib.genList (i: lib.take (i + 1) parts) (builtins.length parts);
       checkPrefix =
         prefix:
         let
-          node = lib.attrByPath ([ ns ] ++ prefix) null config;
+          fullPath = [ ns ] ++ prefix;
         in
-        if node != null && node ? enable then node.enable else true;
+        if !lib.hasAttrByPath fullPath config then
+          throw "lib.my.isEnabled: unknown module path '${ns}.${pathStr}' (segment '${lib.concatStringsSep "." prefix}' does not exist)"
+        else
+          let
+            node = lib.attrByPath fullPath null config;
+          in
+          if node ? enable then node.enable else true;
     in
     builtins.all checkPrefix prefixes;
 

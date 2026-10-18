@@ -92,7 +92,9 @@
               # Re-export modules.nix helpers (isEnabled, mkHostModules) under `lib.my.*`
               # so consumer sites write `lib.my.isEnabled config "<ns>" "<path>"`
               # instead of re-importing the module-catalog library at every call site.
-              isEnabled = (import lib.my.modules.modules { lib = final; }).isEnabled;
+              inherit ((import final.my.modules.modules { lib = final; }))
+                isEnabled
+                mkHostModules;
 
               modules = final.mapAttrs' (
                 name: _: final.nameValuePair (final.removeSuffix ".nix" name) (./modules/custom + "/${name}")

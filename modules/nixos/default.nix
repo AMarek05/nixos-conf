@@ -1,9 +1,6 @@
 { lib, ... }:
 
-let
-  modulesLib = import (lib.my.modules.modules) { inherit lib; };
-in
-modulesLib.mkHostModules {
+lib.my.mkHostModules {
   namespace = "nixosModules";
   basePath = ../../modules/nixos;
   entries = [
