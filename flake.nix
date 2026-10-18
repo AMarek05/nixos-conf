@@ -82,32 +82,33 @@
     inputs:
     inputs.flake-parts.lib.mkFlake { inherit inputs; } (
       let
-        lib = inputs.nixpkgs.lib.extend (
-          final: prev:
-          (removeAttrs inputs.home-manager.lib [ "homeManagerConfiguration" ])
-          // {
-            my = {
-              toLua = import ./lib/toLua.nix { lib = final; };
+        mkLib =
+          nixpkgs:
+          nixpkgs.lib.extend (
+            final: prev:
+            (removeAttrs inputs.home-manager.lib [ "homeManagerConfiguration" ])
+            // {
+              my = {
+                toLua = import ./lib/toLua.nix { lib = final; };
 
-              # Re-export modules.nix helpers (isEnabled, mkHostModules) under `lib.my.*`
-              # so consumer sites write `lib.my.isEnabled config "<ns>" "<path>"`
-              # instead of re-importing the module-catalog library at every call site.
-              inherit ((import final.my.modules.modules { lib = final; }))
-                isEnabled
-                mkHostModules
-                ;
+                inherit ((import final.my.modules.modules { lib = final; }))
+                  isEnabled
+                  mkHostModules
+                  ;
 
-              modules = final.mapAttrs' (
-                name: _: final.nameValuePair (final.removeSuffix ".nix" name) (./modules/custom + "/${name}")
-              ) (builtins.readDir ./modules/custom);
+                modules = final.mapAttrs' (
+                  name: _: final.nameValuePair (final.removeSuffix ".nix" name) (./modules/custom + "/${name}")
+                ) (builtins.readDir ./modules/custom);
 
-              patches = {
-                qs = ./patches/quickshell-monitor-fix.patch;
-                fj = ./patches/forgejo-cli-pr-create-fix.patch;
+                patches = {
+                  qs = ./patches/quickshell-monitor-fix.patch;
+                  fj = ./patches/forgejo-cli-pr-create-fix.patch;
+                };
               };
-            };
-          }
-        );
+            }
+          );
+
+        lib = mkLib inputs.nixpkgs;
 
         hosts = {
           "nixos" = {
@@ -173,7 +174,10 @@
           { nixpkgs, system }:
           nixpkgs.lib.nixosSystem {
             inherit system;
-            specialArgs = { inherit inputs lib; };
+            specialArgs = {
+              inherit inputs;
+              lib = mkLib nixpkgs;
+            };
             modules = [
               { nixpkgs.overlays = overlays; }
 
@@ -195,7 +199,8 @@
               ./hosts/hm/${name}.nix
             ];
             extraSpecialArgs = {
-              inherit inputs lib;
+              inherit inputs;
+              lib = mkLib nixpkgs;
               osConfig = nixosCfgs.${name}.config;
 
               osConfigs = nixosCfgs;
