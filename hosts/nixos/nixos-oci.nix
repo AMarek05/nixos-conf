@@ -38,7 +38,7 @@
       "-T0"
     ];
 
-    loader.grub.configurationLimit = 2;
+    loader.grub.configurationLimit = 1;
 
     kernelPackages = lib.mkForce pkgs.linuxPackages;
   };
