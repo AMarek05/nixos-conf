@@ -73,58 +73,58 @@
           theme = lib.mkForce "auto";
         };
         sections = {
-        lualine_a = lib.mkForce [
-          (lib.generators.mkLuaInline ''{ "mode", icons_enabled = true }'')
-        ];
+          lualine_a = lib.mkForce [
+            (lib.generators.mkLuaInline ''{ "mode", icons_enabled = true }'')
+          ];
 
-        lualine_b = lib.mkForce [
-          (lib.generators.mkLuaInline ''{ "filetype", colored = true, icon_only = true, icon = { align = 'left' }, separator = "", padding = { left = 2, right = 1 } }'')
-          (lib.generators.mkLuaInline ''{ "filename", symbols = {modified = ' ', readonly = ' '}, padding = { left = 1, right = 1 } }'')
-        ];
+          lualine_b = lib.mkForce [
+            (lib.generators.mkLuaInline ''{ "filetype", colored = true, icon_only = true, icon = { align = 'left' }, separator = "", padding = { left = 2, right = 1 } }'')
+            (lib.generators.mkLuaInline ''{ "filename", symbols = {modified = ' ', readonly = ' '}, padding = { left = 1, right = 1 } }'')
+          ];
 
-        lualine_c = lib.mkForce [
-          (lib.generators.mkLuaInline ''{ "diff", colored = true, symbols = {added = '+', modified = '~', removed = '-'} }'')
-        ];
+          lualine_c = lib.mkForce [
+            (lib.generators.mkLuaInline ''{ "diff", colored = true, symbols = {added = '+', modified = '~', removed = '-'} }'')
+          ];
 
-        lualine_x = lib.mkForce [
-          (lib.generators.mkLuaInline ''
-            {
-              function()
-                local buf_ft = vim.bo.filetype
-                local excluded_buf_ft = { toggleterm = true, NvimTree = true, ["neo-tree"] = true, TelescopePrompt = true }
-                if excluded_buf_ft[buf_ft] then return "" end
-                local bufnr = vim.api.nvim_get_current_buf()
-                local clients = vim.lsp.get_clients({ bufnr = bufnr })
-                if vim.tbl_isempty(clients) then return "No Active LSP" end
-                local active_clients = {}
-                for _, client in ipairs(clients) do table.insert(active_clients, client.name) end
-                return table.concat(active_clients, ", ")
-              end,
-              icon = ' ',
-              padding = { left = 1, right = 1 },
-            }
-          '')
-          (lib.generators.mkLuaInline ''
-            { 
-              "diagnostics", 
-              sources = {'nvim_diagnostic'}, 
-              symbols = {error = '󰅙 ', warn = ' ', info = ' ', hint = '󰌵 '}, 
-              colored = true,
-              padding = { left = 1, right = 1 },
-            }
-          '')
-        ];
+          lualine_x = lib.mkForce [
+            (lib.generators.mkLuaInline ''
+              {
+                function()
+                  local buf_ft = vim.bo.filetype
+                  local excluded_buf_ft = { toggleterm = true, NvimTree = true, ["neo-tree"] = true, TelescopePrompt = true }
+                  if excluded_buf_ft[buf_ft] then return "" end
+                  local bufnr = vim.api.nvim_get_current_buf()
+                  local clients = vim.lsp.get_clients({ bufnr = bufnr })
+                  if vim.tbl_isempty(clients) then return "No Active LSP" end
+                  local active_clients = {}
+                  for _, client in ipairs(clients) do table.insert(active_clients, client.name) end
+                  return table.concat(active_clients, ", ")
+                end,
+                icon = ' ',
+                padding = { left = 1, right = 1 },
+              }
+            '')
+            (lib.generators.mkLuaInline ''
+              { 
+                "diagnostics", 
+                sources = {'nvim_diagnostic'}, 
+                symbols = {error = '󰅙 ', warn = ' ', info = ' ', hint = '󰌵 '}, 
+                colored = true,
+                padding = { left = 1, right = 1 },
+              }
+            '')
+          ];
 
-        lualine_y = lib.mkForce [
-          (lib.generators.mkLuaInline ''{ "searchcount", maxcount = 999, timeout = 120, padding = { left = 1, right = 1 } }'')
-          (lib.generators.mkLuaInline ''{ "branch", icon = '', padding = { left = 1, right = 1 } }'')
-        ];
+          lualine_y = lib.mkForce [
+            (lib.generators.mkLuaInline ''{ "searchcount", maxcount = 999, timeout = 120, padding = { left = 1, right = 1 } }'')
+            (lib.generators.mkLuaInline ''{ "branch", icon = '', padding = { left = 1, right = 1 } }'')
+          ];
 
-        lualine_z = lib.mkForce [
-          (lib.generators.mkLuaInline ''{ "progress", padding = { left = 1, right = 1 } }'')
-          (lib.generators.mkLuaInline ''{ "location", padding = { left = 1, right = 1 } }'')
-          (lib.generators.mkLuaInline ''{ "fileformat", symbols = { unix = '', dos = '', mac = '' }, padding = { left = 1, right = 1 } }'')
-        ];
+          lualine_z = lib.mkForce [
+            (lib.generators.mkLuaInline ''{ "progress", padding = { left = 1, right = 1 } }'')
+            (lib.generators.mkLuaInline ''{ "location", padding = { left = 1, right = 1 } }'')
+            (lib.generators.mkLuaInline ''{ "fileformat", symbols = { unix = '', dos = '', mac = '' }, padding = { left = 1, right = 1 } }'')
+          ];
         };
       };
 

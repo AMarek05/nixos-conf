@@ -5,7 +5,7 @@
   ...
 }:
 {
-  config = lib.mkIf (config.hmModules.apps.enable && config.hmModules.apps.packages.enable) {
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "apps.packages") {
     home.packages = with pkgs; [ nh ];
   };
 }

@@ -5,7 +5,7 @@
   ...
 }:
 {
-  config = lib.mkIf (config.hmModules.apps.enable && config.hmModules.apps.dolphin.enable) {
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "apps.dolphin") {
     home.packages = with pkgs; [
       (symlinkJoin {
         name = "dolphin-xcb";

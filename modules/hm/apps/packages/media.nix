@@ -5,17 +5,10 @@
   ...
 }:
 {
-  config =
-    lib.mkIf
-      (
-        config.hmModules.apps.enable
-        && config.hmModules.apps.packages.enable
-        && config.hmModules.apps.packages.media.enable
-      )
-      {
-        home.packages = with pkgs; [
-          vlc
-          kdePackages.kdenlive
-        ];
-      };
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "apps.packages.media") {
+    home.packages = with pkgs; [
+      vlc
+      kdePackages.kdenlive
+    ];
+  };
 }

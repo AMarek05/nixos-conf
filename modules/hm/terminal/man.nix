@@ -6,7 +6,7 @@
   ...
 }:
 {
-  config = lib.mkIf (config.hmModules.terminal.enable && config.hmModules.terminal.man.enable) {
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "terminal.man") {
     home.sessionVariables = {
       MANPAGER = "sh -c 'col -bx | ${pkgs.bat}/bin/bat -l man -p'";
       MANROFFOPT = "-c";

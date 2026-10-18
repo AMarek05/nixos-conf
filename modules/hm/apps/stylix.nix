@@ -11,7 +11,7 @@
     inputs.stylix.homeModules.stylix
   ];
 
-  config = lib.mkIf (config.hmModules.apps.enable && config.hmModules.apps.stylix.enable) {
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "apps.stylix") {
     gtk.gtk4.theme = lib.mkForce null;
 
     home.pointerCursor.enable = true;

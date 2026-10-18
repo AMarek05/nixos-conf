@@ -1,7 +1,7 @@
 # modules/nixos/shell/zsh.nix — enable zsh as a system shell.
 { config, lib, ... }:
 {
-  config = lib.mkIf (config.nixosModules.shell.enable && config.nixosModules.shell.zsh.enable) {
+  config = lib.mkIf (lib.my.isEnabled config "nixosModules" "shell.zsh") {
     programs.zsh.enable = true;
   };
 }

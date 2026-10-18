@@ -5,23 +5,16 @@
   ...
 }:
 {
-  config =
-    lib.mkIf
-      (
-        config.hmModules.apps.enable
-        && config.hmModules.apps.packages.enable
-        && config.hmModules.apps.packages.gaming.enable
-      )
-      {
-        home.packages = with pkgs; [
-          umu-launcher
-          flatpak
-          prismlauncher
-          ftb-app
-          heroic
-          ckan
-          qbittorrent
-          openmw
-        ];
-      };
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "apps.packages.gaming") {
+    home.packages = with pkgs; [
+      umu-launcher
+      flatpak
+      prismlauncher
+      ftb-app
+      heroic
+      ckan
+      qbittorrent
+      openmw
+    ];
+  };
 }

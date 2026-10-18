@@ -5,28 +5,21 @@
   ...
 }:
 {
-  config =
-    lib.mkIf
-      (
-        config.hmModules.apps.enable
-        && config.hmModules.apps.packages.enable
-        && config.hmModules.apps.packages.productivity.enable
-      )
-      {
-        home.packages = with pkgs; [
-          antigravity-hub
-          dbeaver-bin
-          libreoffice-stable
+  config = lib.mkIf (lib.my.isEnabled config "hmModules" "apps.packages.productivity") {
+    home.packages = with pkgs; [
+      antigravity-hub
+      dbeaver-bin
+      libreoffice-stable
 
-          remmina
+      remmina
 
-          alacarte
-          evince
+      alacarte
+      evince
 
-          intellij-idea
-          rust-rover
+      intellij-idea
+      rust-rover
 
-          thunderbird
-        ];
-      };
+      thunderbird
+    ];
+  };
 }
