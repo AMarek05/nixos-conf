@@ -94,7 +94,8 @@
               # instead of re-importing the module-catalog library at every call site.
               inherit ((import final.my.modules.modules { lib = final; }))
                 isEnabled
-                mkHostModules;
+                mkHostModules
+                ;
 
               modules = final.mapAttrs' (
                 name: _: final.nameValuePair (final.removeSuffix ".nix" name) (./modules/custom + "/${name}")
