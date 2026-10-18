@@ -117,16 +117,20 @@ let
     ${ns} = lib.foldl' lib.recursiveUpdate { } (map (mkEntryOptions [ ]) entries);
   };
 
-  # Cascading enable helper
-  # Verifies that every level along the path is enabled in `config`.
-  # Accepts either dot-notation ("desktop.wm.hyprland") or a list (["desktop" "wm" "hyprland"]).
+  # Cascading enable helper.
+  # Verifies that every level along the path is enabled in `config.<ns>`.
+  # Accepts either dot-notation ("desktop.audio") or a list (["desktop" "audio"]).
   # If any intermediate level lacks an `enable` option (e.g. grouping container),
   # it passes through to the next level.
   # Throws if any segment along the path does not exist in `config.<ns>`.
   isEnabled =
     config: ns: path:
     let
-      parts = if builtins.isList path then path else lib.splitString "." path;
+      parts =
+        if builtins.isList path then
+          lib.concatMap (x: lib.splitString "." x) path
+        else
+          lib.splitString "." path;
       pathStr = if builtins.isString path then path else lib.concatStringsSep "." path;
       prefixes = lib.genList (i: lib.take (i + 1) parts) (builtins.length parts);
       checkPrefix =
