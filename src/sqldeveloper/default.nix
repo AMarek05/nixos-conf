@@ -5,6 +5,8 @@
   fetchurl,
   rpmextract,
   makeWrapper,
+  copyDesktopItems,
+  makeDesktopItem,
   jdk17 ? pkgs.jdk17.override { enableJavaFX = true; },
   fontconfig,
   glib,
@@ -27,6 +29,7 @@ stdenv.mkDerivation rec {
   nativeBuildInputs = [
     rpmextract
     makeWrapper
+    copyDesktopItems
   ];
 
   buildInputs = [
@@ -40,11 +43,29 @@ stdenv.mkDerivation rec {
     libX11
   ];
 
+  desktopItems = [
+    (makeDesktopItem {
+      name = "sqldeveloper";
+      exec = "sqldeveloper";
+      icon = "sqldeveloper";
+      comment = "Oracle SQL Developer";
+      desktopName = "Oracle SQL Developer";
+      genericName = "Database Client";
+      categories = [
+        "Development"
+        "Database"
+      ];
+      terminal = false;
+    })
+  ];
+
   unpackPhase = ''
     rpmextract $src
   '';
 
   installPhase = ''
+    runHook preInstall
+
     mkdir -p $out/share/sqldeveloper $out/bin
 
     cp -r opt/sqldeveloper/* $out/share/sqldeveloper/
@@ -52,7 +73,6 @@ stdenv.mkDerivation rec {
     echo "SetJavaHome ${jdk17}" >> $out/share/sqldeveloper/sqldeveloper/bin/sqldeveloper.conf
 
     # Wrap the binary using makeWrapper to inject LD_LIBRARY_PATH and Java options 
-    # so JavaFX can locate its GTK/glass bindings at runtime.
     makeWrapper $out/share/sqldeveloper/sqldeveloper.sh $out/bin/sqldeveloper \
       --prefix PATH : "${lib.makeBinPath [ jdk17 ]}" \
       --prefix LD_LIBRARY_PATH : "${
@@ -68,6 +88,11 @@ stdenv.mkDerivation rec {
       }" \
       --set JAVA_HOME "${jdk17}" \
       --set-default GDK_BACKEND x11
+
+    # Install the desktop icon so application launchers can display it
+    install -Dm644 opt/sqldeveloper/icon.png $out/share/icons/hicolor/128x128/apps/sqldeveloper.png
+
+    runHook postInstall
   '';
 
   meta = with lib; {
