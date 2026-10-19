@@ -14,7 +14,7 @@
       remmina
 
       alacarte
-      evince
+      kdePackages.okular
 
       intellij-idea
       rust-rover
