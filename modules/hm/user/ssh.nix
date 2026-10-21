@@ -36,8 +36,6 @@ in
           "admin" = {
             HostName = "admin";
             User = "root";
-
-            ForwardAgent = true;
           };
 
           "proxmox" = {
@@ -59,13 +57,7 @@ in
             HostName = "amarek.pl";
             User = "adam";
             Port = 2222;
-          };
-
-          "pangolin" = {
-            HostName = "amarek.pl";
-            Port = 2222;
-
-            User = "ubuntu";
+            ForwardAgent = true;
           };
 
           "polluks" = {
