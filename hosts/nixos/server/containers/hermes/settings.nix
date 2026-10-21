@@ -1,5 +1,5 @@
 {
-  model = "minimax/MiniMax-M3";
+  model = "minimax/MiniMax-M3.1-Flash";
   gateway.bind = "lan";
   gateway.platforms.discord.gateway_restart_notification = false;
 
