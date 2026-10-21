@@ -10,7 +10,11 @@
   services.pangolin = {
     enable = true;
 
-    package = pkgs.fosrl-pangolin.override { edition = "enterprise"; };
+    package = import ./pangolin-wrapper-fix.nix {
+      pkg = pkgs.fosrl-pangolin.override {
+        edition = "enterprise";
+      };
+    };
 
     openFirewall = true;
     baseDomain = "amarek.pl";
