@@ -16,6 +16,8 @@
     hyprland.enable = false;
 
     terminal.ghostty.enable = false;
+
+    user.util.enable = false;
   };
 
   programs.git.signing.key = lib.mkForce "/home/adam/.ssh/git";
