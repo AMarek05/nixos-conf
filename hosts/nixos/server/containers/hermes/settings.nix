@@ -5,6 +5,20 @@
 
   providers.openai = null;
 
+  agent = {
+    reasoning_effort = "low";
+
+    disabled_toolsets = [
+      "computer_use"
+      "homeassistant"
+      "discord_admin"
+    ];
+
+    task_completion_guidance = true;
+    tool_use_enforcement = "auto";
+    environment_probe = true;
+  };
+
   discord = {
     enabled = true;
     token = "\${DISCORD_BOT_TOKEN}";
@@ -42,16 +56,4 @@
     "hermes-cli"
     "kanban"
   ];
-
-  agent = {
-    disabled_toolsets = [
-      "computer_use"
-      "homeassistant"
-      "discord_admin"
-    ];
-
-    task_completion_guidance = true;
-    tool_use_enforcement = "auto";
-    environment_probe = true;
-  };
 }
