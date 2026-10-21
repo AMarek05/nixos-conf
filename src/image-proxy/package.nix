@@ -1,11 +1,20 @@
 { lib, rustPlatform }:
-
+let
+  source = lib.fileset.toSource {
+    root = ./.;
+    fileset = lib.fileset.unions [
+      ./Cargo.toml
+      ./Cargo.lock
+      ./src
+    ];
+  };
+in
 rustPlatform.buildRustPackage {
   pname = "image-proxy";
   version = "0.1.0";
 
-  src = lib.cleanSource ./.;
-  cargoLock.lockFile = ./Cargo.lock;
+  src = source;
+  cargoLock.lockFile = "${source}/Cargo.lock";
 
   meta = {
     description = "Translates SillyTavern OpenAI image calls to MiniMax.";
