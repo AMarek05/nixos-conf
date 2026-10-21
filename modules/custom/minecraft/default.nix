@@ -143,6 +143,8 @@ in
       ]
       ++ server.volumes;
 
+      extraOptions = [ "--stop-timeout=120" ];
+
       # Only the active server runs; the restore unit starts it on boot.
       autoStart = false;
     }) cfg.servers;
@@ -156,6 +158,10 @@ in
 
           # The servers are long lived; a rebuild must not restart them.
           restartIfChanged = false;
+
+          serviceConfig = {
+            TimeoutStopSec = lib.mkForce 130;
+          };
         }
       ) cfg.servers)
       // lib.optionalAttrs (names != [ ]) {

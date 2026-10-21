@@ -60,6 +60,7 @@
           OPS = "atrys14";
           ENABLE_WHITELIST = "TRUE";
           WHITELIST = "atrys14";
+          ENABLE_RCON = "true";
           RCON_PASSWORD = "pass";
         };
       };
