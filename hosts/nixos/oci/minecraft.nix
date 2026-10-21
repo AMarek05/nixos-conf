@@ -33,12 +33,33 @@
           TYPE = "FORGE";
           VERSION = "1.20.1";
           FORGE_VERSION = "47.4.0";
+
+          EULA = "TRUE";
           MEMORY = "8G";
           DIFFICULTY = "peaceful";
           OPS = "atrys14";
           ENABLE_WHITELIST = "TRUE";
           WHITELIST = "atrys14";
+          RCON_PASSWORD = "pass";
+        };
+      };
+
+      moni = {
+        description = "Monifactory Expert 1.20.1";
+        image = "itzg/minecraft-server:java17";
+        environment = {
+          TYPE = "FORGE";
+          VERSION = "1.20.1";
+          FORGE_VERSION = "47.4.13";
+
+          GENERIC_PACK = "https://github.com/Omicron-Industries/Monifactory/releases/download/0.13.8/Monifactory-Beta.0.13.8-server.zip";
+
           EULA = "TRUE";
+          MEMORY = "8G";
+          DIFFICULTY = "peaceful";
+          OPS = "atrys14";
+          ENABLE_WHITELIST = "TRUE";
+          WHITELIST = "atrys14";
           RCON_PASSWORD = "pass";
         };
       };
