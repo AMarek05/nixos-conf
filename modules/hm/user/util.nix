@@ -19,7 +19,7 @@ in
       file
       zip
       unzip
-      unrar-free
+      unrar
       p7zip
       zstd
       pv
