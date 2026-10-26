@@ -43,6 +43,9 @@ in
   };
 
   nixpkgs.config.allowUnfreePredicate = pkg: pkgs.lib.hasPrefix "open-webui" pkg.pname;
+  nixpkgs.config.problems.handlers = {
+    posthog.broken = "warn"; # or "ignore"
+  };
 
   # ── SOPS ────────────────────────────────────────────────────────────────
   sops.age.sshKeyPaths = [ "/var/lib/sops-nix/age_key" ];
