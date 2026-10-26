@@ -10,7 +10,7 @@
 
   sops.secrets."runner-token" = {
     sopsFile = inputs.self + "/secrets/serv.yaml";
-    owner = "runner";
+    owner = "root";
     mode = "0400";
   };
 
@@ -23,17 +23,14 @@
     ];
   };
 
-  services.gitea-actions-runner = {
-    package = pkgs.forgejo-runner;
-
+  services.forgejo-runner = {
     instances."native" = {
       enable = true;
-      name = "nixos-nspawn-runner";
       url = "https://git.amarek.pl";
 
-      tokenFile = config.sops.secrets."runner-token".path;
+      settings.server.connections.default.uuid = "5012e7fb-5114-417e-ad1e-e8994a08047a";
+      secrets.server.connections.default.token_url = config.sops.secrets."runner-token".path;
 
-      # The :host suffix bypasses Docker/Podman
       labels = [
         "nixos:host"
       ];
@@ -59,17 +56,6 @@
         gcc
         clang
       ];
-    };
-  };
-
-  systemd.services."gitea-runner-native" = {
-    serviceConfig = {
-      DynamicUser = lib.mkForce false;
-      User = lib.mkForce "runner";
-      Group = lib.mkForce "runner";
-      BindReadOnlyPaths = [ "/run/secrets/runner-token" ];
-
-      TimeoutStartSec = "10s";
     };
   };
 }
