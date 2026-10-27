@@ -32,6 +32,7 @@ in
 
     lsp.servers = {
       nixd.settings.nixd.formatting.command = [ (lib.getExe pkgs.nixfmt) ];
+      basedpyright.settings.basedpyright.analysis.typeCheckingMode = "standard";
     };
 
     languages = {
