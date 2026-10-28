@@ -21,6 +21,13 @@
       "nix-command"
       "flakes"
     ];
+
+    narinfo-cache-negative-ttl = 0;
+    trusted-users = [
+      "root"
+      "runner"
+      "@wheel"
+    ];
   };
 
   services.forgejo-runner = {
