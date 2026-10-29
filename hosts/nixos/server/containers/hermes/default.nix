@@ -242,7 +242,7 @@ in
 
   # ── OpenWebUI ─────────────────────────────────────────────────────────────
   services.open-webui = {
-    enable = true;
+    enable = false;
 
     package =
       # let
